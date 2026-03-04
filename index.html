@@ -408,7 +408,7 @@ function renderGagnants() {
     var row = document.createElement("div"); row.className = "gcard";
     var badge = document.createElement("div"); badge.className = "gnum"; badge.textContent = num;
     var fields = document.createElement("div"); fields.className = "gfields";
-    var ip  = document.createElement("input"); ip.type = "text";  ip.id = "pr" + id; ip.placeholder = "Prenom"; ip.value = s.pr;
+    var ip  = document.createElement("input"); ip.type = "text";  ip.id = "pr" + id; ip.placeholder = "Prénom"; ip.value = s.pr;
     var inm = document.createElement("input"); inm.type = "text"; inm.id = "nm" + id; inm.placeholder = "Nom";   inm.value = s.nm;
     var ie  = document.createElement("input"); ie.type = "email"; ie.id = "em" + id; ie.placeholder = "email@exemple.com"; ie.value = s.em;
     fields.appendChild(ip); fields.appendChild(inm); fields.appendChild(ie);
