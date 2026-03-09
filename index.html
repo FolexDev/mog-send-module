@@ -541,10 +541,10 @@ async function scanDossier() {
       renderGagnants();
     }
 
-    /* Pill prochain numéro */
-    var pillNext = prochain !== null
+    /* Pill prochain numéro — uniquement si stock > 0 */
+    var pillNext = (prochain !== null && stock > 0)
       ? '<span class="ds-pill ok"><span class="ds-dot"></span>Prochain n° : <strong style="margin-left:3px">' + prochain + '</strong></span>'
-      : '<span class="ds-pill err"><span class="ds-dot"></span>&#10005; Aucun disponible</span>';
+      : '';
 
     /* Pill stock */
     var pillStock = stock > 0
