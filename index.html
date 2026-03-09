@@ -147,9 +147,13 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .sel-pill.show{display:inline-flex}
 .sel-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
 .explorer{border:1px solid rgba(255,255,255,.12);border-radius:12px;background:linear-gradient(160deg,#1e1e1e,#272727,#1c1c1c);overflow:hidden;max-height:0;opacity:0;transition:max-height .38s cubic-bezier(.4,0,.2,1),opacity .25s ease;margin-bottom:6px;}
-.explorer.open{max-height:700px;opacity:1}
+.explorer.open{max-height:520px;opacity:1}
 .exp-topbar{height:3px;background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999)}
-.exp-body{padding:10px}
+.exp-body{padding:10px;max-height:390px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;}
+.exp-body::-webkit-scrollbar{width:5px}
+.exp-body::-webkit-scrollbar-track{background:transparent}
+.exp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px}
+.exp-body::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.28)}
 .ant-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:11px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.2);color:var(--txt);font-family:"DM Sans",sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:6px;text-align:left;}
 .ant-btn:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18)}
 .ant-btn.open-one{background:rgba(232,0,29,.1);border-color:rgba(232,0,29,.28);color:#ff8080}
