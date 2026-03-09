@@ -497,13 +497,18 @@ async function scanDossier() {
       pageToken = data.nextPageToken || "";
     } while (pageToken);
 
-    /* Séparer envoyés / non envoyés */
+    /* Séparer envoyés / disponibles / autres */
     var envoyes = [];
     var restants = [];
     allFiles.forEach(function(f) {
       var name = f.name.replace(/\.pdf$/i, "");
-      if (/-envoy[eé]/i.test(name)) { envoyes.push(name); }
-      else { restants.push(name); }
+      if (/-envoy[eé]/i.test(name)) {
+        envoyes.push(name);
+      } else if (/^.+-\d+$/.test(name)) {
+        /* Termine exactement par -[chiffres] : disponible */
+        restants.push(name);
+      }
+      /* Tout autre fichier annoté (digital, régie, etc.) : ignoré */
     });
 
     /* Extraire les numéros des fichiers restants */
