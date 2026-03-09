@@ -312,7 +312,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
       </div>
       <div class="field">
         <label>ID du dossier "Originaux"</label>
-        <input type="text" id="folderID" placeholder="ex: 1EPQqtKR_GgoVxThVVHFf" onblur="scanDossier()" onpaste="setTimeout(scanDossier,100)">
+        <input type="text" id="folderID" placeholder="ex: 1EPQqtKR_GgoVxThVVHFf ou lien Drive complet" onblur="scanDossier()" onpaste="extractFolderID(event)">
         <div class="drive-stats" id="driveStats"></div>
       </div>
     </div>
@@ -468,7 +468,19 @@ function setAuthUI(c) {
   document.getElementById("authBtn").className     = c ? "authbtn disconnect" : "authbtn";
 }
 
-/* ── SCAN DOSSIER DRIVE ── */
+/* ── EXTRACTION ID DEPUIS LIEN DRIVE ── */
+function extractFolderID(e) {
+  setTimeout(function() {
+    var field = document.getElementById("folderID");
+    var val = field.value.trim();
+    /* Cherche /folders/XXXX dans l'URL */
+    var m = val.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    if (m) { field.value = m[1]; }
+    scanDossier();
+  }, 50);
+}
+
+
 async function scanDossier() {
   var fid = document.getElementById("folderID").value.trim();
   var box = document.getElementById("driveStats");
