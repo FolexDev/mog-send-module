@@ -390,11 +390,7 @@ var expState = {
   cache            : {}   /* { one: [...], lac: [...] } */
 };
 
-/* ─── Logo / favicon ─── */
-document.getElementById("logoImg").src = "https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
-var lnk=document.createElement("link"); lnk.rel="icon"; lnk.type="image/png";
-lnk.href="https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
-document.head.appendChild(lnk);
+/* ─── Logo / favicon — déplacé dans window load ─── */
 
 /* ─── Waveform ─── */
 function drawWaveform(){
@@ -419,6 +415,12 @@ window.addEventListener('resize',drawWaveform);
 
 /* ─── INIT ─── */
 window.addEventListener("load",function(){
+  /* Logo / favicon */
+  var logoEl = document.getElementById("logoImg");
+  if(logoEl) logoEl.src = "https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
+  var lnk=document.createElement("link"); lnk.rel="icon"; lnk.type="image/png";
+  lnk.href="https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
+  document.head.appendChild(lnk);
   addGagnant(); renderSaveSlots(); setTimeout(drawWaveform,60);
   var t=setInterval(function(){
     if(window.google&&window.google.accounts){
@@ -450,14 +452,19 @@ function setAuthUI(c){
    EXPLORATEUR ACCORDION
 ═══════════════════════════════ */
 function toggleExplorer(){
-  var exp=document.getElementById('driveExplorer'), btn=document.getElementById('browseBtn');
-  if(exp.classList.contains('open')){ exp.classList.remove('open'); btn.classList.remove('exp-open'); return; }
+  var exp=document.getElementById("driveExplorer"), btn=document.getElementById("browseBtn");
+  if(exp.classList.contains("open")){ exp.classList.remove("open"); btn.classList.remove("exp-open"); return; }
   if(!accessToken){
-    document.getElementById('driveStats').innerHTML='<span class="ds-pill warn"><span class="ds-dot"></span>Connecte-toi à Google d'abord</span>';
+    var box=document.getElementById("driveStats"); box.innerHTML="";
+    var dot=document.createElement("span"); dot.className="ds-dot";
+    var s=document.createElement("span"); s.className="ds-pill warn";
+    s.appendChild(dot);
+    s.appendChild(document.createTextNode("Connecte-toi à Google d’abord"));
+    box.appendChild(s);
     return;
   }
-  document.getElementById('driveStats').innerHTML='';
-  exp.classList.add('open'); btn.classList.add('exp-open');
+  document.getElementById("driveStats").innerHTML="";
+  exp.classList.add("open"); btn.classList.add("exp-open");
 }
 
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
@@ -606,7 +613,7 @@ async function scanDossier(){
   var fid=document.getElementById("folderID").value.trim();
   var box=document.getElementById("driveStats");
   if(!fid){box.innerHTML="";return;}
-  if(!accessToken){box.innerHTML='<span class="ds-pill warn"><span class="ds-dot"></span>Connecte-toi à Google d\'abord</span>';return;}
+  if(!accessToken){var dot2=document.createElement("span");dot2.className="ds-dot";var s2=document.createElement("span");s2.className="ds-pill warn";s2.appendChild(dot2);s2.appendChild(document.createTextNode("Connecte-toi à Google d’abord"));box.innerHTML="";box.appendChild(s2);return;}
   box.innerHTML='<span class="ds-pill loading"><span class="ds-dot" style="animation:sp .7s linear infinite;border:2px solid rgba(220,220,220,.15);border-top-color:currentColor;border-radius:50%;width:8px;height:8px;background:none"></span>Scan en cours…</span>';
   try{
     var allFiles=[],pageToken="";
