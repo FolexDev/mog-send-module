@@ -127,9 +127,9 @@ select option{background:#2a2a2a;color:#e8e8e8}
 /* ── EXPLORATEUR ── */
 .folder-row{display:flex;gap:8px;align-items:flex-start}
 .folder-row input{flex:1}
-.browse-btn{padding:11px 13px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.28);color:rgba(220,220,220,.55);font-family:"DM Sans",sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
-.browse-btn:hover{color:#e8e8e8;border-color:rgba(255,255,255,.22)}
-.browse-btn.active{border-color:rgba(245,166,35,.4);color:#f5a623}
+.browse-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(220,220,220,.55);font-family:"DM Sans",sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.browse-btn:hover{color:#e8e8e8;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
+.browse-btn.active{border-color:rgba(245,166,35,.4);color:#f5a623;background:rgba(245,166,35,.05)}
 .exp-wrap{overflow:hidden;max-height:0;transition:max-height .32s ease;margin-top:8px}
 .exp-wrap.open{max-height:520px}
 .exp-box{border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#1d1d1d;overflow:hidden}
