@@ -648,6 +648,17 @@ async function scanDossier() {
         a.className = "fl dyn";
         a.textContent = "\uD83D\uDCC2 " + meta.name;
         fl.appendChild(a);
+        // Auto-select expéditeur selon antenne
+        var antenne = EXP.ant;
+        if (!antenne) {
+          var fullPath = (EXP.cName || "") + " " + meta.name;
+          // Ajouter aussi le nom de base des fichiers PDF
+          if (restants.length > 0) fullPath += " " + restants[0];
+          if (/one.?fm|onefm/i.test(fullPath)) antenne = "one";
+          else if (/radio.?lac|radiolac/i.test(fullPath)) antenne = "lac";
+        }
+        if (antenne === "one") document.getElementById("mailFrom").value = "sav@onefm.ch";
+        else if (antenne === "lac") document.getElementById("mailFrom").value = "sav@radiolac.ch";
       }
     } catch(e2) { /* silencieux */ }
   } catch(e) {
