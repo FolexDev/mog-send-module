@@ -9,20 +9,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{
-  --dark:#181818;
-  --card-bg:linear-gradient(160deg,#282828,#343434,#262626);
-  --bd:rgba(255,255,255,.14);--bd2:rgba(255,255,255,.18);
-  --txt:#e8e8e8;--mut:rgba(220,220,220,.42);
-  --ok:#00c47a;--warn:#f5a623;
-  --grad:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999);
-  --grad-btn:linear-gradient(180deg,#d8d8d8 0%,#888 50%,#aaa 100%);
-}
+:root{--dark:#181818;--card-bg:linear-gradient(160deg,#282828,#343434,#262626);--bd:rgba(255,255,255,.14);--bd2:rgba(255,255,255,.18);--txt:#e8e8e8;--mut:rgba(220,220,220,.42);--ok:#00c47a;--warn:#f5a623;--grad:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999);--grad-btn:linear-gradient(180deg,#d8d8d8 0%,#888 50%,#aaa 100%);}
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:linear-gradient(160deg,#181818,#252525,#181818);
-  color:var(--txt);font-family:"DM Sans",sans-serif;min-height:100vh;overflow-x:hidden;
-}
+body{background:linear-gradient(160deg,#181818,#252525,#181818);color:var(--txt);font-family:"DM Sans",sans-serif;min-height:100vh;overflow-x:hidden;}
 body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .gl{position:fixed;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 70%);top:-250px;left:-150px;pointer-events:none;z-index:0}
 .go{position:fixed;width:550px;height:550px;border-radius:50%;background:radial-gradient(circle,rgba(200,200,200,.04) 0%,transparent 70%);bottom:-180px;right:-120px;pointer-events:none;z-index:0}
@@ -44,44 +33,18 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .step .sn{display:block;font-family:"Bebas Neue",sans-serif;font-size:18px;line-height:1.1;margin-bottom:1px}
 .step.done .sn{color:var(--ok)}.step.done{color:rgba(0,196,122,.55)}
 .step.active .sn{color:#fff}.step.active{color:#fff;background:rgba(255,255,255,.05)}
-.card{
-  background:linear-gradient(160deg,#282828,#343434,#262626);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:16px;
-  padding:32px 28px;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 2px 0 rgba(255,255,255,.07) inset, 0 8px 40px rgba(0,0,0,.55);
-}
-.card::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:3px;
-  border-radius:16px 16px 0 0;
-  background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999);
-  z-index:2;
-}
+.card{background:linear-gradient(160deg,#282828,#343434,#262626);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:32px 28px;position:relative;overflow:hidden;box-shadow:0 2px 0 rgba(255,255,255,.07) inset,0 8px 40px rgba(0,0,0,.55);}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999);z-index:2;}
 .sec{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(200,200,200,.48);margin-bottom:14px;display:flex;align-items:center;gap:10px}
 .sec::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.1)}
 .sep{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);margin:24px 0}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.row.full{grid-template-columns:1fr}
-.row.tri{grid-template-columns:1fr 1fr 1fr}
+.row.full{grid-template-columns:1fr}.row.tri{grid-template-columns:1fr 1fr 1fr}
 @media(max-width:620px){.row,.row.tri{grid-template-columns:1fr}}
 .field{display:flex;flex-direction:column;gap:6px}
 label{font-size:11px;font-weight:500;color:var(--mut);letter-spacing:.05em;text-transform:uppercase}
-input[type=text],input[type=email],input[type=number],textarea,select{
-  background:rgba(0,0,0,.28);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:8px;color:var(--txt);
-  font-family:"DM Sans",sans-serif;font-size:14px;
-  padding:11px 13px;outline:none;
-  transition:border-color .2s,background .2s;width:100%;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
-}
-input:focus,textarea:focus,select:focus{
-  border-color:rgba(255,255,255,.28);
-  background:rgba(0,0,0,.35);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 0 0 3px rgba(255,255,255,.06);
-}
+input[type=text],input[type=email],input[type=number],textarea,select{background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--txt);font-family:"DM Sans",sans-serif;font-size:14px;padding:11px 13px;outline:none;transition:border-color .2s,background .2s;width:100%;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
+input:focus,textarea:focus,select:focus{border-color:rgba(255,255,255,.28);background:rgba(0,0,0,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 0 3px rgba(255,255,255,.06);}
 textarea{resize:vertical;min-height:142px;line-height:1.65}
 select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(200,200,200,0.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
 select option{background:#2a2a2a;color:#e8e8e8}
@@ -103,8 +66,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .savebtn.primary{border-color:rgba(0,196,122,.3);color:var(--ok);background:rgba(0,196,122,.07)}.savebtn.primary:hover{background:rgba(0,196,122,.14)}
 .save-slots{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .slot{padding:6px 12px;border-radius:7px;border:1px solid var(--bd);background:rgba(0,0,0,.2);color:var(--mut);font-family:"DM Sans",sans-serif;font-size:11px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
-.slot:hover{border-color:var(--bd2);color:var(--txt)}
-.slot.filled{border-color:rgba(0,196,122,.25);color:var(--ok)}
+.slot:hover{border-color:var(--bd2);color:var(--txt)}.slot.filled{border-color:rgba(0,196,122,.25);color:var(--ok)}
 .slot-del{color:var(--mut);font-size:10px;line-height:1}.slot-del:hover{color:#ff6060}
 .start-row{display:flex;align-items:center;gap:14px;margin-bottom:18px}
 .start-row input[type=number]{width:90px;text-align:center;font-size:16px;font-weight:700}
@@ -129,15 +91,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .actions{display:flex;align-items:center;gap:12px;margin-top:28px;flex-wrap:nowrap}
 .rsetb{padding:13px 20px;background:transparent;border:1px solid var(--bd);border-radius:10px;color:var(--mut);font-family:"DM Sans",sans-serif;font-size:14px;cursor:pointer;transition:all .2s;flex-shrink:0}
 .rsetb:hover{color:var(--txt);border-color:rgba(255,255,255,.28)}
-.sendb{
-  flex-shrink:0;padding:14px 28px;border:none;border-radius:10px;
-  font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:.08em;
-  cursor:pointer;transition:filter .2s,transform .15s;
-  display:flex;align-items:center;justify-content:center;gap:9px;
-  color:#111;
-  background:linear-gradient(180deg,#d8d8d8 0%,#888 50%,#aaa 100%);
-  box-shadow:0 2px 0 rgba(255,255,255,.3) inset, 0 4px 18px rgba(0,0,0,.45);
-}
+.sendb{flex-shrink:0;padding:14px 28px;border:none;border-radius:10px;font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:.08em;cursor:pointer;transition:filter .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:9px;color:#111;background:linear-gradient(180deg,#d8d8d8 0%,#888 50%,#aaa 100%);box-shadow:0 2px 0 rgba(255,255,255,.3) inset,0 4px 18px rgba(0,0,0,.45);}
 .sendb:hover{filter:brightness(1.1)}.sendb:active{transform:scale(.98)}.sendb:disabled{opacity:.38;cursor:not-allowed;filter:none}
 .wave-canvas{display:block;height:52px;flex:1;min-width:0;pointer-events:none;border-radius:8px;opacity:.9}
 .sbar{display:none;align-items:center;gap:10px;margin-top:16px;padding:13px 16px;border-radius:10px;font-size:13px;line-height:1.55;white-space:pre-line}
@@ -170,6 +124,55 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .cbtn{padding:11px 22px;border-radius:9px;font-family:"DM Sans",sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid var(--bd2)}
 .cbtn.no{background:transparent;color:var(--mut)}.cbtn.no:hover{color:var(--txt);background:rgba(255,255,255,.07)}
 .cbtn.yes{background:linear-gradient(180deg,#d8d8d8 0%,#888 50%,#aaa 100%);border:none;color:#111;box-shadow:0 2px 0 rgba(255,255,255,.3) inset}.cbtn.yes:hover{filter:brightness(1.1)}
+/* ── EXPLORATEUR ── */
+.folder-row{display:flex;gap:8px;align-items:flex-start}
+.folder-row input{flex:1}
+.browse-btn{padding:11px 13px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.28);color:rgba(220,220,220,.55);font-family:"DM Sans",sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.browse-btn:hover{color:#e8e8e8;border-color:rgba(255,255,255,.22)}
+.browse-btn.active{border-color:rgba(245,166,35,.4);color:#f5a623}
+.exp-wrap{overflow:hidden;max-height:0;transition:max-height .32s ease;margin-top:8px}
+.exp-wrap.open{max-height:520px}
+.exp-box{border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#1d1d1d;overflow:hidden}
+.exp-topbar{height:3px;background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999)}
+.ant-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 13px;background:rgba(0,0,0,.18);border:none;border-top:1px solid rgba(255,255,255,.07);color:#e8e8e8;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;text-align:left}
+.ant-btn:first-of-type{border-top:none}
+.ant-btn:hover{background:rgba(255,255,255,.04)}
+.ant-btn.open-one{background:rgba(232,0,29,.08);color:#ff8080}
+.ant-btn.open-lac{background:rgba(0,87,168,.1);color:#80b0e0}
+.ant-left{display:flex;align-items:center;gap:8px}
+.ant-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot-one{background:#e8001d}.dot-lac{background:#0057a8}
+.ant-chev{font-size:12px;color:rgba(255,255,255,.28);transition:transform .2s}
+.ant-btn.open-one .ant-chev,.ant-btn.open-lac .ant-chev{transform:rotate(90deg);color:rgba(255,255,255,.55)}
+.cl{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.cl.open{max-height:240px}
+.cl-scroll{overflow-y:auto;max-height:240px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent}
+.cl-scroll::-webkit-scrollbar{width:4px}
+.cl-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:4px}
+.ci{display:flex;align-items:center;gap:9px;padding:8px 13px;cursor:pointer;border-top:1px solid rgba(255,255,255,.04);transition:background .1s}
+.ci:hover{background:rgba(255,255,255,.04)}.ci.open{background:rgba(255,255,255,.04)}
+.ci-name{font-size:12px;font-weight:500;color:#ccc;flex:1}
+.ci-chev{font-size:11px;color:rgba(255,255,255,.2);transition:transform .16s;flex-shrink:0}
+.ci.open .ci-chev{transform:rotate(90deg);color:rgba(255,255,255,.45)}
+.sf-list{overflow:hidden;max-height:0;transition:max-height .18s ease;background:rgba(0,0,0,.14)}
+.sf-list.open{max-height:200px}
+.sf-item{display:flex;align-items:center;gap:9px;padding:7px 13px 7px 34px;cursor:pointer;border-top:1px solid rgba(255,255,255,.04);transition:background .1s}
+.sf-item:hover{background:rgba(255,255,255,.04)}
+.sf-item.is-orig{background:rgba(245,166,35,.05)}
+.sf-item.is-orig:hover{background:rgba(245,166,35,.1)}
+.sf-item.chosen{background:rgba(0,196,122,.07)}
+.sf-name{font-size:12px;font-weight:500;color:rgba(200,200,200,.7);flex:1}
+.sf-item.is-orig .sf-name{color:#f5a623;font-weight:600}
+.sf-item.chosen .sf-name{color:#00c47a;font-weight:600}
+.sf-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(245,166,35,.12);color:#f5a623;border:1px solid rgba(245,166,35,.25);flex-shrink:0}
+.sf-item.chosen .sf-badge{background:rgba(0,196,122,.12);color:#00c47a;border-color:rgba(0,196,122,.25)}
+.exp-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;border-top:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.12)}
+.exp-hint{font-size:11px;color:rgba(200,200,200,.28);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exp-hint.ready{color:rgba(0,196,122,.75)}
+.exp-ok{padding:5px 13px;border:none;border-radius:7px;background:linear-gradient(180deg,#d8d8d8 0%,#888 50%,#aaa 100%);color:#111;font-family:"Bebas Neue",sans-serif;font-size:14px;letter-spacing:.04em;cursor:pointer;opacity:.28;pointer-events:none;box-shadow:0 2px 0 rgba(255,255,255,.22) inset;flex-shrink:0}
+.exp-ok.ready{opacity:1;pointer-events:all}.exp-ok.ready:hover{filter:brightness(1.1)}
+.exp-loading{display:flex;align-items:center;gap:8px;padding:10px 13px;font-size:12px;color:rgba(200,200,200,.35)}
+.spxs{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid rgba(200,200,200,.1);border-top-color:rgba(200,200,200,.35);animation:sp .7s linear infinite;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -237,7 +240,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
     </div>
     <div class="row">
       <div class="field">
-        <label>Nom du fichier PDF (sans numéro et sans extension)</label>
+        <label>Nom du fichier PDF (sans num&eacute;ro et sans extension)</label>
         <input type="text" id="pdfName" placeholder="ex: Billet_Concert_OneFM">
         <div class="folder-links">
           <span style="font-size:11px;color:var(--mut)">Ouvrir dans Drive :</span>
@@ -246,8 +249,30 @@ select option{background:#2a2a2a;color:#e8e8e8}
         </div>
       </div>
       <div class="field">
-        <label>Lien du dossier "Originaux"</label>
-        <input type="text" id="folderID" placeholder="ex: 1EPQqtKR_GgoVxThVVHFf ou lien Drive complet" onblur="scanDossier()" onpaste="extractFolderID(event)">
+        <label>Lien du dossier &quot;Originaux&quot;</label>
+        <div class="folder-row">
+          <input type="text" id="folderID" placeholder="Colle un lien Drive ou clique Parcourir" onblur="scanDossier()" onpaste="extractFolderID(event)">
+          <button class="browse-btn" id="browseBtn" onclick="browseToggle()">&#128194; Parcourir</button>
+        </div>
+        <div class="exp-wrap" id="expWrap">
+          <div class="exp-box">
+            <div class="exp-topbar"></div>
+            <button class="ant-btn" id="antOne" onclick="antToggle('one')">
+              <span class="ant-left"><span class="ant-dot dot-one"></span>One FM</span>
+              <span class="ant-chev">&#8250;</span>
+            </button>
+            <div class="cl" id="clOne"><div class="cl-scroll" id="csOne"></div></div>
+            <button class="ant-btn" id="antLac" onclick="antToggle('lac')">
+              <span class="ant-left"><span class="ant-dot dot-lac"></span>Radio Lac</span>
+              <span class="ant-chev">&#8250;</span>
+            </button>
+            <div class="cl" id="clLac"><div class="cl-scroll" id="csLac"></div></div>
+            <div class="exp-footer">
+              <span class="exp-hint" id="expHint">S&#233;lectionne un dossier Originaux</span>
+              <button class="exp-ok" id="expOk" onclick="expConfirm()">S&#201;LECTIONNER</button>
+            </div>
+          </div>
+        </div>
         <div class="drive-stats" id="driveStats"></div>
       </div>
     </div>
@@ -269,11 +294,11 @@ select option{background:#2a2a2a;color:#e8e8e8}
     <div class="row full">
       <div class="field">
         <label>Corps du message</label>
-        <textarea id="mailContent" placeholder="!!! Hello/Bonjour et félicitations [Prénom] déjà inséré !!!&#10;&#10;Commencer par exemple par: Voici tes/vos billets pour...&#10;&#10;&#192; bient&#244;t sur les ondes !"></textarea>
+        <textarea id="mailContent" placeholder="!!! Hello/Bonjour et f&#233;licitations [Pr&#233;nom] d&#233;j&#224; ins&#233;r&#233; !!!&#10;&#10;Commencer par exemple par: Voici tes/vos billets pour...&#10;&#10;&#192; bient&#244;t sur les ondes !"></textarea>
       </div>
     </div>
     <div style="margin-top:12px;">
-      <button class="rsetb" onclick="resetForm()">&#8635; Réinitialiser</button>
+      <button class="rsetb" onclick="resetForm()">&#8635; R&eacute;initialiser</button>
     </div>
     <div class="sep"></div>
     <div class="sec">Destinataires &mdash; gagnants <span class="cbadge" id="cbadge">0</span></div>
@@ -306,14 +331,19 @@ var SPREADSHEET_ID = "11O24DWCA2pWtEh344R1ABJ10ZsArKCEiBNWC5EWV2wY";
 var WEBHOOK        = "https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv";
 var SCOPES         = "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.metadata.readonly";
 var STORAGE_KEY    = "envoi_pdf_configs";
+var ROOT_ONE       = "1EPQqtKR_GgoVxThVVHFfEyvlGXVhpMY7";
+var ROOT_LAC       = "1Oi6tJ-MLYmuv64tBxmfoj86pPNSxvFgW";
 var gagnants       = [];
 var accessToken    = null;
 var tokenClient    = null;
+var EXP = { open:false, ant:null, cId:null, cName:null, selId:null, selName:null, cache:{} };
+
 document.getElementById("logoImg").src = "https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
 var lnk = document.createElement("link");
 lnk.rel = "icon"; lnk.type = "image/png";
 lnk.href = "https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
 document.head.appendChild(lnk);
+
 function drawWaveform() {
   var canvas = document.getElementById('waveCanvas');
   if (!canvas) return;
@@ -334,11 +364,8 @@ function drawWaveform() {
     var env   = bell * noise;
     var halfH = env * (H * 0.42);
     var brightness;
-    if (t < 0.5) {
-      brightness = Math.round(100 + t * 2 * 155);
-    } else {
-      brightness = Math.round(255 - (t - 0.5) * 2 * 105);
-    }
+    if (t < 0.5) { brightness = Math.round(100 + t * 2 * 155); }
+    else { brightness = Math.round(255 - (t - 0.5) * 2 * 105); }
     var alpha = 0.45 + env * 0.55;
     var col   = 'rgba('+brightness+','+brightness+','+brightness+','+alpha+')';
     var x  = gap + i * (barW + gap);
@@ -368,14 +395,15 @@ window.addEventListener("load", function() {
   }, 200);
 });
 window.addEventListener('resize', drawWaveform);
+
 function handleAuth() {
   if (accessToken) { google.accounts.oauth2.revoke(accessToken, function(){}); accessToken = null; setAuthUI(false); }
   else { if (tokenClient) tokenClient.requestAccessToken(); else showStatus("error", "Google Sign-In non charge."); }
 }
 function setAuthUI(c) {
   document.getElementById("authDot").className     = "authdot" + (c ? " connected" : "");
-  document.getElementById("authLabel").textContent = c ? "Connecté à Google" : "Non connecté à Google";
-  document.getElementById("authBtn").textContent   = c ? "Déconnecter" : "Se connecter à Google";
+  document.getElementById("authLabel").textContent = c ? "Connect\u00e9 \u00e0 Google" : "Non connect\u00e9 \u00e0 Google";
+  document.getElementById("authBtn").textContent   = c ? "D\u00e9connecter" : "Se connecter \u00e0 Google";
   document.getElementById("authBtn").className     = c ? "authbtn disconnect" : "authbtn";
 }
 function extractFolderID(e) {
@@ -387,15 +415,177 @@ function extractFolderID(e) {
     scanDossier();
   }, 50);
 }
+function browseToggle() {
+  if (EXP.open) { browseClose(); return; }
+  if (!accessToken) {
+    var box = document.getElementById("driveStats");
+    box.innerHTML = "";
+    var p = document.createElement("span"); p.className = "ds-pill warn";
+    var d = document.createElement("span"); d.className = "ds-dot";
+    p.appendChild(d);
+    p.appendChild(document.createTextNode(" Connecte-toi \u00e0 Google d\u2019abord"));
+    box.appendChild(p);
+    return;
+  }
+  EXP.open = true;
+  document.getElementById("expWrap").classList.add("open");
+  document.getElementById("browseBtn").classList.add("active");
+}
+function browseClose() {
+  EXP.open = false;
+  document.getElementById("expWrap").classList.remove("open");
+  document.getElementById("browseBtn").classList.remove("active");
+}
+function antToggle(ant) {
+  var same = EXP.ant === ant;
+  document.getElementById("clOne").classList.remove("open");
+  document.getElementById("clLac").classList.remove("open");
+  document.getElementById("antOne").className = "ant-btn";
+  document.getElementById("antLac").className = "ant-btn";
+  EXP.cId = null; EXP.cName = null;
+  document.querySelectorAll(".sf-list").forEach(function(e){ e.classList.remove("open"); });
+  document.querySelectorAll(".ci").forEach(function(e){ e.classList.remove("open"); });
+  if (same) { EXP.ant = null; expUpdFooter(); return; }
+  EXP.ant = ant;
+  var suffix = ant === "one" ? "One" : "Lac";
+  document.getElementById("cl" + suffix).classList.add("open");
+  document.getElementById("ant" + suffix).className = "ant-btn open-" + ant;
+  loadConcours(ant);
+  expUpdFooter();
+}
+function loadConcours(ant) {
+  var suffix = ant === "one" ? "One" : "Lac";
+  var cs = document.getElementById("cs" + suffix);
+  if (EXP.cache[ant]) { renderConcours(ant, EXP.cache[ant]); return; }
+  var ld = document.createElement("div"); ld.className = "exp-loading";
+  var sp = document.createElement("span"); sp.className = "spxs";
+  ld.appendChild(sp); ld.appendChild(document.createTextNode(" Chargement..."));
+  cs.innerHTML = ""; cs.appendChild(ld);
+  var rootId = ant === "one" ? ROOT_ONE : ROOT_LAC;
+  fetch(
+    "https://www.googleapis.com/drive/v3/files?q=" +
+    encodeURIComponent("'" + rootId + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false") +
+    "&fields=files(id,name)&orderBy=name%20desc&pageSize=100&supportsAllDrives=true&includeItemsFromAllDrives=true",
+    { headers: { Authorization: "Bearer " + accessToken } }
+  ).then(function(r) { return r.json(); }).then(function(data) {
+    EXP.cache[ant] = data.files || [];
+    renderConcours(ant, EXP.cache[ant]);
+  }).catch(function(e) {
+    cs.innerHTML = "";
+    var err = document.createElement("div"); err.className = "exp-loading"; err.style.color = "#ff6060";
+    err.textContent = "Erreur : " + e.message; cs.appendChild(err);
+  });
+}
+function renderConcours(ant, folders) {
+  var suffix = ant === "one" ? "One" : "Lac";
+  var cs = document.getElementById("cs" + suffix);
+  cs.innerHTML = "";
+  if (!folders.length) {
+    var em = document.createElement("div"); em.className = "exp-loading";
+    em.textContent = "Aucun dossier."; cs.appendChild(em); return;
+  }
+  folders.forEach(function(f) {
+    var ci = document.createElement("div"); ci.className = "ci"; ci.id = "ci-" + f.id;
+    var ic = document.createElement("span"); ic.textContent = "\uD83D\uDCC1"; ic.style.fontSize = "13px";
+    var nm = document.createElement("span"); nm.className = "ci-name"; nm.textContent = f.name;
+    var ch = document.createElement("span"); ch.className = "ci-chev"; ch.textContent = "\u203A";
+    ci.appendChild(ic); ci.appendChild(nm); ci.appendChild(ch);
+    ci.onclick = (function(folder) { return function() { concoursToggle(folder); }; })(f);
+    cs.appendChild(ci);
+    var sfl = document.createElement("div"); sfl.className = "sf-list"; sfl.id = "sf-" + f.id;
+    cs.appendChild(sfl);
+  });
+}
+function concoursToggle(folder) {
+  var same = EXP.cId === folder.id;
+  document.querySelectorAll(".sf-list").forEach(function(e){ e.classList.remove("open"); });
+  document.querySelectorAll(".ci").forEach(function(e){ e.classList.remove("open"); });
+  if (same) { EXP.cId = null; EXP.cName = null; expUpdFooter(); return; }
+  EXP.cId = folder.id; EXP.cName = folder.name;
+  var ci = document.getElementById("ci-" + folder.id);
+  var sfl = document.getElementById("sf-" + folder.id);
+  if (ci) ci.classList.add("open");
+  if (!sfl.dataset.loaded) {
+    var ld = document.createElement("div"); ld.className = "exp-loading";
+    var sp2 = document.createElement("span"); sp2.className = "spxs";
+    ld.appendChild(sp2); ld.appendChild(document.createTextNode(" Chargement..."));
+    sfl.innerHTML = ""; sfl.appendChild(ld); sfl.classList.add("open");
+    fetch(
+      "https://www.googleapis.com/drive/v3/files?q=" +
+      encodeURIComponent("'" + folder.id + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false") +
+      "&fields=files(id,name)&orderBy=name&pageSize=50&supportsAllDrives=true&includeItemsFromAllDrives=true",
+      { headers: { Authorization: "Bearer " + accessToken } }
+    ).then(function(r) { return r.json(); }).then(function(data) {
+      sfl.innerHTML = ""; sfl.dataset.loaded = "1";
+      if (!data.files || !data.files.length) {
+        var em2 = document.createElement("div"); em2.className = "exp-loading";
+        em2.textContent = "Aucun sous-dossier."; sfl.appendChild(em2);
+      } else {
+        data.files.forEach(function(sf) {
+          var isO = /originaux/i.test(sf.name);
+          var it = document.createElement("div");
+          it.className = "sf-item" + (isO ? " is-orig" : ""); it.id = "sfi-" + sf.id;
+          var ic2 = document.createElement("span"); ic2.textContent = isO ? "\uD83D\uDCC2" : "\uD83D\uDCC1"; ic2.style.fontSize = "12px";
+          var nm2 = document.createElement("span"); nm2.className = "sf-name"; nm2.textContent = sf.name;
+          it.appendChild(ic2); it.appendChild(nm2);
+          if (isO) {
+            var b = document.createElement("span"); b.className = "sf-badge"; b.id = "sfb-" + sf.id;
+            b.textContent = "\u2713 S\u00e9lectionner"; it.appendChild(b);
+          }
+          it.onclick = (function(s) { return function() { sfSelect(s); }; })(sf);
+          sfl.appendChild(it);
+        });
+      }
+    }).catch(function(e) {
+      sfl.innerHTML = "";
+      var err2 = document.createElement("div"); err2.className = "exp-loading"; err2.style.color = "#ff6060";
+      err2.textContent = "Erreur : " + e.message; sfl.appendChild(err2);
+    });
+  } else { sfl.classList.add("open"); }
+  expUpdFooter();
+}
+function sfSelect(sf) {
+  document.querySelectorAll(".sf-item").forEach(function(el) {
+    el.classList.remove("chosen");
+    if (el.classList.contains("is-orig")) {
+      var b = el.querySelector(".sf-badge");
+      if (b) b.textContent = "\u2713 S\u00e9lectionner";
+    }
+  });
+  var el = document.getElementById("sfi-" + sf.id);
+  if (el) {
+    el.classList.add("chosen");
+    var b = el.querySelector(".sf-badge");
+    if (b) b.textContent = "\u2713 S\u00e9lectionn\u00e9";
+  }
+  EXP.selId = sf.id; EXP.selName = sf.name;
+  expUpdFooter();
+}
+function expUpdFooter() {
+  var hint = document.getElementById("expHint"), ok = document.getElementById("expOk");
+  if (EXP.selId && EXP.cName) {
+    hint.textContent = EXP.cName + " \u203A " + EXP.selName;
+    hint.className = "exp-hint ready"; ok.className = "exp-ok ready";
+  } else {
+    hint.textContent = "S\u00e9lectionne un dossier Originaux";
+    hint.className = "exp-hint"; ok.className = "exp-ok";
+  }
+}
+function expConfirm() {
+  if (!EXP.selId) return;
+  document.getElementById("folderID").value = EXP.selId;
+  browseClose();
+  scanDossier();
+}
 async function scanDossier() {
   var fid = document.getElementById("folderID").value.trim();
   var box = document.getElementById("driveStats");
   if (!fid) { box.innerHTML = ""; return; }
   if (!accessToken) {
-    box.innerHTML = '<span class="ds-pill warn"><span class="ds-dot"></span>Connecte-toi à Google d\'abord</span>';
+    box.innerHTML = '<span class="ds-pill warn"><span class="ds-dot"></span>Connecte-toi &agrave; Google</span>';
     return;
   }
-  box.innerHTML = '<span class="ds-pill loading"><span class="ds-dot" style="animation:sp .7s linear infinite;border:2px solid rgba(220,220,220,.15);border-top-color:currentColor;border-radius:50%;width:8px;height:8px;background:none"></span>Scan en cours…</span>';
+  box.innerHTML = '<span class="ds-pill loading"><span class="ds-dot" style="animation:sp .7s linear infinite;border:2px solid rgba(220,220,220,.15);border-top-color:currentColor;border-radius:50%;width:8px;height:8px;background:none"></span>Scan en cours&hellip;</span>';
   try {
     var allFiles = [];
     var pageToken = "";
@@ -413,33 +603,23 @@ async function scanDossier() {
       allFiles = allFiles.concat(data.files || []);
       pageToken = data.nextPageToken || "";
     } while (pageToken);
-    var envoyes = [];
-    var restants = [];
-    var autres = [];
+    var envoyes = [], restants = [], autres = [];
     allFiles.forEach(function(f) {
       var name = f.name.replace(/\.pdf$/i, "");
-      if (/-envoy[eé]/i.test(name)) {
-        envoyes.push(name);
-      } else if (/^.+-\d+$/.test(name)) {
-        restants.push(name);
-      } else {
-        autres.push(name);
-      }
+      if (/-envoy[e\u00e9]/i.test(name)) { envoyes.push(name); }
+      else if (/^.+-\d+$/.test(name)) { restants.push(name); }
+      else { autres.push(name); }
     });
     var nums = restants.map(function(name) {
-      var m = name.match(/-(\d+)$/);
-      return m ? parseInt(m[1], 10) : null;
+      var m = name.match(/-(\d+)$/); return m ? parseInt(m[1], 10) : null;
     }).filter(function(n) { return n !== null; }).sort(function(a,b){return a-b;});
     var prochain = nums.length > 0 ? nums[0] : null;
     var stock    = restants.length;
     var utilises = envoyes.length + autres.length;
     var total    = allFiles.length;
-    if (prochain !== null) {
-      document.getElementById("startNum").value = prochain;
-      renderGagnants();
-    }
+    if (prochain !== null) { document.getElementById("startNum").value = prochain; renderGagnants(); }
     var pillNext = (prochain !== null && stock > 0)
-      ? '<span class="ds-pill ok"><span class="ds-dot"></span>Prochain n° : <strong style="margin-left:3px">' + prochain + '</strong></span>'
+      ? '<span class="ds-pill ok"><span class="ds-dot"></span>Prochain n&deg; : <strong style="margin-left:3px">' + prochain + '</strong></span>'
       : '';
     var pillStock = stock > 0
       ? '<span class="ds-pill ok"><span class="ds-dot"></span>' + stock + ' PDF disponible' + (stock > 1 ? 's' : '') + '</span>'
@@ -529,7 +709,7 @@ function renderGagnants() {
     var row=document.createElement("div");row.className="gcard";
     var badge=document.createElement("div");badge.className="gnum";badge.textContent=num;
     var fields=document.createElement("div");fields.className="gfields";
-    var ip=document.createElement("input");ip.type="text";ip.id="pr"+id;ip.placeholder="Prénom";ip.value=s.pr;
+    var ip=document.createElement("input");ip.type="text";ip.id="pr"+id;ip.placeholder="Pr\u00e9nom";ip.value=s.pr;
     var inm=document.createElement("input");inm.type="text";inm.id="nm"+id;inm.placeholder="Nom";inm.value=s.nm;
     var ie=document.createElement("input");ie.type="email";ie.id="em"+id;ie.placeholder="email@exemple.com";ie.value=s.em;
     fields.appendChild(ip);fields.appendChild(inm);fields.appendChild(ie);
@@ -621,6 +801,13 @@ function resetForm(){
   document.getElementById("mailContent").value="";
   document.getElementById("startNum").value="1";
   document.getElementById("driveStats").innerHTML="";
+  browseClose();
+  EXP.ant=null; EXP.cId=null; EXP.selId=null; EXP.selName=null;
+  document.getElementById("clOne").classList.remove("open");
+  document.getElementById("clLac").classList.remove("open");
+  document.getElementById("antOne").className="ant-btn";
+  document.getElementById("antLac").className="ant-btn";
+  expUpdFooter();
   setStep(1);
   document.getElementById("sbar").className="sbar";
 }
