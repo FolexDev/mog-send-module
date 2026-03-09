@@ -497,18 +497,19 @@ async function scanDossier() {
       pageToken = data.nextPageToken || "";
     } while (pageToken);
 
-    /* Séparer envoyés / disponibles / autres */
+    /* Catégoriser chaque fichier */
     var envoyes = [];
     var restants = [];
+    var autres = [];
     allFiles.forEach(function(f) {
       var name = f.name.replace(/\.pdf$/i, "");
       if (/-envoy[eé]/i.test(name)) {
         envoyes.push(name);
       } else if (/^.+-\d+$/.test(name)) {
-        /* Termine exactement par -[chiffres] : disponible */
         restants.push(name);
+      } else {
+        autres.push(name); /* annotés : régie, digital, etc. */
       }
-      /* Tout autre fichier annoté (digital, régie, etc.) : ignoré */
     });
 
     /* Extraire les numéros des fichiers restants */
@@ -517,24 +518,31 @@ async function scanDossier() {
       return m ? parseInt(m[1], 10) : null;
     }).filter(function(n) { return n !== null; }).sort(function(a,b){return a-b;});
 
-    var prochain = nums.length > 0 ? nums[0] : 1;
+    var prochain = nums.length > 0 ? nums[0] : null;
     var stock    = restants.length;
+    var utilises = envoyes.length + autres.length; /* envoyés + annotés = "utilisés" */
     var total    = allFiles.length;
 
     /* Mettre à jour le champ startNum */
-    document.getElementById("startNum").value = prochain;
-    renderGagnants();
+    if (prochain !== null) {
+      document.getElementById("startNum").value = prochain;
+      renderGagnants();
+    }
 
-    /* Afficher les pills */
+    /* Pill prochain numéro */
+    var pillNext = prochain !== null
+      ? '<span class="ds-pill ok"><span class="ds-dot"></span>Prochain n° : <strong style="margin-left:3px">' + prochain + '</strong></span>'
+      : '<span class="ds-pill err"><span class="ds-dot"></span>&#10005; Aucun disponible</span>';
+
+    /* Pill stock */
     var pillStock = stock > 0
       ? '<span class="ds-pill ok"><span class="ds-dot"></span>' + stock + ' PDF disponible' + (stock > 1 ? 's' : '') + '</span>'
       : '<span class="ds-pill err"><span class="ds-dot"></span>0 PDF disponible</span>';
 
-    var pillNext = '<span class="ds-pill ok"><span class="ds-dot"></span>Prochain n° : <strong style="margin-left:3px">' + prochain + '</strong></span>';
+    /* Pill utilisés */
+    var pillUtil = '<span class="ds-pill" style="color:rgba(200,200,200,.45)"><span class="ds-dot"></span>' + utilises + '&nbsp;/&nbsp;' + total + ' utilis&eacute;' + (utilises > 1 ? 's' : '') + '</span>';
 
-    var pillTotal = '<span class="ds-pill" style="color:rgba(200,200,200,.45)"><span class="ds-dot"></span>' + envoyes.length + '&nbsp;/&nbsp;' + total + ' envoyé' + (envoyes.length > 1 ? 's' : '') + '</span>';
-
-    box.innerHTML = pillNext + pillStock + pillTotal;
+    box.innerHTML = pillNext + pillStock + pillUtil;
 
   } catch(e) {
     box.innerHTML = '<span class="ds-pill err"><span class="ds-dot"></span>Erreur : ' + e.message + '</span>';
