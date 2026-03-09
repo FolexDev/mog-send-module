@@ -48,7 +48,7 @@ input:focus,textarea:focus,select:focus{border-color:rgba(255,255,255,.28);backg
 textarea{resize:vertical;min-height:142px;line-height:1.65}
 select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(200,200,200,0.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
 select option{background:#2a2a2a;color:#e8e8e8}
-.drive-stats{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;min-height:26px}
+.drive-stats{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;min-height:26px}
 .ds-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.22)}
 .ds-pill.ok{border-color:rgba(0,196,122,.3);background:rgba(0,196,122,.08);color:var(--ok)}
 .ds-pill.warn{border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.08);color:var(--warn)}
@@ -131,7 +131,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .browse-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(220,220,220,.55);font-family:"DM Sans",sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
 .browse-btn:hover{color:#e8e8e8;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
 .browse-btn.active{border-color:rgba(245,166,35,.4);color:#f5a623;background:rgba(245,166,35,.05)}
-.exp-wrap{overflow:hidden;max-height:0;transition:max-height .32s ease;margin-top:8px}
+.exp-wrap{overflow:hidden;max-height:0;transition:max-height .32s ease;margin-top:0}
 .exp-wrap.open{max-height:520px}
 .exp-box{border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#1d1d1d;overflow:hidden}
 .exp-topbar{height:3px;background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999)}
@@ -175,9 +175,9 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .exp-loading{display:flex;align-items:center;gap:8px;padding:10px 13px;font-size:12px;color:rgba(200,200,200,.35)}
 .spxs{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid rgba(200,200,200,.1);border-top-color:rgba(200,200,200,.35);animation:sp .7s linear infinite;flex-shrink:0}
 
-/* AJOUT POUR L'ALIGNEMENT DES LIENS */
-.fl-row { display: flex; align-items: center; gap: 10px; min-height: 28px; }
-.fl-lbl { font-size: 11px; color: var(--mut); text-transform: none; letter-spacing: normal; width: 105px; flex-shrink: 0; }
+/* ALIGNEMENT LIENS */
+.fl-row{display:flex;align-items:center;gap:8px;min-height:28px;flex-wrap:wrap}
+.fl-lbl{font-size:11px;color:var(--mut);width:105px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -250,8 +250,8 @@ select option{background:#2a2a2a;color:#e8e8e8}
         <div class="folder-links">
           <div class="fl-row">
             <span class="fl-lbl">Ouvrir dans Drive :</span>
-            <a href="https://drive.google.com/drive/u/0/folders/1EPQqtKR_GgoVxThVVHFfEyvlGXVhpMY7" target="_blank" class="fl one">&#128308; Envois One</a>
-            <a href="https://drive.google.com/drive/u/0/folders/1Oi6tJ-MLYmuv64tBxmfoj86pPNSxvFgW" target="_blank" class="fl lac">&#128309; Envois Lac</a>
+            <a href="https://drive.google.com/drive/u/0/folders/1EPQqtKR_GgoVxThVVHFfEyvlGXVhpMY7" target="_blank" class="fl one">&#128308; Envois One FM</a>
+            <a href="https://drive.google.com/drive/u/0/folders/1Oi6tJ-MLYmuv64tBxmfoj86pPNSxvFgW" target="_blank" class="fl lac">&#128309; Envois Radio Lac</a>
           </div>
           <div id="folderLink"></div>
         </div>
@@ -262,6 +262,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
           <input type="text" id="folderID" placeholder="Colle un lien Drive ou clique Parcourir" onblur="scanDossier()" onpaste="extractFolderID(event)">
           <button class="browse-btn" id="browseBtn" onclick="browseToggle()">&#128194; Parcourir</button>
         </div>
+        <div class="drive-stats" id="driveStats"></div>
         <div class="exp-wrap" id="expWrap">
           <div class="exp-box">
             <div class="exp-topbar"></div>
@@ -281,7 +282,6 @@ select option{background:#2a2a2a;color:#e8e8e8}
             </div>
           </div>
         </div>
-        <div class="drive-stats" id="driveStats"></div>
       </div>
     </div>
     <div class="sep"></div>
@@ -590,6 +590,8 @@ async function scanDossier() {
   var box = document.getElementById("driveStats");
   document.getElementById("folderLink").innerHTML = "";
   document.getElementById("pdfName").value = "";
+  // Si le dossier ne correspond pas à la sélection active de l'explorateur, on reset EXP.ant
+  if (EXP.selId !== fid) { EXP.ant = null; }
   if (!fid) { box.innerHTML = ""; return; }
   if (!accessToken) {
     box.innerHTML = '<span class="ds-pill warn"><span class="ds-dot"></span>Connecte-toi &agrave; Google</span>';
@@ -631,6 +633,11 @@ async function scanDossier() {
     if (restants.length > 0) {
       var baseName = restants[0].replace(/-\d+$/, "");
       document.getElementById("pdfName").value = baseName;
+      // Détection antenne via nom du fichier si EXP.ant pas encore défini
+      if (!EXP.ant) {
+        if (/one.?fm|onefm/i.test(baseName)) { document.getElementById("mailFrom").value = "sav@onefm.ch"; }
+        else if (/radio.?lac|radiolac/i.test(baseName)) { document.getElementById("mailFrom").value = "sav@radiolac.ch"; }
+      }
     }
     var pillNext = (prochain !== null && stock > 0)
       ? '<span class="ds-pill ok"><span class="ds-dot"></span>Prochain n&deg; : <strong style="margin-left:3px">' + prochain + '</strong></span>'
@@ -640,8 +647,7 @@ async function scanDossier() {
       : '<span class="ds-pill err"><span class="ds-dot"></span>0 PDF disponible</span>';
     var pillUtil = '<span class="ds-pill" style="color:rgba(200,200,200,.45)"><span class="ds-dot"></span>' + utilises + '&nbsp;/&nbsp;' + total + ' utilis&eacute;' + (utilises > 1 ? 's' : '') + '</span>';
     box.innerHTML = pillNext + pillStock + pillUtil;
-    
-    // MISE À JOUR ALIGNEMENT ET TEXTE
+    // Bouton lien dossier orange
     try {
       var metaUrl = "https://www.googleapis.com/drive/v3/files/" + fid + "?fields=name&supportsAllDrives=true";
       var metaResp = await fetch(metaUrl, { headers: { Authorization: "Bearer " + accessToken } });
@@ -649,30 +655,17 @@ async function scanDossier() {
         var meta = await metaResp.json();
         var fl = document.getElementById("folderLink");
         fl.innerHTML = "";
-        
-        // Création de la ligne alignée
-        var row = document.createElement("div");
-        row.className = "fl-row";
-        row.style.marginTop = "8px"; // Espacement avec la ligne du dessus
-        
-        var txt = document.createElement("span");
-        txt.className = "fl-lbl";
-        txt.textContent = "Dossier concours :";
-        
         var a = document.createElement("a");
         a.href = "https://drive.google.com/drive/folders/" + fid;
         a.target = "_blank";
         a.className = "fl dyn";
         a.textContent = "\uD83D\uDCC2 " + meta.name;
-        
-        row.appendChild(txt);
-        row.appendChild(a);
-        fl.appendChild(row);
-        
+        fl.appendChild(a);
         // Auto-select expéditeur selon antenne
         var antenne = EXP.ant;
         if (!antenne) {
           var fullPath = (EXP.cName || "") + " " + meta.name;
+          // Ajouter aussi le nom de base des fichiers PDF
           if (restants.length > 0) fullPath += " " + restants[0];
           if (/one.?fm|onefm/i.test(fullPath)) antenne = "one";
           else if (/radio.?lac|radiolac/i.test(fullPath)) antenne = "lac";
