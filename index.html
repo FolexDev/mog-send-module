@@ -193,6 +193,9 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .login-error{margin-top:16px;padding:10px 14px;border-radius:8px;background:rgba(232,0,29,.1);border:1px solid rgba(232,0,29,.3);color:#ff6060;font-size:12px;display:none;}
 .login-error.show{display:block;}
 </style>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png">
+<link rel="shortcut icon" href="https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png">
 </head>
 <body>
 
@@ -433,10 +436,7 @@ var tokenClient    = null;
 var EXP = { open:false, ant:null, cId:null, cName:null, selId:null, selName:null, cache:{} };
 
 document.getElementById("logoImg").src = "https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
-var lnk = document.createElement("link");
-lnk.rel = "icon"; lnk.type = "image/png";
-lnk.href = "https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
-document.head.appendChild(lnk);
+
 
 function drawWaveform() {
   var canvas = document.getElementById('waveCanvas');
@@ -491,7 +491,7 @@ window.addEventListener("load", function() {
 window.addEventListener('resize', drawWaveform);
 
 function handleAuth() {
-  if (accessToken) { google.accounts.oauth2.revoke(accessToken, function(){}); accessToken = null; setAuthUI(false); }
+  if (accessToken) { google.accounts.oauth2.revoke(accessToken, function(){}); accessToken = null; setAuthUI(false); document.getElementById("loginPage").style.display = "flex"; document.getElementById("loginError").classList.remove("show"); }
   else { if (tokenClient) tokenClient.requestAccessToken(); else showStatus("error", "Google Sign-In non charge."); }
 }
 function setAuthUI(c) {
