@@ -34,7 +34,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .step.done .sn{color:var(--ok)}.step.done{color:rgba(0,196,122,.55)}
 .step.active .sn{color:#fff}.step.active{color:#fff;background:rgba(255,255,255,.05)}
 .card{background:linear-gradient(160deg,#282828,#343434,#262626);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:32px 28px;position:relative;overflow:hidden;box-shadow:0 2px 0 rgba(255,255,255,.07) inset,0 8px 40px rgba(0,0,0,.55);}
-.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999);z-index:2;}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999);}
 .sec{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(200,200,200,.48);margin-bottom:14px;display:flex;align-items:center;gap:10px}
 .sec::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.1)}
 .sep{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);margin:24px 0}
@@ -182,8 +182,8 @@ select option{background:#2a2a2a;color:#e8e8e8}
 /* ── LOGIN PAGE ── */
 #loginPage{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#181818,#252525,#181818);}
 #loginPage::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
-.login-card{position:relative;z-index:1;background:linear-gradient(160deg,#282828,#343434,#262626);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:48px 40px;width:380px;max-width:92vw;text-align:center;box-shadow:0 2px 0 rgba(255,255,255,.07) inset,0 16px 60px rgba(0,0,0,.7);}
-.login-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999);}
+.login-card{position:relative;z-index:1;background:linear-gradient(160deg,#282828,#343434,#262626);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:48px 40px;width:380px;max-width:92vw;text-align:center;overflow:hidden;box-shadow:0 2px 0 rgba(255,255,255,.07) inset,0 16px 60px rgba(0,0,0,.7);}
+.login-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999);}
 .login-logo{width:72px;height:72px;border-radius:14px;object-fit:cover;margin:0 auto 20px;}
 .login-title{font-family:"Bebas Neue",sans-serif;font-size:32px;letter-spacing:.04em;color:#fff;margin-bottom:6px;}
 .login-sub{font-size:12px;color:var(--mut);letter-spacing:.08em;text-transform:uppercase;margin-bottom:32px;}
