@@ -453,7 +453,9 @@ var progWinners = [];
 var progTotal = 0;
 var progDone = 0;
 
-function openProgModal(winners) {
+function openProgModal(winners, folderId) {
+  window._progFolderID = folderId || "";
+  window._progParentID = "";
   progWinners = winners;
   progTotal = winners.length;
   progDone = 0;
@@ -478,11 +480,17 @@ function openProgModal(winners) {
     list.appendChild(row);
   }
   document.getElementById("progBg").classList.add("show");
-  // Activer immédiatement la première ligne en cours
-  var firstRow = document.getElementById("prow-0");
-  var firstIcon = document.getElementById("picon-0");
-  if (firstRow) firstRow.className = "prog-row active";
-  if (firstIcon) firstIcon.innerHTML = "<div class='prog-spin'></div>";
+  var _r0 = document.getElementById("prow-0");
+  var _i0 = document.getElementById("picon-0");
+  if (_r0) _r0.className = "prog-row active";
+  if (_i0) _i0.innerHTML = "<div class=\'prog-spin\'></div>";
+  // Récupérer le dossier parent du dossier Originaux
+  if (folderId && accessToken) {
+    fetch("https://www.googleapis.com/drive/v3/files/" + folderId + "?fields=parents&supportsAllDrives=true", {headers:{Authorization:"Bearer "+accessToken}})
+    .then(function(r){return r.json();})
+    .then(function(d){ if(d.parents&&d.parents[0]) window._progParentID = d.parents[0]; })
+    .catch(function(){});
+  }
 }
 
 function closeProgModal() {
@@ -541,10 +549,10 @@ function updateProgUI(cur, tot) {
     var row = document.getElementById("prow-" + i);
     var icon = document.getElementById("picon-" + i);
     if (!row || !icon) continue;
-    if (i < cur - 1) {
+    if (i < cur) {
       row.className = "prog-row done"; icon.innerHTML = "✅";
-    } else if (i === cur - 1) {
-      row.className = "prog-row active"; icon.innerHTML = "<div class='prog-spin'></div>";
+    } else if (i === cur && cur < tot) {
+      row.className = "prog-row active"; icon.innerHTML = "<div class=\'prog-spin\'></div>";
     } else {
       row.className = "prog-row"; icon.textContent = "⏳";
     }
@@ -569,7 +577,31 @@ function progFinalize(sent, errors, timeout) {
     recap.textContent = "⚠️ Timeout : " + sent + " envoi" + (sent > 1 ? "s" : "") + " confirmé" + (sent > 1 ? "s" : "") + " sur " + progTotal + ". Vérifie Make.";
   } else {
     recap.className = "prog-recap show";
-    recap.textContent = "✅ " + sent + " billet" + (sent > 1 ? "s" : "") + " envoyé" + (sent > 1 ? "s" : "") + " avec succès !";
+    recap.innerHTML = "";
+    var rLine1 = document.createElement("div");
+    rLine1.textContent = "✅ " + sent + " billet" + (sent > 1 ? "s" : "") + " envoyé" + (sent > 1 ? "s" : "") + " avec succès !";
+    rLine1.style.marginBottom = "10px";
+    recap.appendChild(rLine1);
+    if (window._progFolderID) {
+      var rLine2 = document.createElement("div");
+      rLine2.style.fontSize = "11px"; rLine2.style.color = "rgba(200,200,200,.55)"; rLine2.style.marginBottom = "4px";
+      var lbl2 = document.createElement("span"); lbl2.textContent = "Dossier Originaux : ";
+      var a2 = document.createElement("a");
+      a2.href = "https://drive.google.com/drive/folders/" + window._progFolderID;
+      a2.target = "_blank"; a2.textContent = "Ouvrir"; a2.style.color = "#f5a623"; a2.style.textDecoration = "none";
+      rLine2.appendChild(lbl2); rLine2.appendChild(a2);
+      recap.appendChild(rLine2);
+    }
+    if (window._progParentID) {
+      var rLine3 = document.createElement("div");
+      rLine3.style.fontSize = "11px"; rLine3.style.color = "rgba(200,200,200,.55)";
+      var lbl3 = document.createElement("span"); lbl3.textContent = "Dossier racine : ";
+      var a3 = document.createElement("a");
+      a3.href = "https://drive.google.com/drive/folders/" + window._progParentID;
+      a3.target = "_blank"; a3.textContent = "Ouvrir"; a3.style.color = "#f5a623"; a3.style.textDecoration = "none";
+      rLine3.appendChild(lbl3); rLine3.appendChild(a3);
+      recap.appendChild(rLine3);
+    }
   }
   document.getElementById("progSubtitle").textContent = timeout ? "Process terminé avec avertissement" : "Process terminé !";
   document.getElementById("progClose").className = "prog-close ready";
@@ -1108,7 +1140,8 @@ function confirmYes(){
   closeConfirm();
   var startN=getStart(); var wlist=[];
   for(var i=0;i<gagnants.length;i++){var id=gagnants[i];wlist.push({numero:startN+i,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()});}
-  openProgModal(wlist);
+  var fid = document.getElementById("folderID").value.trim();
+  openProgModal(wlist, fid);
   showStatus("success","Process MOG Send Node launched");
   setTimeout(function(){doEnvoi();},600);
 }
