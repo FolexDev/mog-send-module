@@ -536,9 +536,9 @@ function updateProgUI(cur, tot) {
     var row = document.getElementById("prow-" + i);
     var icon = document.getElementById("picon-" + i);
     if (!row || !icon) continue;
-    if (i < cur) {
+    if (i < cur - 1) {
       row.className = "prog-row done"; icon.innerHTML = "✅";
-    } else if (i === cur) {
+    } else if (i === cur - 1) {
       row.className = "prog-row active"; icon.innerHTML = "<div class='prog-spin'></div>";
     } else {
       row.className = "prog-row"; icon.textContent = "⏳";
