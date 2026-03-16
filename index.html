@@ -192,6 +192,46 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .login-btn svg{width:20px;height:20px;flex-shrink:0;}
 .login-error{margin-top:16px;padding:10px 14px;border-radius:8px;background:rgba(232,0,29,.1);border:1px solid rgba(232,0,29,.3);color:#ff6060;font-size:12px;display:none;}
 .login-error.show{display:block;}
+
+/* ── MODALE PROGRESSION ── */
+.prog-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:center;justify-content:center;}
+.prog-bg.show{display:flex;}
+.prog-box{background:linear-gradient(160deg,#252525,#2e2e2e,#242424);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:32px 28px;width:460px;max-width:94vw;box-shadow:0 2px 0 rgba(255,255,255,.07) inset,0 20px 60px rgba(0,0,0,.7);position:relative;overflow:hidden;}
+.prog-box::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#777,#ddd,#aaa,#fff,#999);}
+.prog-title{font-family:"Bebas Neue",sans-serif;font-size:24px;letter-spacing:.05em;color:#fff;margin-bottom:6px;}
+.prog-subtitle{font-size:12px;color:var(--mut);margin-bottom:22px;}
+.prog-global{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.prog-circle{position:relative;width:52px;height:52px;flex-shrink:0;}
+.prog-circle svg{transform:rotate(-90deg);}
+.prog-circle-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:4;}
+.prog-circle-fg{fill:none;stroke:url(#progGrad);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .5s ease;}
+.prog-circle-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Bebas Neue",sans-serif;font-size:15px;color:#fff;letter-spacing:.03em;}
+.prog-bar-wrap{flex:1;}
+.prog-bar-label{font-size:12px;color:var(--mut);margin-bottom:6px;display:flex;justify-content:space-between;}
+.prog-bar-track{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,#777,#ddd);border-radius:3px;transition:width .5s ease;width:0%;}
+.prog-list{display:flex;flex-direction:column;gap:7px;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;margin-bottom:20px;}
+.prog-list::-webkit-scrollbar{width:3px;}
+.prog-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px;}
+.prog-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.06);transition:border-color .3s,background .3s;}
+.prog-row.active{border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.04);}
+.prog-row.done{border-color:rgba(0,196,122,.25);background:rgba(0,196,122,.04);}
+.prog-row.err{border-color:rgba(232,0,29,.25);background:rgba(232,0,29,.04);}
+.prog-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:rgba(255,255,255,.06);}
+.prog-row.active .prog-icon{background:rgba(245,166,35,.15);}
+.prog-row.done .prog-icon{background:rgba(0,196,122,.15);}
+.prog-row.err .prog-icon{background:rgba(232,0,29,.15);}
+.prog-spin{width:12px;height:12px;border:2px solid rgba(245,166,35,.2);border-top-color:#f5a623;border-radius:50%;animation:sp .7s linear infinite;}
+.prog-name{flex:1;font-size:13px;color:var(--txt);}
+.prog-row.active .prog-name{color:#f5a623;}
+.prog-row.done .prog-name{color:rgba(220,220,220,.8);}
+.prog-row.err .prog-name{color:#ff6060;}
+.prog-num{font-size:11px;color:var(--mut);font-weight:600;}
+.prog-recap{padding:12px 14px;border-radius:10px;background:rgba(0,196,122,.07);border:1px solid rgba(0,196,122,.2);font-size:13px;color:var(--ok);display:none;margin-bottom:16px;}
+.prog-recap.show{display:block;}
+.prog-recap.has-err{background:rgba(245,166,35,.07);border-color:rgba(245,166,35,.2);color:var(--warn);}
+.prog-close{width:100%;padding:11px;border:none;border-radius:9px;background:linear-gradient(180deg,#d8d8d8 0%,#888 50%,#aaa 100%);color:#111;font-family:"Bebas Neue",sans-serif;font-size:17px;letter-spacing:.06em;cursor:pointer;opacity:.3;pointer-events:none;box-shadow:0 2px 0 rgba(255,255,255,.25) inset;}
+.prog-close.ready{opacity:1;pointer-events:all;}.prog-close.ready:hover{filter:brightness(1.1);}
 </style>
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png">
 <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png">
@@ -218,6 +258,40 @@ select option{background:#2a2a2a;color:#e8e8e8}
   </div>
 </div>
 
+<div class="prog-bg" id="progBg">
+  <div class="prog-box">
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <linearGradient id="progGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#777"/>
+          <stop offset="50%" stop-color="#ddd"/>
+          <stop offset="100%" stop-color="#aaa"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="prog-title">Envoi en cours</div>
+    <div class="prog-subtitle" id="progSubtitle">Initialisation&hellip;</div>
+    <div class="prog-global">
+      <div class="prog-circle">
+        <svg width="52" height="52" viewBox="0 0 52 52">
+          <circle class="prog-circle-bg" cx="26" cy="26" r="22"/>
+          <circle class="prog-circle-fg" id="progCircleFg" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+        </svg>
+        <div class="prog-circle-txt" id="progCircleTxt">0%</div>
+      </div>
+      <div class="prog-bar-wrap">
+        <div class="prog-bar-label">
+          <span id="progBarLabel">En attente&hellip;</span>
+          <span id="progBarCount">0 / 0</span>
+        </div>
+        <div class="prog-bar-track"><div class="prog-bar-fill" id="progBarFill"></div></div>
+      </div>
+    </div>
+    <div class="prog-list" id="progList"></div>
+    <div class="prog-recap" id="progRecap"></div>
+    <button class="prog-close" id="progClose" onclick="closeProgModal()">FERMER</button>
+  </div>
+</div>
 <div class="gl"></div><div class="go"></div>
 <div class="confirm-bg" id="confirmBg">
   <div class="confirm-box">
@@ -371,6 +445,131 @@ select option{background:#2a2a2a;color:#e8e8e8}
   </div>
 </div>
 <script>
+
+
+/* ── PROGRESSION MODALE ── */
+var progPollInterval = null;
+var progWinners = [];
+var progTotal = 0;
+var progDone = 0;
+
+function openProgModal(winners) {
+  progWinners = winners;
+  progTotal = winners.length;
+  progDone = 0;
+  document.getElementById("progSubtitle").textContent = "Make est en route…";
+  document.getElementById("progBarLabel").textContent = "En attente…";
+  document.getElementById("progBarCount").textContent = "0 / " + progTotal;
+  document.getElementById("progBarFill").style.width = "0%";
+  document.getElementById("progCircleTxt").textContent = "0%";
+  document.getElementById("progCircleFg").style.strokeDashoffset = "138.2";
+  document.getElementById("progRecap").className = "prog-recap";
+  document.getElementById("progRecap").textContent = "";
+  document.getElementById("progClose").className = "prog-close";
+  var list = document.getElementById("progList");
+  list.innerHTML = "";
+  for (var i = 0; i < winners.length; i++) {
+    var w = winners[i];
+    var row = document.createElement("div"); row.className = "prog-row"; row.id = "prow-" + i;
+    var icon = document.createElement("div"); icon.className = "prog-icon"; icon.id = "picon-" + i; icon.textContent = "⏳";
+    var name = document.createElement("span"); name.className = "prog-name"; name.textContent = w.prenom + " " + w.nom;
+    var num = document.createElement("span"); num.className = "prog-num"; num.textContent = "Billet #" + w.numero;
+    row.appendChild(icon); row.appendChild(name); row.appendChild(num);
+    list.appendChild(row);
+  }
+  document.getElementById("progBg").classList.add("show");
+}
+
+function closeProgModal() {
+  document.getElementById("progBg").classList.remove("show");
+  if (progPollInterval) { clearInterval(progPollInterval); progPollInterval = null; }
+}
+
+function startProgPoll() {
+  var lastVal = "";
+  var polls = 0;
+  var maxPolls = 120;
+  if (progPollInterval) clearInterval(progPollInterval);
+  progPollInterval = setInterval(async function() {
+    polls++;
+    if (polls > maxPolls) {
+      clearInterval(progPollInterval); progPollInterval = null;
+      progFinalize(progDone, progTotal - progDone, true); return;
+    }
+    try {
+      var r = await fetch(
+        "https://sheets.googleapis.com/v4/spreadsheets/" + SPREADSHEET_ID +
+        "/values/'Liste%20envois'!E2?majorDimension=ROWS",
+        { headers: { Authorization: "Bearer " + accessToken } }
+      );
+      var d = await r.json();
+      var val = ((d.values || [[""]])[0][0] || "").toString().trim();
+      if (!val || val === lastVal) return;
+      lastVal = val;
+      var parts = val.split("/");
+      if (parts.length === 2) {
+        var cur = parseInt(parts[0], 10);
+        var tot = parseInt(parts[1], 10);
+        if (!isNaN(cur) && !isNaN(tot) && tot > 0) {
+          progDone = cur;
+          updateProgUI(cur, tot);
+          if (cur >= tot) {
+            clearInterval(progPollInterval); progPollInterval = null;
+            setTimeout(function() { progFinalize(cur, 0, false); }, 800);
+          }
+        }
+      }
+    } catch(e) { /* silencieux */ }
+  }, 3000);
+}
+
+function updateProgUI(cur, tot) {
+  var pct = Math.round((cur / tot) * 100);
+  document.getElementById("progBarFill").style.width = pct + "%";
+  document.getElementById("progBarCount").textContent = cur + " / " + tot;
+  document.getElementById("progBarLabel").textContent = "Envoi " + cur + " sur " + tot;
+  document.getElementById("progSubtitle").textContent = cur + " billet" + (cur > 1 ? "s" : "") + " envoyé" + (cur > 1 ? "s" : "") + " sur " + tot;
+  var circ = 138.2;
+  document.getElementById("progCircleFg").style.strokeDashoffset = circ - (circ * pct / 100);
+  document.getElementById("progCircleTxt").textContent = pct + "%";
+  for (var i = 0; i < progWinners.length; i++) {
+    var row = document.getElementById("prow-" + i);
+    var icon = document.getElementById("picon-" + i);
+    if (!row || !icon) continue;
+    if (i < cur) {
+      row.className = "prog-row done"; icon.innerHTML = "✅";
+    } else if (i === cur) {
+      row.className = "prog-row active"; icon.innerHTML = "<div class='prog-spin'></div>";
+    } else {
+      row.className = "prog-row"; icon.textContent = "⏳";
+    }
+  }
+}
+
+function progFinalize(sent, errors, timeout) {
+  if (!timeout) {
+    for (var i = 0; i < progWinners.length; i++) {
+      var row = document.getElementById("prow-" + i);
+      var icon = document.getElementById("picon-" + i);
+      if (row) row.className = "prog-row done";
+      if (icon) icon.innerHTML = "✅";
+    }
+    document.getElementById("progBarFill").style.width = "100%";
+    document.getElementById("progCircleFg").style.strokeDashoffset = "0";
+    document.getElementById("progCircleTxt").textContent = "100%";
+  }
+  var recap = document.getElementById("progRecap");
+  if (timeout) {
+    recap.className = "prog-recap show has-err";
+    recap.textContent = "⚠️ Timeout : " + sent + " envoi" + (sent > 1 ? "s" : "") + " confirmé" + (sent > 1 ? "s" : "") + " sur " + progTotal + ". Vérifie Make.";
+  } else {
+    recap.className = "prog-recap show";
+    recap.textContent = "✅ " + sent + " billet" + (sent > 1 ? "s" : "") + " envoyé" + (sent > 1 ? "s" : "") + " avec succès !";
+  }
+  document.getElementById("progSubtitle").textContent = timeout ? "Process terminé avec avertissement" : "Process terminé !";
+  document.getElementById("progClose").className = "prog-close ready";
+  document.getElementById("btnSend").disabled = false;
+}
 
 var ALLOWED_DOMAIN = "mediaonegroup.ch";
 var loginClient = null;
@@ -900,7 +1099,14 @@ function validate() {
 function lancerEnvoi(){var err=validate();if(err){showStatus("error",err);return;}document.getElementById("confirmNum").textContent=getStart();document.getElementById("confirmBg").classList.add("show");}
 function closeConfirm(){document.getElementById("confirmBg").classList.remove("show");}
 function confirmNo(){closeConfirm();showStatus("warn","Process interrupted");}
-function confirmYes(){closeConfirm();showStatus("success","Process MOG Send Node launched");setTimeout(function(){doEnvoi();},600);}
+function confirmYes(){
+  closeConfirm();
+  var startN=getStart(); var wlist=[];
+  for(var i=0;i<gagnants.length;i++){var id=gagnants[i];wlist.push({numero:startN+i,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()});}
+  openProgModal(wlist);
+  showStatus("success","Process MOG Send Node launched");
+  setTimeout(function(){doEnvoi();},600);
+}
 async function doEnvoi() {
   var startN=getStart();var winners=[];
   for(var i=0;i<gagnants.length;i++){var id=gagnants[i];winners.push({numero:startN+i,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()});}
@@ -912,8 +1118,15 @@ async function doEnvoi() {
   var xhr=new XMLHttpRequest();xhr.open("POST",WEBHOOK);xhr.setRequestHeader("Content-Type","application/json");
   xhr.onload=function(){
     document.getElementById("btnSend").disabled=false;
-    if(xhr.status>=200&&xhr.status<300){setStep(4);showStatus("success","Sheet ecrite + Make declenche - "+winners.length+" billet"+(winners.length>1?"s":"")+" en cours d'envoi.");}
-    else{setStep(2);showStatus("error","Sheet OK mais webhook refuse (HTTP "+xhr.status+").");}
+    if(xhr.status>=200&&xhr.status<300){
+      setStep(4);
+      showStatus("success","Sheet ecrite + Make declenche - "+winners.length+" billet"+(winners.length>1?"s":"")+" en cours d'envoi.");
+      startProgPoll();
+    } else {
+      document.getElementById("btnSend").disabled=false;
+      setStep(2);
+      showStatus("error","Sheet OK mais webhook refuse (HTTP "+xhr.status+").");
+    }
   };
   xhr.onerror=function(){document.getElementById("btnSend").disabled=false;setStep(2);showStatus("error","Sheet OK mais impossible de joindre le webhook.");};
   xhr.send(JSON.stringify({trigger:"html",count:winners.length}));
