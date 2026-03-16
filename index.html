@@ -582,16 +582,6 @@ function progFinalize(sent, errors, timeout) {
     rLine1.textContent = "✅ " + sent + " billet" + (sent > 1 ? "s" : "") + " envoyé" + (sent > 1 ? "s" : "") + " avec succès !";
     rLine1.style.marginBottom = "10px";
     recap.appendChild(rLine1);
-    if (window._progFolderID) {
-      var rLine2 = document.createElement("div");
-      rLine2.style.fontSize = "11px"; rLine2.style.color = "rgba(200,200,200,.55)"; rLine2.style.marginBottom = "4px";
-      var lbl2 = document.createElement("span"); lbl2.textContent = "Dossier Originaux : ";
-      var a2 = document.createElement("a");
-      a2.href = "https://drive.google.com/drive/folders/" + window._progFolderID;
-      a2.target = "_blank"; a2.textContent = "Ouvrir"; a2.style.color = "#f5a623"; a2.style.textDecoration = "none";
-      rLine2.appendChild(lbl2); rLine2.appendChild(a2);
-      recap.appendChild(rLine2);
-    }
     if (window._progParentID) {
       var rLine3 = document.createElement("div");
       rLine3.style.fontSize = "11px"; rLine3.style.color = "rgba(200,200,200,.55)";
