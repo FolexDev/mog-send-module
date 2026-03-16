@@ -383,6 +383,7 @@ function initLoginClient() {
       loginClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
+        prompt: "",
         callback: function(resp) {
           if (resp.error) { showLoginError(); return; }
           // Vérifier le domaine via userinfo
@@ -480,7 +481,7 @@ window.addEventListener("load", function() {
     if (window.google && window.google.accounts) {
       clearInterval(gsiCheck);
       tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID, scope: SCOPES,
+        client_id: CLIENT_ID, scope: SCOPES, prompt: "",
         callback: function(resp) {
           if (resp.error) { showStatus("error", "Erreur Google : " + resp.error); return; }
           accessToken = resp.access_token; setAuthUI(true);
