@@ -254,7 +254,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
       </svg>
       Se connecter avec Google
     </button>
-    <div class="login-error" id="loginError">Acc&egrave;s refus&eacute;. Utilise un compte @mediaonegroup.ch, onefm.ch ou radiolac.ch</div>
+    <div class="login-error" id="loginError">Acc&egrave;s refus&eacute;. Utilise un compte @mediaonegroup.ch</div>
   </div>
 </div>
 
@@ -636,7 +636,7 @@ function progFinalize(sent, errors, timeout) {
   document.getElementById("btnSend").disabled = false;
 }
 
-var ALLOWED_DOMAINS = "mediaonegroup.ch", "onefm.ch", "radiolac.ch";
+var ALLOWED_DOMAIN = "mediaonegroup.ch";
 var loginClient = null;
 var appUnlocked = false;
 
