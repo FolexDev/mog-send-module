@@ -254,7 +254,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
       </svg>
       Se connecter avec Google
     </button>
-    <div class="login-error" id="loginError">Acc&egrave;s refus&eacute;. Utilise un compte @mediaonegroup.ch</div>
+    <div class="login-error" id="loginError">Acc&egrave;s refus&eacute;. Tu n&rsquo;es pas autoris&eacute;.</div>
   </div>
 </div>
 
@@ -636,7 +636,11 @@ function progFinalize(sent, errors, timeout) {
   document.getElementById("btnSend").disabled = false;
 }
 
-var ALLOWED_DOMAIN = "mediaonegroup.ch";
+var ALLOWED_EMAILS = [
+  "alex@mediaonegroup.ch",
+  "lionel@mediaonegroup.ch",
+  "alexis@onefm.ch"
+];
 var loginClient = null;
 var appUnlocked = false;
 
@@ -655,7 +659,7 @@ function initLoginClient() {
             headers: { Authorization: "Bearer " + resp.access_token }
           }).then(function(r){ return r.json(); }).then(function(info){
             var email = info.email || "";
-            if (email.endsWith("@" + ALLOWED_DOMAIN)) {
+            if (ALLOWED_EMAILS.indexOf(email) !== -1) {
               accessToken = resp.access_token;
               unlockApp(email);
             } else {
