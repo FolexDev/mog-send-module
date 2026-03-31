@@ -101,6 +101,8 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .sbar.success{background:rgba(0,196,122,.1);border:1px solid rgba(0,196,122,.3);color:var(--ok)}
 .sbar.error{background:rgba(232,0,29,.1);border:1px solid rgba(232,0,29,.3);color:#ff6060}
 .sbar.warn{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);color:var(--warn)}
+.emoji-btn{padding:4px 6px;border-radius:7px;border:1px solid var(--bd);background:transparent;cursor:pointer;font-size:16px;line-height:1;transition:background .15s;}
+.emoji-btn:hover{background:rgba(255,255,255,.09);}
 .spin{width:15px;height:15px;flex-shrink:0;border:2px solid rgba(255,255,255,.1);border-top-color:currentColor;border-radius:50%;animation:sp .7s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .infobox{margin-top:14px;padding:12px 16px;background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:10px;font-size:12px;color:rgba(245,166,35,.8);line-height:1.6;display:flex;gap:10px}
@@ -415,8 +417,25 @@ select option{background:#2a2a2a;color:#e8e8e8}
         <textarea id="mailContent" placeholder="!!! Hello/Bonjour et f&#233;licitations [Pr&#233;nom] d&#233;j&#224; ins&#233;r&#233; !!!&#10;&#10;Commencer par exemple par: Voici tes/vos billets pour...&#10;&#10;&#192; bient&#244;t sur les ondes !"></textarea>
       </div>
     </div>
-    <div style="margin-top:12px;">
+    <div style="margin-top:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
       <button class="rsetb" onclick="resetForm()">&#8635; R&eacute;initialiser</button>
+      <button class="emoji-btn" onclick="insertEmoji('🎶')">🎶</button>
+      <button class="emoji-btn" onclick="insertEmoji('🎵')">🎵</button>
+      <button class="emoji-btn" onclick="insertEmoji('🎼')">🎼</button>
+      <button class="emoji-btn" onclick="insertEmoji('🎤')">🎤</button>
+      <button class="emoji-btn" onclick="insertEmoji('🎙️')">🎙️</button>
+      <button class="emoji-btn" onclick="insertEmoji('🎸')">🎸</button>
+      <button class="emoji-btn" onclick="insertEmoji('📻')">📻</button>
+      <button class="emoji-btn" onclick="insertEmoji('🥳')">🥳</button>
+      <button class="emoji-btn" onclick="insertEmoji('🎉')">🎉</button>
+      <button class="emoji-btn" onclick="insertEmoji('🎊')">🎊</button>
+      <button class="emoji-btn" onclick="insertEmoji('✨')">✨</button>
+      <button class="emoji-btn" onclick="insertEmoji('🔥')">🔥</button>
+      <button class="emoji-btn" onclick="insertEmoji('😀')">😀</button>
+      <button class="emoji-btn" onclick="insertEmoji('😎')">😎</button>
+      <button class="emoji-btn" onclick="insertEmoji('🤩')">🤩</button>
+      <button class="emoji-btn" onclick="insertEmoji('🗓️')">🗓️</button>
+      <button class="emoji-btn" onclick="insertEmoji('📩')">📩</button>
     </div>
     <div class="sep"></div>
     <div class="sec">Destinataires &mdash; gagnants <span class="cbadge" id="cbadge">0</span></div>
@@ -1220,6 +1239,7 @@ async function writeToSheet(pdfName,folderID,mailFrom,mailSubject,mailContent,wi
   await sheetsRequest("PUT","/values/'Liste envois'!A2:D"+(1+winners.length)+"?valueInputOption=RAW",{values:rows});
   await sheetsRequest("PUT","/values/'Liste envois'!F1?valueInputOption=RAW",{values:[[winners.length]]});
 }
+function insertEmoji(e){var ta=document.getElementById("mailContent");var s=ta.selectionStart,end=ta.selectionEnd;ta.value=ta.value.slice(0,s)+e+ta.value.slice(end);ta.selectionStart=ta.selectionEnd=s+e.length;ta.focus();}
 function showStatus(type,msg){var bar=document.getElementById("sbar");bar.className="sbar show "+type;document.getElementById("stxt").textContent=msg;document.getElementById("spin").style.display=type==="loading"?"block":"none";}
 function setStep(n){for(var i=1;i<=4;i++){document.getElementById("s"+i).className="step"+(i<n?" done":i===n?" active":"");}}
 function resetForm(){
