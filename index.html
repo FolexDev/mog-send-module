@@ -360,12 +360,6 @@ select option{background:#2a2a2a;color:#e8e8e8}
         <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;">
           <div style="display:flex;flex-direction:column;gap:8px;min-width:0;">
             <input type="text" id="folderID" placeholder="Colle un lien Drive ou clique Parcourir" onblur="scanDossier()" onpaste="extractFolderID(event)">
-            <div id="pdfNameWrap" style="display:none;">
-              <label>Nom du fichier PDF d&eacute;tect&eacute;</label>
-              <input type="text" id="pdfName" readonly style="cursor:default;opacity:.65;pointer-events:none;margin-top:6px;">
-            </div>
-            <div class="drive-stats" id="driveStats"></div>
-            <div id="folderLink"></div>
             <div class="exp-wrap" id="expWrap">
               <div class="exp-box">
                 <div class="exp-topbar"></div>
@@ -385,6 +379,12 @@ select option{background:#2a2a2a;color:#e8e8e8}
                 </div>
               </div>
             </div>
+            <div id="pdfNameWrap" style="display:none;">
+              <label>Nom du fichier PDF d&eacute;tect&eacute;</label>
+              <input type="text" id="pdfName" readonly style="cursor:default;opacity:.65;pointer-events:none;margin-top:6px;">
+            </div>
+            <div class="drive-stats" id="driveStats"></div>
+            <div id="folderLink"></div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <button class="browse-btn" id="browseBtn" onclick="browseToggle()">&#128194; Parcourir</button>
