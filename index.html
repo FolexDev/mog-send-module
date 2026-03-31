@@ -1142,8 +1142,8 @@ document.addEventListener('paste', function(e) {
   var suffix=active.id.replace(/^(pr|nm|em)/,'');
   var startIdx=gagnants.indexOf(parseFloat(suffix));
   if(startIdx===-1)return;
-  var fields=['pr','nm','em'];
-  var fieldIdx=active.id.startsWith('pr')?0:active.id.startsWith('nm')?1:2;
+  var fields=['nm','pr','em'];
+  var fieldIdx=active.id.startsWith('nm')?0:active.id.startsWith('pr')?1:2;
   var totalGagnantsNeeded=Math.ceil((fieldIdx+values.length)/3);
   var gagnantsToAdd=(startIdx+totalGagnantsNeeded)-gagnants.length;
   for(var a=0;a<gagnantsToAdd;a++){gagnants.push(Date.now()+Math.random());}
