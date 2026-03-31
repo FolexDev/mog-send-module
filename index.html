@@ -357,35 +357,39 @@ select option{background:#2a2a2a;color:#e8e8e8}
     <div class="row full">
       <div class="field">
         <label>Lien du dossier &quot;Originaux&quot;</label>
-        <div class="folder-row">
-          <input type="text" id="folderID" placeholder="Colle un lien Drive ou clique Parcourir" onblur="scanDossier()" onpaste="extractFolderID(event)">
-          <button class="browse-btn" id="browseBtn" onclick="browseToggle()">&#128194; Parcourir</button>
-          <a href="https://drive.google.com/drive/u/0/folders/1EPQqtKR_GgoVxThVVHFfEyvlGXVhpMY7" target="_blank" class="fl one">Envois One</a>
-          <a href="https://drive.google.com/drive/u/0/folders/1Oi6tJ-MLYmuv64tBxmfoj86pPNSxvFgW" target="_blank" class="fl lac">Envois Lac</a>
-        </div>
-        <div id="pdfNameWrap" style="display:none;margin-top:10px;">
-          <label>Nom du fichier PDF d&eacute;tect&eacute;</label>
-          <input type="text" id="pdfName" readonly style="cursor:default;opacity:.65;pointer-events:none;">
-        </div>
-        <div class="drive-stats" id="driveStats"></div>
-        <div id="folderLink"></div>
-        <div class="exp-wrap" id="expWrap">
-          <div class="exp-box">
-            <div class="exp-topbar"></div>
-            <button class="ant-btn" id="antOne" onclick="antToggle('one')">
-              <span class="ant-left"><span class="ant-dot dot-one"></span>One FM</span>
-              <span class="ant-chev">&#8250;</span>
-            </button>
-            <div class="cl" id="clOne"><div class="cl-scroll" id="csOne"></div></div>
-            <button class="ant-btn" id="antLac" onclick="antToggle('lac')">
-              <span class="ant-left"><span class="ant-dot dot-lac"></span>Radio Lac</span>
-              <span class="ant-chev">&#8250;</span>
-            </button>
-            <div class="cl" id="clLac"><div class="cl-scroll" id="csLac"></div></div>
-            <div class="exp-footer">
-              <span class="exp-hint" id="expHint">S&#233;lectionne un dossier Originaux</span>
-              <button class="exp-ok" id="expOk" onclick="expConfirm()">S&#201;LECTIONNER</button>
+        <div class="folder-row" style="align-items:flex-start;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;">
+            <input type="text" id="folderID" placeholder="Colle un lien Drive ou clique Parcourir" onblur="scanDossier()" onpaste="extractFolderID(event)" style="flex:none;width:100%;">
+            <div id="pdfNameWrap" style="display:none;">
+              <label>Nom du fichier PDF d&eacute;tect&eacute;</label>
+              <input type="text" id="pdfName" readonly style="cursor:default;opacity:.65;pointer-events:none;flex:none;width:100%;margin-top:6px;">
             </div>
+            <div class="drive-stats" id="driveStats"></div>
+            <div id="folderLink"></div>
+            <div class="exp-wrap" id="expWrap">
+              <div class="exp-box">
+                <div class="exp-topbar"></div>
+                <button class="ant-btn" id="antOne" onclick="antToggle('one')">
+                  <span class="ant-left"><span class="ant-dot dot-one"></span>One FM</span>
+                  <span class="ant-chev">&#8250;</span>
+                </button>
+                <div class="cl" id="clOne"><div class="cl-scroll" id="csOne"></div></div>
+                <button class="ant-btn" id="antLac" onclick="antToggle('lac')">
+                  <span class="ant-left"><span class="ant-dot dot-lac"></span>Radio Lac</span>
+                  <span class="ant-chev">&#8250;</span>
+                </button>
+                <div class="cl" id="clLac"><div class="cl-scroll" id="csLac"></div></div>
+                <div class="exp-footer">
+                  <span class="exp-hint" id="expHint">S&#233;lectionne un dossier Originaux</span>
+                  <button class="exp-ok" id="expOk" onclick="expConfirm()">S&#201;LECTIONNER</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+            <button class="browse-btn" id="browseBtn" onclick="browseToggle()">&#128194; Parcourir</button>
+            <a href="https://drive.google.com/drive/u/0/folders/1EPQqtKR_GgoVxThVVHFfEyvlGXVhpMY7" target="_blank" class="fl one">Envois One</a>
+            <a href="https://drive.google.com/drive/u/0/folders/1Oi6tJ-MLYmuv64tBxmfoj86pPNSxvFgW" target="_blank" class="fl lac">Envois Lac</a>
           </div>
         </div>
       </div>
