@@ -126,7 +126,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .cbtn.no{background:transparent;color:var(--mut)}.cbtn.no:hover{color:var(--txt);background:rgba(255,255,255,.07)}
 .cbtn.yes{background:linear-gradient(180deg,#d8d8d8 0%,#888 50%,#aaa 100%);border:none;color:#111;box-shadow:0 2px 0 rgba(255,255,255,.3) inset}.cbtn.yes:hover{filter:brightness(1.1)}
 /* ── EXPLORATEUR ── */
-.folder-row{display:flex;gap:8px;align-items:flex-start}
+.folder-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .folder-row input{flex:1}
 .browse-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(220,220,220,.55);font-family:"DM Sans",sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
 .browse-btn:hover{color:#e8e8e8;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
@@ -354,14 +354,21 @@ select option{background:#2a2a2a;color:#e8e8e8}
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row full">
       <div class="field">
         <label>Lien du dossier &quot;Originaux&quot;</label>
         <div class="folder-row">
           <input type="text" id="folderID" placeholder="Colle un lien Drive ou clique Parcourir" onblur="scanDossier()" onpaste="extractFolderID(event)">
           <button class="browse-btn" id="browseBtn" onclick="browseToggle()">&#128194; Parcourir</button>
+          <a href="https://drive.google.com/drive/u/0/folders/1EPQqtKR_GgoVxThVVHFfEyvlGXVhpMY7" target="_blank" class="fl one">Envois One</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1Oi6tJ-MLYmuv64tBxmfoj86pPNSxvFgW" target="_blank" class="fl lac">Envois Lac</a>
         </div>
+        <div id="folderLink"></div>
         <div class="drive-stats" id="driveStats"></div>
+        <div id="pdfNameWrap" style="display:none;margin-top:10px;">
+          <label>Nom du fichier PDF d&eacute;tect&eacute;</label>
+          <input type="text" id="pdfName" readonly style="cursor:default;opacity:.65;pointer-events:none;">
+        </div>
         <div class="exp-wrap" id="expWrap">
           <div class="exp-box">
             <div class="exp-topbar"></div>
@@ -380,18 +387,6 @@ select option{background:#2a2a2a;color:#e8e8e8}
               <button class="exp-ok" id="expOk" onclick="expConfirm()">S&#201;LECTIONNER</button>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Nom du fichier PDF (sans num&eacute;ro et sans extension)</label>
-        <input type="text" id="pdfName" placeholder="ex: Billet_Concert_OneFM">
-        <div class="folder-links">
-          <div class="fl-row">
-            <span class="fl-lbl">Ouvrir dans Drive :</span>
-<a href="https://drive.google.com/drive/u/0/folders/1EPQqtKR_GgoVxThVVHFfEyvlGXVhpMY7" target="_blank" class="fl one" style="opacity:.6">Envois One</a>
-<a href="https://drive.google.com/drive/u/0/folders/1Oi6tJ-MLYmuv64tBxmfoj86pPNSxvFgW" target="_blank" class="fl lac" style="opacity:.6">Envois Lac</a>
-          </div>
-          <div id="folderLink"></div>
         </div>
       </div>
     </div>
@@ -947,6 +942,7 @@ async function scanDossier() {
   var box = document.getElementById("driveStats");
   document.getElementById("folderLink").innerHTML = "";
   document.getElementById("pdfName").value = "";
+  document.getElementById("pdfNameWrap").style.display = "none";
   // Si le dossier ne correspond pas à la sélection active de l'explorateur, on reset EXP.ant
   if (EXP.selId !== fid) { EXP.ant = null; }
   if (!fid) { box.innerHTML = ""; return; }
@@ -990,6 +986,7 @@ async function scanDossier() {
     if (restants.length > 0) {
       var baseName = restants[0].replace(/-\d+$/, "");
       document.getElementById("pdfName").value = baseName;
+      document.getElementById("pdfNameWrap").style.display = "block";
       // Détection antenne via nom du fichier si EXP.ant pas encore défini
       if (!EXP.ant) {
         if (/one.?fm|onefm/i.test(baseName)) { document.getElementById("mailFrom").value = "sav@onefm.ch"; }
@@ -1223,6 +1220,7 @@ function showStatus(type,msg){var bar=document.getElementById("sbar");bar.classN
 function setStep(n){for(var i=1;i<=4;i++){document.getElementById("s"+i).className="step"+(i<n?" done":i===n?" active":"");}}
 function resetForm(){
   document.getElementById("pdfName").value="";
+  document.getElementById("pdfNameWrap").style.display="none";
   document.getElementById("folderID").value="";
   document.getElementById("mailSubject").value="";
   document.getElementById("mailContent").value="";
