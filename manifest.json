@@ -2,7 +2,7 @@
   "name": "MOG Send Module",
   "short_name": "MOG Send",
   "description": "Envoi PDF Billets - Media One Group",
-  "start_url": "./Index-V22-21.04.26.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#181818",
   "theme_color": "#181818",
