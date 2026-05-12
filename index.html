@@ -1330,10 +1330,6 @@ function resetForm(){
   document.getElementById("sbar").className="sbar";
 }
 </script>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
-}
-</script>
+<script>if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));</script>
 </body>
 </html>
