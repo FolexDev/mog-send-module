@@ -269,10 +269,14 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .prog-close{width:100%;padding:11px;border:none;border-radius:9px;background:linear-gradient(180deg,#d8d8d8 0%,#888 50%,#aaa 100%);color:#111;font-family:"Bebas Neue",sans-serif;font-size:17px;letter-spacing:.06em;cursor:pointer;opacity:.3;pointer-events:none;box-shadow:0 2px 0 rgba(255,255,255,.25) inset;}
 .prog-close.ready{opacity:1;pointer-events:all;}.prog-close.ready:hover{filter:brightness(1.1);}
 </style>
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/FolexDev/mog-send-module/main/icon-192.png">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/FolexDev/mog-send-module/main/icon-192.png">
-<link rel="shortcut icon" href="https://raw.githubusercontent.com/FolexDev/mog-send-module/main/icon-192.png">
-<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/FolexDev/mog-send-module/main/icon-192.png"/>
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/FolexDev/mog-send-module/main/icon-192.png"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="MOG Send"/>
+<meta name="theme-color" content="#181818"/>
+<script>if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));</script>
 </head>
 <body>
 
@@ -1330,6 +1334,5 @@ function resetForm(){
   document.getElementById("sbar").className="sbar";
 }
 </script>
-<script>if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));</script>
 </body>
 </html>
