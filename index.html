@@ -237,6 +237,10 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .exp-actions{display:flex;align-items:center;gap:6px}
 .exp-back{padding:5px 11px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(200,200,200,.6);border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0}
 .exp-back:hover{background:rgba(255,255,255,.08);color:var(--txt);border-color:rgba(255,255,255,.2)}
+/* ── CAPACITY ALERT ── */
+.capacity-alert{display:none;align-items:center;gap:10px;padding:12px 16px;margin:12px 0;border-radius:8px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);color:#f5a623;font-size:13px;font-weight:500}
+.ca-icon{font-size:16px;flex-shrink:0}
+.ca-text{flex:1}
 .exp-back:disabled{opacity:.28;cursor:not-allowed;pointer-events:none}
 /* ── MODE SELECTOR ── */
 .modeBar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;border:1px solid var(--bd);background:rgba(0,0,0,.15);margin-bottom:16px;flex-wrap:wrap;}
@@ -562,6 +566,10 @@ select option{background:#2a2a2a;color:#e8e8e8}
     <div class="gblock" id="gBlock"></div>
     <button class="addb" onclick="addGagnant()">&#xFF0B; Ajouter un gagnant</button>
     <button class="addb" onclick="effacerListe()" style="border-color:rgba(232,0,29,.3);color:rgba(255,80,80,.7);">&#128465; Effacer liste</button>
+    <div class="capacity-alert" id="capacityAlert" style="display:none;">
+      <span class="ca-icon">⚠️</span>
+      <span class="ca-text" id="capacityAlertMsg">Dépassement de capacité</span>
+    </div>
     <div class="actions">
       <button class="sendb" id="btnSend" onclick="lancerEnvoi()">&#128640; LANCER &#128640;</button>
       <canvas class="wave-canvas" id="waveCanvas"></canvas>
@@ -909,6 +917,37 @@ function recalculateWinnersNumbers() {
       currentNum += nbr;
     }
   }
+
+  // Valider la capacité et afficher une alerte si dépassement
+  var capCheck = validateCapacity();
+  if (!capCheck.valid) {
+    document.getElementById("capacityAlert").style.display = "flex";
+    document.getElementById("capacityAlertMsg").textContent =
+      "⚠️ Dépassement : " + capCheck.total + " PDFs requis, " +
+      capCheck.available + " disponible(s). Réduisez les quantités.";
+  } else {
+    document.getElementById("capacityAlert").style.display = "none";
+  }
+}
+
+function validateCapacity() {
+  if (currentMode !== "onebyOne") return { valid: true, surplus: 0, total: 0, available: 0 };
+
+  var totalRequired = 0;
+  for (var i = 0; i < gagnants.length; i++) {
+    var id = gagnants[i];
+    var nbrInput = document.getElementById("nbrpdf" + id);
+    var nbr = nbrInput ? parseInt(nbrInput.value, 10) : 0;
+    if (!isNaN(nbr) && nbr > 0) {
+      totalRequired += nbr;
+    }
+  }
+
+  var pdfsAvailable = window.pdfStock || 0;
+  var surplus = totalRequired - pdfsAvailable;
+  var valid = surplus <= 0;
+
+  return { valid: valid, surplus: surplus, total: totalRequired, available: pdfsAvailable };
 }
 
 async function recalculateStartNum() {
@@ -1311,6 +1350,8 @@ async function scanDossier() {
   } catch(e) {
     box.innerHTML = '<span class="ds-pill err"><span class="ds-dot"></span>Erreur : ' + e.message + '</span>';
   }
+  // Sauvegarder le nombre de PDFs disponibles pour la validation de capacité (mode 1by1)
+  window.pdfStock = stock || 0;
   setTimeout(function() { recalculateStartNum(); }, 600);
 }
 function getConfigs() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch(e) { return {}; } }
@@ -1432,6 +1473,8 @@ document.addEventListener('paste', function(e) {
 function effacerListe(){gagnants=[];addGagnant();}
 function validate() {
   if(!accessToken) return "Connecte-toi a Google d'abord.";
+  // En mode 1by1, vérifier la capacité avant l'envoi
+  if(currentMode==="onebyOne"){var capCheck=validateCapacity();if(!capCheck.valid){return "Dépassement de capacité : "+capCheck.total+" PDFs requis, seulement "+capCheck.available+" disponible(s).";}};
   if(!document.getElementById("pdfName").value.trim()) return "Nom du PDF manquant.";
   if(!document.getElementById("folderID").value.trim()) return "ID du dossier manquant.";
   if(!document.getElementById("mailSubject").value.trim()) return "Objet du mail manquant.";
@@ -1463,6 +1506,8 @@ async function doEnvoi() {
   var startN=getStart();var winners=[];
   var currentNum=startN;
   for(var i=0;i<gagnants.length;i++){var id=gagnants[i];var w={numero:currentMode==="normal"?(startN+i):currentNum,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()};if(currentMode==="onebyOne"){var nbrInput=document.getElementById("nbrpdf"+id);w.nbrPDF=nbrInput?parseInt(nbrInput.value,10):1;currentNum+=w.nbrPDF;}winners.push(w);}
+  // Vérifier la capacité avant envoi (sécurité)
+  var capCheck=validateCapacity();if(!capCheck.valid){showStatus("error","Impossible d'envoyer : dépassement de capacité ("+capCheck.total+" PDFs requis, "+capCheck.available+" disponible(s))");return;}
   document.getElementById("btnSend").disabled=true;
   setStep(2);showStatus("loading","Etape 1/2 - Ecriture dans Google Sheet...");
   try{await writeToSheet(document.getElementById("pdfName").value.trim(),document.getElementById("folderID").value.trim(),document.getElementById("mailFrom").value,document.getElementById("mailSubject").value.trim(),document.getElementById("mailContent").value.trim(),winners);}
