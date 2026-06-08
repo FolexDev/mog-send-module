@@ -210,6 +210,34 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .exp-ok.ready{opacity:1;pointer-events:all}.exp-ok.ready:hover{filter:brightness(1.1)}
 .exp-loading{display:flex;align-items:center;gap:8px;padding:10px 13px;font-size:12px;color:rgba(200,200,200,.35)}
 .spxs{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid rgba(200,200,200,.1);border-top-color:rgba(200,200,200,.35);animation:sp .7s linear infinite;flex-shrink:0}
+/* ── FLEXIBLE NAVIGATOR ── */
+.exp-antennes{display:flex;flex-direction:column;border-bottom:1px solid rgba(255,255,255,.07)}
+.exp-breadcrumb{display:flex;align-items:center;gap:6px;padding:8px 13px;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;color:rgba(200,200,200,.6);overflow-x:auto;scrollbar-width:thin}
+.crumb-home{flex-shrink:0;font-size:14px}
+.crumb-text{white-space:nowrap;color:rgba(200,200,200,.8);font-weight:500}
+.crumb-sep{flex-shrink:0;color:rgba(255,255,255,.2);margin:0 2px}
+.exp-folders{display:flex;flex-direction:column;max-height:300px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent}
+.exp-folders::-webkit-scrollbar{width:4px}
+.exp-folders::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:4px}
+.exp-folder-item{display:flex;align-items:center;gap:9px;padding:9px 13px;cursor:pointer;border-top:1px solid rgba(255,255,255,.04);transition:background .1s}
+.exp-folder-item:hover{background:rgba(255,255,255,.04)}
+.exp-folder-item.is-original{background:rgba(245,166,35,.05)}
+.exp-folder-item.is-original:hover{background:rgba(245,166,35,.1)}
+.exp-folder-item.chosen{background:rgba(0,196,122,.07)}
+.exp-folder-icon{flex-shrink:0;font-size:14px}
+.exp-folder-name{flex:1;font-size:13px;font-weight:500;color:rgba(200,200,200,.7);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exp-folder-item.is-original .exp-folder-name{color:#f5a623;font-weight:600}
+.exp-folder-item.chosen .exp-folder-name{color:#00c47a;font-weight:600}
+.exp-folder-arrow{flex-shrink:0;font-size:13px;color:rgba(255,255,255,.2);transition:transform .2s}
+.exp-folder-item:hover .exp-folder-arrow{transform:translateX(2px);color:rgba(255,255,255,.4)}
+.exp-folder-badge{flex-shrink:0;font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(245,166,35,.12);color:#f5a623;border:1px solid rgba(245,166,35,.25);white-space:nowrap;transition:all .15s}
+.exp-folder-item.chosen .exp-folder-badge{background:rgba(0,196,122,.12);color:#00c47a;border-color:rgba(0,196,122,.25)}
+.exp-empty,.exp-error{padding:12px 13px;font-size:12px;color:rgba(200,200,200,.35)}
+.exp-error{color:#ff6060}
+.exp-actions{display:flex;align-items:center;gap:6px}
+.exp-back{padding:5px 11px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(200,200,200,.6);border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0}
+.exp-back:hover{background:rgba(255,255,255,.08);color:var(--txt);border-color:rgba(255,255,255,.2)}
+.exp-back:disabled{opacity:.28;cursor:not-allowed;pointer-events:none}
 /* ── MODE SELECTOR ── */
 .modeBar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;border:1px solid var(--bd);background:rgba(0,0,0,.15);margin-bottom:16px;flex-wrap:wrap;}
 .mode-lbl{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
@@ -430,20 +458,33 @@ select option{background:#2a2a2a;color:#e8e8e8}
             <input type="text" id="folderID" placeholder="Colle un lien Drive ou clique Parcourir" onblur="scanDossier()" onpaste="extractFolderID(event)">
             <div class="exp-wrap" id="expWrap">
               <div class="exp-box">
-                <div class="exp-topbar"></div>
-                <button class="ant-btn" id="antOne" onclick="antToggle('one')">
-                  <span class="ant-left"><span class="ant-dot dot-one"></span>One FM</span>
-                  <span class="ant-chev">&#8250;</span>
-                </button>
-                <div class="cl" id="clOne"><div class="cl-scroll" id="csOne"></div></div>
-                <button class="ant-btn" id="antLac" onclick="antToggle('lac')">
-                  <span class="ant-left"><span class="ant-dot dot-lac"></span>Radio Lac</span>
-                  <span class="ant-chev">&#8250;</span>
-                </button>
-                <div class="cl" id="clLac"><div class="cl-scroll" id="csLac"></div></div>
+                <!-- Boutons d'accès rapide (antennes) -->
+                <div class="exp-antennes">
+                  <button class="ant-btn" id="antOne" onclick="antToggle('one')">
+                    <span class="ant-left"><span class="ant-dot dot-one"></span>One FM</span>
+                    <span class="ant-chev">›</span>
+                  </button>
+                  <button class="ant-btn" id="antLac" onclick="antToggle('lac')">
+                    <span class="ant-left"><span class="ant-dot dot-lac"></span>Radio Lac</span>
+                    <span class="ant-chev">›</span>
+                  </button>
+                </div>
+
+                <!-- Breadcrumb bar -->
+                <div class="exp-breadcrumb" id="expBreadcrumb">
+                  <span class="crumb-home">📁</span>
+                </div>
+
+                <!-- Folders list (générique, N niveaux) -->
+                <div class="exp-folders" id="expFolders"></div>
+
+                <!-- Footer -->
                 <div class="exp-footer">
-                  <span class="exp-hint" id="expHint">S&#233;lectionne un dossier Originaux</span>
-                  <button class="exp-ok" id="expOk" onclick="expConfirm()">S&#201;LECTIONNER</button>
+                  <span class="exp-hint" id="expHint">Sélectionne un dossier Originaux</span>
+                  <div class="exp-actions">
+                    <button class="exp-back" id="expBack" onclick="expGoBack()" style="display:none;">↶ RETOUR</button>
+                    <button class="exp-ok" id="expOk" onclick="expConfirm()">✓ SÉLECTIONNER</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -584,6 +625,14 @@ function openProgModal(winners, folderId) {
 function closeProgModal() {
   document.getElementById("progBg").classList.remove("show");
   if (progPollInterval) { clearInterval(progPollInterval); progPollInterval = null; }
+
+  // Rescanner le dossier en mode 1by1 pour mettre à jour les PDFs disponibles et le numéro de départ
+  if (currentMode === "onebyOne") {
+    var folderId = document.getElementById("folderID").value.trim();
+    if (folderId) {
+      scanDossier();
+    }
+  }
 }
 
 function startProgPoll() {
@@ -800,7 +849,15 @@ var ROOT_LAC       = "1Oi6tJ-MLYmuv64tBxmfoj86pPNSxvFgW";
 var gagnants       = [];
 var accessToken    = null;
 var tokenClient    = null;
-var EXP = { open:false, ant:null, cId:null, cName:null, selId:null, selName:null, cache:{} };
+var EXP = {
+  open: false,
+  breadcrumb: [],        // [{ id, name }, { id, name }, ...]
+  currentLevel: 0,       // index actuel dans breadcrumb
+  selectedId: null,      // ID du dossier "Originaux" choisi
+  selectedName: null,    // Nom du dossier "Originaux"
+  currentFolders: [],    // dossiers du niveau actuel
+  cache: {}              // par ID parent
+};
 
 var modeConfigs = {
   normal: {
@@ -981,143 +1038,183 @@ function browseClose() {
   document.getElementById("browseBtn").classList.remove("active");
 }
 function antToggle(ant) {
-  var same = EXP.ant === ant;
-  document.getElementById("clOne").classList.remove("open");
-  document.getElementById("clLac").classList.remove("open");
-  document.getElementById("antOne").className = "ant-btn";
-  document.getElementById("antLac").className = "ant-btn";
-  EXP.cId = null; EXP.cName = null;
-  document.querySelectorAll(".sf-list").forEach(function(e){ e.classList.remove("open"); });
-  document.querySelectorAll(".ci").forEach(function(e){ e.classList.remove("open"); });
-  if (same) { EXP.ant = null; expUpdFooter(); return; }
-  EXP.ant = ant;
-  var suffix = ant === "one" ? "One" : "Lac";
-  document.getElementById("cl" + suffix).classList.add("open");
-  document.getElementById("ant" + suffix).className = "ant-btn open-" + ant;
-  loadConcours(ant);
+  var rootId = ant === "one" ? ROOT_ONE : ROOT_LAC;
+  var rootName = ant === "one" ? "One FM" : "Radio Lac";
+  selectRootFolder(rootId, rootName);
+}
+
+function selectRootFolder(folderId, folderName) {
+  EXP.breadcrumb = [{ id: folderId, name: folderName }];
+  EXP.currentLevel = 0;
+  EXP.selectedId = null;
+  EXP.selectedName = null;
+  loadFoldersForLevel(0);
+  expRenderBreadcrumb();
   expUpdFooter();
 }
-function loadConcours(ant) {
-  var suffix = ant === "one" ? "One" : "Lac";
-  var cs = document.getElementById("cs" + suffix);
-  if (EXP.cache[ant]) { renderConcours(ant, EXP.cache[ant]); return; }
+
+function loadFoldersForLevel(level) {
+  if (level < 0 || level >= EXP.breadcrumb.length) return;
+  var current = EXP.breadcrumb[level];
+  var expFolders = document.getElementById("expFolders");
+
+  if (EXP.cache[current.id]) {
+    renderSubFolders(level, EXP.cache[current.id]);
+    return;
+  }
+
   var ld = document.createElement("div"); ld.className = "exp-loading";
   var sp = document.createElement("span"); sp.className = "spxs";
   ld.appendChild(sp); ld.appendChild(document.createTextNode(" Chargement..."));
-  cs.innerHTML = ""; cs.appendChild(ld);
-  var rootId = ant === "one" ? ROOT_ONE : ROOT_LAC;
+  expFolders.innerHTML = ""; expFolders.appendChild(ld);
+
   fetch(
     "https://www.googleapis.com/drive/v3/files?q=" +
-    encodeURIComponent("'" + rootId + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false") +
-    "&fields=files(id,name)&orderBy=name%20desc&pageSize=100&supportsAllDrives=true&includeItemsFromAllDrives=true",
+    encodeURIComponent("'" + current.id + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false") +
+    "&fields=files(id,name)&orderBy=name&pageSize=100&supportsAllDrives=true&includeItemsFromAllDrives=true",
     { headers: { Authorization: "Bearer " + accessToken } }
   ).then(function(r) { return r.json(); }).then(function(data) {
-    EXP.cache[ant] = data.files || [];
-    renderConcours(ant, EXP.cache[ant]);
+    EXP.cache[current.id] = data.files || [];
+    renderSubFolders(level, EXP.cache[current.id]);
   }).catch(function(e) {
-    cs.innerHTML = "";
-    var err = document.createElement("div"); err.className = "exp-loading"; err.style.color = "#ff6060";
-    err.textContent = "Erreur : " + e.message; cs.appendChild(err);
+    expFolders.innerHTML = "";
+    var err = document.createElement("div"); err.className = "exp-error";
+    err.textContent = "Erreur : " + e.message; expFolders.appendChild(err);
   });
 }
-function renderConcours(ant, folders) {
-  var suffix = ant === "one" ? "One" : "Lac";
-  var cs = document.getElementById("cs" + suffix);
-  cs.innerHTML = "";
+
+function renderSubFolders(level, folders) {
+  var expFolders = document.getElementById("expFolders");
+  expFolders.innerHTML = "";
+
   if (!folders.length) {
-    var em = document.createElement("div"); em.className = "exp-loading";
-    em.textContent = "Aucun dossier."; cs.appendChild(em); return;
+    var em = document.createElement("div"); em.className = "exp-empty";
+    em.textContent = "Aucun dossier"; expFolders.appendChild(em);
+    return;
   }
-  folders.forEach(function(f) {
-    var ci = document.createElement("div"); ci.className = "ci"; ci.id = "ci-" + f.id;
-    var ic = document.createElement("span"); ic.textContent = "\uD83D\uDCC1"; ic.style.fontSize = "13px";
-    var nm = document.createElement("span"); nm.className = "ci-name"; nm.textContent = f.name;
-    var ch = document.createElement("span"); ch.className = "ci-chev"; ch.textContent = "\u203A";
-    ci.appendChild(ic); ci.appendChild(nm); ci.appendChild(ch);
-    ci.onclick = (function(folder) { return function() { concoursToggle(folder); }; })(f);
-    cs.appendChild(ci);
-    var sfl = document.createElement("div"); sfl.className = "sf-list"; sfl.id = "sf-" + f.id;
-    cs.appendChild(sfl);
+
+  folders.forEach(function(folder) {
+    var isOriginal = /originaux/i.test(folder.name);
+    var item = document.createElement("div");
+    item.className = "exp-folder-item" + (isOriginal ? " is-original" : "");
+    item.id = "exp-folder-" + folder.id;
+
+    var icon = document.createElement("span");
+    icon.className = "exp-folder-icon";
+    icon.textContent = isOriginal ? "\uD83D\uDCCB" : "\uD83D\uDCC1";
+
+    var name = document.createElement("span");
+    name.className = "exp-folder-name";
+    name.textContent = folder.name;
+
+    var action = document.createElement("span");
+    action.className = isOriginal ? "exp-folder-badge" : "exp-folder-arrow";
+    action.textContent = isOriginal ? "\u2713 S\u00e9lectionner" : "\u203A";
+    action.id = "exp-badge-" + folder.id;
+
+    item.appendChild(icon);
+    item.appendChild(name);
+    item.appendChild(action);
+
+    item.onclick = (function(f) {
+      return function() {
+        if (isOriginal) expSelectOriginal(f);
+        else expOpenFolder(f);
+      };
+    })(folder);
+
+    expFolders.appendChild(item);
   });
-}
-function concoursToggle(folder) {
-  var same = EXP.cId === folder.id;
-  document.querySelectorAll(".sf-list").forEach(function(e){ e.classList.remove("open"); });
-  document.querySelectorAll(".ci").forEach(function(e){ e.classList.remove("open"); });
-  if (same) { EXP.cId = null; EXP.cName = null; expUpdFooter(); return; }
-  EXP.cId = folder.id; EXP.cName = folder.name;
-  var ci = document.getElementById("ci-" + folder.id);
-  var sfl = document.getElementById("sf-" + folder.id);
-  if (ci) ci.classList.add("open");
-  if (!sfl.dataset.loaded) {
-    var ld = document.createElement("div"); ld.className = "exp-loading";
-    var sp2 = document.createElement("span"); sp2.className = "spxs";
-    ld.appendChild(sp2); ld.appendChild(document.createTextNode(" Chargement..."));
-    sfl.innerHTML = ""; sfl.appendChild(ld); sfl.classList.add("open");
-    fetch(
-      "https://www.googleapis.com/drive/v3/files?q=" +
-      encodeURIComponent("'" + folder.id + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false") +
-      "&fields=files(id,name)&orderBy=name&pageSize=50&supportsAllDrives=true&includeItemsFromAllDrives=true",
-      { headers: { Authorization: "Bearer " + accessToken } }
-    ).then(function(r) { return r.json(); }).then(function(data) {
-      sfl.innerHTML = ""; sfl.dataset.loaded = "1";
-      if (!data.files || !data.files.length) {
-        var em2 = document.createElement("div"); em2.className = "exp-loading";
-        em2.textContent = "Aucun sous-dossier."; sfl.appendChild(em2);
-      } else {
-        data.files.forEach(function(sf) {
-          var isO = /originaux/i.test(sf.name);
-          var it = document.createElement("div");
-          it.className = "sf-item" + (isO ? " is-orig" : ""); it.id = "sfi-" + sf.id;
-          var ic2 = document.createElement("span"); ic2.textContent = isO ? "\uD83D\uDCC2" : "\uD83D\uDCC1"; ic2.style.fontSize = "12px";
-          var nm2 = document.createElement("span"); nm2.className = "sf-name"; nm2.textContent = sf.name;
-          it.appendChild(ic2); it.appendChild(nm2);
-          if (isO) {
-            var b = document.createElement("span"); b.className = "sf-badge"; b.id = "sfb-" + sf.id;
-            b.textContent = "\u2713 S\u00e9lectionner"; it.appendChild(b);
-          }
-          it.onclick = (function(s) { return function() { sfSelect(s); }; })(sf);
-          sfl.appendChild(it);
-        });
-      }
-    }).catch(function(e) {
-      sfl.innerHTML = "";
-      var err2 = document.createElement("div"); err2.className = "exp-loading"; err2.style.color = "#ff6060";
-      err2.textContent = "Erreur : " + e.message; sfl.appendChild(err2);
-    });
-  } else { sfl.classList.add("open"); }
+
   expUpdFooter();
 }
-function sfSelect(sf) {
-  document.querySelectorAll(".sf-item").forEach(function(el) {
+
+function expOpenFolder(folder) {
+  EXP.breadcrumb.push({ id: folder.id, name: folder.name });
+  EXP.currentLevel = EXP.breadcrumb.length - 1;
+  loadFoldersForLevel(EXP.currentLevel);
+  expRenderBreadcrumb();
+  expUpdFooter();
+}
+
+function expSelectOriginal(folder) {
+  document.querySelectorAll(".exp-folder-badge").forEach(el => {
+    el.textContent = "\u2713 S\u00e9lectionner";
+  });
+  document.querySelectorAll(".exp-folder-item").forEach(el => {
     el.classList.remove("chosen");
-    if (el.classList.contains("is-orig")) {
-      var b = el.querySelector(".sf-badge");
-      if (b) b.textContent = "\u2713 S\u00e9lectionner";
+  });
+
+  var item = document.getElementById("exp-folder-" + folder.id);
+  if (item) {
+    item.classList.add("chosen");
+    var badge = item.querySelector(".exp-folder-badge");
+    if (badge) badge.textContent = "\u2713 S\u00e9lectionn\u00e9";
+  }
+
+  EXP.selectedId = folder.id;
+  EXP.selectedName = folder.name;
+  expUpdFooter();
+}
+
+function expGoBack() {
+  if (EXP.breadcrumb.length <= 1) {
+    browseClose();
+    return;
+  }
+
+  EXP.breadcrumb.pop();
+  EXP.currentLevel = EXP.breadcrumb.length - 1;
+  loadFoldersForLevel(EXP.currentLevel);
+  expRenderBreadcrumb();
+  expUpdFooter();
+}
+
+function expRenderBreadcrumb() {
+  var crumb = document.getElementById("expBreadcrumb");
+  crumb.innerHTML = '<span class="crumb-home">\uD83D\uDCC1</span>';
+
+  EXP.breadcrumb.forEach(function(item, idx) {
+    var span = document.createElement("span");
+    span.className = "crumb-text";
+    span.textContent = item.name;
+    crumb.appendChild(span);
+
+    if (idx < EXP.breadcrumb.length - 1) {
+      var sep = document.createElement("span");
+      sep.className = "crumb-sep";
+      sep.textContent = "\u203A";
+      crumb.appendChild(sep);
     }
   });
-  var el = document.getElementById("sfi-" + sf.id);
-  if (el) {
-    el.classList.add("chosen");
-    var b = el.querySelector(".sf-badge");
-    if (b) b.textContent = "\u2713 S\u00e9lectionn\u00e9";
-  }
-  EXP.selId = sf.id; EXP.selName = sf.name;
-  expUpdFooter();
 }
+
 function expUpdFooter() {
-  var hint = document.getElementById("expHint"), ok = document.getElementById("expOk");
-  if (EXP.selId && EXP.cName) {
-    hint.textContent = EXP.cName + " \u203A " + EXP.selName;
-    hint.className = "exp-hint ready"; ok.className = "exp-ok ready";
+  var hint = document.getElementById("expHint");
+  var ok = document.getElementById("expOk");
+  var back = document.getElementById("expBack");
+
+  if (EXP.selectedId && EXP.selectedName) {
+    var path = EXP.breadcrumb.map(function(b) { return b.name; }).join(" \u203A ") + " \u203A " + EXP.selectedName;
+    hint.textContent = path;
+    hint.className = "exp-hint ready";
+    ok.className = "exp-ok ready";
   } else {
     hint.textContent = "S\u00e9lectionne un dossier Originaux";
-    hint.className = "exp-hint"; ok.className = "exp-ok";
+    hint.className = "exp-hint";
+    ok.className = "exp-ok";
+  }
+
+  if (EXP.breadcrumb.length > 1) {
+    back.style.display = "flex";
+  } else {
+    back.style.display = "none";
   }
 }
+
 function expConfirm() {
-  if (!EXP.selId) return;
-  document.getElementById("folderID").value = EXP.selId;
+  if (!EXP.selectedId) return;
+  document.getElementById("folderID").value = EXP.selectedId;
   browseClose();
   scanDossier();
 }
@@ -1127,8 +1224,8 @@ async function scanDossier() {
   document.getElementById("folderLink").innerHTML = "";
   document.getElementById("pdfName").value = "";
   document.getElementById("pdfNameWrap").style.display = "none";
-  // Si le dossier ne correspond pas à la sélection active de l'explorateur, on reset EXP.ant
-  if (EXP.selId !== fid) { EXP.ant = null; }
+  // Si le dossier ne correspond pas à la sélection active de l'explorateur, on reset EXP
+  if (EXP.selectedId !== fid) { EXP = { open: false, breadcrumb: [], currentLevel: 0, selectedId: null, selectedName: null, currentFolders: [], cache: {} }; }
   if (!fid) { box.innerHTML = ""; return; }
   if (!accessToken) {
     box.innerHTML = '<span class="ds-pill warn"><span class="ds-dot"></span>Connecte-toi &agrave; Google</span>';
@@ -1171,11 +1268,9 @@ async function scanDossier() {
       var baseName = restants[0].replace(/-\d+$/, "");
       document.getElementById("pdfName").value = baseName;
       document.getElementById("pdfNameWrap").style.display = "block";
-      // Détection antenne via nom du fichier si EXP.ant pas encore défini
-      if (!EXP.ant) {
-        if (/one.?fm|onefm/i.test(baseName)) { document.getElementById("mailFrom").value = "sav@onefm.ch"; }
-        else if (/radio.?lac|radiolac/i.test(baseName)) { document.getElementById("mailFrom").value = "sav@radiolac.ch"; }
-      }
+      // Détection antenne via nom du fichier PDF
+      if (/one.?fm|onefm/i.test(baseName)) { document.getElementById("mailFrom").value = "sav@onefm.ch"; }
+      else if (/radio.?lac|radiolac/i.test(baseName)) { document.getElementById("mailFrom").value = "sav@radiolac.ch"; }
     }
     var pillNext = (prochain !== null && stock > 0)
       ? '<span class="ds-pill ok"><span class="ds-dot"></span>Prochain n&deg; : <strong style="margin-left:3px">' + prochain + '</strong></span>'
@@ -1206,17 +1301,11 @@ async function scanDossier() {
         row.appendChild(lbl);
         row.appendChild(a);
         fl.appendChild(row);
-        // Auto-select expéditeur selon antenne
-        var antenne = EXP.ant;
-        if (!antenne) {
-          var fullPath = (EXP.cName || "") + " " + meta.name;
-          // Ajouter aussi le nom de base des fichiers PDF
-          if (restants.length > 0) fullPath += " " + restants[0];
-          if (/one.?fm|onefm/i.test(fullPath)) antenne = "one";
-          else if (/radio.?lac|radiolac/i.test(fullPath)) antenne = "lac";
-        }
-        if (antenne === "one") document.getElementById("mailFrom").value = "sav@onefm.ch";
-        else if (antenne === "lac") document.getElementById("mailFrom").value = "sav@radiolac.ch";
+        // Auto-select expéditeur selon dossier et PDF
+        var fullPath = meta.name;
+        if (restants.length > 0) fullPath += " " + restants[0];
+        if (/one.?fm|onefm/i.test(fullPath)) document.getElementById("mailFrom").value = "sav@onefm.ch";
+        else if (/radio.?lac|radiolac/i.test(fullPath)) document.getElementById("mailFrom").value = "sav@radiolac.ch";
       }
     } catch(e2) { /* silencieux */ }
   } catch(e) {
@@ -1441,11 +1530,9 @@ function resetForm(){
   document.getElementById("startNum").value="1";
   document.getElementById("driveStats").innerHTML="";
   document.getElementById("folderLink").innerHTML="";
-  EXP.ant=null; EXP.cId=null; EXP.selId=null; EXP.selName=null;
-  document.getElementById("clOne").classList.remove("open");
-  document.getElementById("clLac").classList.remove("open");
-  document.getElementById("antOne").className="ant-btn";
-  document.getElementById("antLac").className="ant-btn";
+  EXP = { open: false, breadcrumb: [], currentLevel: 0, selectedId: null, selectedName: null, currentFolders: [], cache: {} };
+  document.getElementById("expFolders").innerHTML="";
+  expRenderBreadcrumb();
   expUpdFooter();
   setStep(1);
   document.getElementById("sbar").className="sbar";
