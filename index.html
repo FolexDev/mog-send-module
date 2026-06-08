@@ -591,8 +591,10 @@ function startProgPoll() {
   var maxSeen = 0;
   var noProgressCount = 0;
   var maxNoProgress = 240; // 2 min sans progression = timeout
+
   if (progPollInterval) clearInterval(progPollInterval);
-  progPollInterval = setInterval(async function() {
+
+  var pollFunction = async function() {
     try {
       var encodedCell = cfg.progressCell.replace(/ /g, "%20");
       var r = await fetch(
@@ -631,8 +633,11 @@ function startProgPoll() {
         clearInterval(progPollInterval); progPollInterval = null;
         progFinalize(maxSeen, progTotal - maxSeen, true);
       }
-    } catch(e) { /* silencieux */ }
-  }, 500);
+    } catch(e) { console.error("Poll error:", e); }
+  };
+
+  pollFunction();
+  progPollInterval = setInterval(pollFunction, 500);
 }
 
 function updateProgUI(cur, tot) {
@@ -1380,7 +1385,7 @@ async function doEnvoi() {
     if(xhr.status>=200&&xhr.status<300){
       setStep(4);
       showStatus("success","Sheet ecrite + Make declenche - "+winners.length+" billet"+(winners.length>1?"s":"")+" en cours d'envoi.");
-      startProgPoll();
+      setTimeout(function(){startProgPoll();},5000);
     } else {
       document.getElementById("btnSend").disabled=false;
       setStep(2);
