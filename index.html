@@ -1313,21 +1313,27 @@ function renderGagnants() {
 document.addEventListener('paste', function(e) {
   var active=document.activeElement;
   if(!active||active.tagName!=='INPUT')return;
-  if(!active.id.match(/^(pr|nm|em)/))return;
+  if(!active.id.match(/^(pr|nm|em|nbrpdf)/))return;
   var text=e.clipboardData.getData('text');
-  var values=text.split(/\t|\n/).map(function(v){return v.trim();}).filter(function(v){return v!=='';});
-  if(values.length<=1)return;
+  var lines=text.trim().split('\n');
+  if(lines.length<=0)return;
+  var firstLineParts=lines[0].split('\t').map(function(v){return v.trim();});
+  var numCols=firstLineParts.length;
+  if(numCols<3)return;
   e.preventDefault();
-  var suffix=active.id.replace(/^(pr|nm|em)/,'');
+  var suffix=active.id.replace(/^(pr|nm|em|nbrpdf)/,'');
   var startIdx=gagnants.indexOf(parseFloat(suffix));
   if(startIdx===-1)return;
-  var fields=['nm','pr','em'];
-  var fieldIdx=active.id.startsWith('nm')?0:active.id.startsWith('pr')?1:2;
-  var totalGagnantsNeeded=Math.ceil((fieldIdx+values.length)/3);
+  var fields=(currentMode==='onebyOne'&&numCols===4)?['nbrpdf','pr','nm','em']:['nm','pr','em'];
+  var colsPerGagnant=fields.length;
+  var allValues=[];
+  lines.forEach(function(line){allValues=allValues.concat(line.split('\t').map(function(v){return v.trim();}).filter(function(v){return v!=='';}));});
+  var totalGagnantsNeeded=Math.ceil(allValues.length/colsPerGagnant);
   var gagnantsToAdd=(startIdx+totalGagnantsNeeded)-gagnants.length;
   for(var a=0;a<gagnantsToAdd;a++){gagnants.push(Date.now()+Math.random());}
   renderGagnants();
-  values.forEach(function(val,i){var fi=fieldIdx+i;var gIdx=startIdx+Math.floor(fi/3);var fName=fields[fi%3];if(gagnants[gIdx]){var el=document.getElementById(fName+gagnants[gIdx]);if(el)el.value=val;}});
+  allValues.forEach(function(val,i){var gIdx=startIdx+Math.floor(i/colsPerGagnant);var fieldIdx=i%colsPerGagnant;var fName=fields[fieldIdx];if(gagnants[gIdx]){var el=document.getElementById(fName+gagnants[gIdx]);if(el)el.value=val;}});
+  setTimeout(function(){recalculateWinnersNumbers();},100);
 });
 function effacerListe(){gagnants=[];addGagnant();}
 function validate() {
