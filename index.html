@@ -419,7 +419,10 @@ select option{background:#2a2a2a;color:#e8e8e8}
   </header>
   <div class="authbar">
     <div class="aleft"><div class="authdot" id="authDot"></div><span id="authLabel">Non connect&eacute; &agrave; Google</span></div>
-    <button class="authbtn" id="authBtn" onclick="handleAuth()">Se connecter &agrave; Google</button>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="authbtn" style="padding:8px 12px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--txt);" onclick="openDocumentation()">&#10067;</button>
+      <button class="authbtn" id="authBtn" onclick="handleAuth()">Se connecter &agrave; Google</button>
+    </div>
   </div>
   <div class="modeBar" id="modeBar" style="display:none;">
     <span class="mode-lbl">Mode d'envoi :</span>
@@ -1045,6 +1048,9 @@ function setAuthUI(c) {
   document.getElementById("authLabel").textContent = c ? "Connect\u00e9 \u00e0 Google" : "Non connect\u00e9 \u00e0 Google";
   document.getElementById("authBtn").textContent   = c ? "D\u00e9connecter" : "Se connecter \u00e0 Google";
   document.getElementById("authBtn").className     = c ? "authbtn disconnect" : "authbtn";
+}
+function openDocumentation() {
+  window.open("documentation.html", "MOG_Documentation", "width=1200,height=800,scrollbars=yes");
 }
 function extractFolderID(e) {
   setTimeout(function() {
