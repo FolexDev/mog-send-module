@@ -210,6 +210,12 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .exp-ok.ready{opacity:1;pointer-events:all}.exp-ok.ready:hover{filter:brightness(1.1)}
 .exp-loading{display:flex;align-items:center;gap:8px;padding:10px 13px;font-size:12px;color:rgba(200,200,200,.35)}
 .spxs{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid rgba(200,200,200,.1);border-top-color:rgba(200,200,200,.35);animation:sp .7s linear infinite;flex-shrink:0}
+/* ── MODE SELECTOR ── */
+.modeBar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;border:1px solid var(--bd);background:rgba(0,0,0,.15);margin-bottom:16px;flex-wrap:wrap;}
+.mode-lbl{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+.mode-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--bd2);background:rgba(255,255,255,.04);color:var(--mut);font-family:"DM Sans",sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+.mode-btn:hover{background:rgba(255,255,255,.08);color:var(--txt);}
+.mode-btn.active{border-color:rgba(0,196,122,.3);color:var(--ok);background:rgba(0,196,122,.07);}
 
 /* ALIGNEMENT LIENS */
 .fl-row{display:flex;align-items:center;gap:8px;min-height:28px;flex-wrap:nowrap}
@@ -382,6 +388,11 @@ select option{background:#2a2a2a;color:#e8e8e8}
   <div class="authbar">
     <div class="aleft"><div class="authdot" id="authDot"></div><span id="authLabel">Non connect&eacute; &agrave; Google</span></div>
     <button class="authbtn" id="authBtn" onclick="handleAuth()">Se connecter &agrave; Google</button>
+  </div>
+  <div class="modeBar" id="modeBar" style="display:none;">
+    <span class="mode-lbl">Mode d'envoi :</span>
+    <button class="mode-btn active" id="modeNormalBtn" onclick="setMode('normal')">Normal (1 PDF)</button>
+    <button class="mode-btn" id="modeOneByOneBtn" onclick="setMode('onebyOne')">1by1 (Plusieurs PDFs)</button>
   </div>
   <div class="steps">
     <div class="step active" id="s1"><span class="sn">1</span>Config PDF &amp; Mail</div>
@@ -576,15 +587,17 @@ function closeProgModal() {
 }
 
 function startProgPoll() {
+  var cfg = modeConfigs[currentMode];
   var maxSeen = 0;
   var noProgressCount = 0;
   var maxNoProgress = 240; // 2 min sans progression = timeout
   if (progPollInterval) clearInterval(progPollInterval);
   progPollInterval = setInterval(async function() {
     try {
+      var encodedCell = cfg.progressCell.replace(/ /g, "%20");
       var r = await fetch(
-        "https://sheets.googleapis.com/v4/spreadsheets/" + SPREADSHEET_ID +
-        "/values/'Liste%20envois'!E2?majorDimension=ROWS",
+        "https://sheets.googleapis.com/v4/spreadsheets/" + cfg.spreadsheetId +
+        "/values/" + encodedCell + "?majorDimension=ROWS",
         { headers: { Authorization: "Bearer " + accessToken } }
       );
       var d = await r.json();
@@ -765,6 +778,7 @@ function showLoginError() {
 function unlockApp(email) {
   appUnlocked = true;
   document.getElementById("loginPage").style.display = "none";
+  document.getElementById("modeBar").style.display = "flex";
   setAuthUI(true);
   document.getElementById("authLabel").textContent = email;
 }
@@ -783,8 +797,70 @@ var accessToken    = null;
 var tokenClient    = null;
 var EXP = { open:false, ant:null, cId:null, cName:null, selId:null, selName:null, cache:{} };
 
+var modeConfigs = {
+  normal: {
+    name: "Normal (1 PDF)",
+    spreadsheetId: "11O24DWCA2pWtEh344R1ABJ10ZsArKCEiBNWC5EWV2wY",
+    webhook: "https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv",
+    progressCell: "'Liste envois'!E2",
+    hasNbrPDF: false
+  },
+  onebyOne: {
+    name: "1by1 (plusieurs PDFs)",
+    spreadsheetId: "1_xMCY0L2hoLu45RnffrMWU71U0y6OG_byqsHZNDd5fk",
+    webhook: "https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff",
+    progressCell: "'Liste envois'!I1",
+    hasNbrPDF: true
+  }
+};
+var currentMode = "normal";
+
 document.getElementById("logoImg").src = "https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
 
+function setMode(mode) {
+  if (!modeConfigs[mode]) return;
+  currentMode = mode;
+  document.getElementById("modeNormalBtn").classList.toggle("active", mode === "normal");
+  document.getElementById("modeOneByOneBtn").classList.toggle("active", mode === "onebyOne");
+  renderGagnants();
+  if (document.getElementById("pdfName").value.trim()) {
+    recalculateStartNum();
+  }
+}
+
+async function recalculateStartNum() {
+  if (currentMode !== "onebyOne") return;
+  var folderId = document.getElementById("folderID").value.trim();
+  var pdfName = document.getElementById("pdfName").value.trim();
+  if (!folderId || !pdfName || !accessToken) return;
+  try {
+    var resp = await fetch(
+      "https://www.googleapis.com/drive/v3/files?q='" + folderId + "' in parents&pageSize=1000&fields=files(id,name)&supportsAllDrives=true",
+      { headers: { Authorization: "Bearer " + accessToken } }
+    );
+    var data = await resp.json();
+    var files = data.files || [];
+    var pattern = new RegExp("^" + pdfName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "-(\\d+)$");
+    var availableNumbers = [];
+    files.forEach(function(file) {
+      var match = file.name.match(pattern);
+      if (match) {
+        var num = parseInt(match[1], 10);
+        availableNumbers.push(num);
+      }
+    });
+    if (availableNumbers.length === 0) {
+      showStatus("warn", "Aucun fichier PDF trouvé dans le dossier au format " + pdfName + "-N.");
+      return;
+    }
+    availableNumbers.sort(function(a, b) { return a - b; });
+    var firstAvailable = availableNumbers[0];
+    document.getElementById("startNum").value = firstAvailable;
+    showStatus("success", "Numéro de départ calculé : " + firstAvailable);
+  } catch(e) {
+    showStatus("error", "Erreur lors du calcul du numéro de départ : " + e.message);
+  }
+}
 
 function drawWaveform() {
   var canvas = document.getElementById('waveCanvas');
@@ -1120,6 +1196,7 @@ async function scanDossier() {
   } catch(e) {
     box.innerHTML = '<span class="ds-pill err"><span class="ds-dot"></span>Erreur : ' + e.message + '</span>';
   }
+  setTimeout(function() { recalculateStartNum(); }, 600);
 }
 function getConfigs() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch(e) { return {}; } }
 function setConfigs(o) { localStorage.setItem(STORAGE_KEY, JSON.stringify(o)); }
@@ -1193,13 +1270,15 @@ function removeGagnant(id) {
 }
 function renderGagnants() {
   var block=document.getElementById("gBlock"); var startN=getStart(); var sv={};
-  for(var k=0;k<gagnants.length;k++){var gid=gagnants[k];var ep=document.getElementById("pr"+gid);var en=document.getElementById("nm"+gid);var ee=document.getElementById("em"+gid);sv[gid]={pr:ep?ep.value:"",nm:en?en.value:"",em:ee?ee.value:""};}
+  for(var k=0;k<gagnants.length;k++){var gid=gagnants[k];var ep=document.getElementById("pr"+gid);var en=document.getElementById("nm"+gid);var ee=document.getElementById("em"+gid);var nbr=document.getElementById("nbrpdf"+gid);sv[gid]={pr:ep?ep.value:"",nm:en?en.value:"",em:ee?ee.value:"",nbr:nbr?nbr.value:"1"};}
   while(block.firstChild){block.removeChild(block.firstChild);}
   for(var i=0;i<gagnants.length;i++){
-    var id=gagnants[i];var num=startN+i;var s=sv[id]||{pr:"",nm:"",em:""};
+    var id=gagnants[i];var num=startN+i;var s=sv[id]||{pr:"",nm:"",em:"",nbr:"1"};
     var row=document.createElement("div");row.className="gcard";
     var badge=document.createElement("div");badge.className="gnum";badge.textContent=num;
     var fields=document.createElement("div");fields.className="gfields";
+    if(currentMode==="onebyOne"){fields.style.gridTemplateColumns="0.8fr 1fr 1fr 2fr";}
+    if(currentMode==="onebyOne"){var inbr=document.createElement("input");inbr.type="number";inbr.id="nbrpdf"+id;inbr.placeholder="Nb";inbr.value=s.nbr;inbr.min="1";fields.appendChild(inbr);}
     var ip=document.createElement("input");ip.type="text";ip.id="pr"+id;ip.placeholder="Pr\u00e9nom";ip.value=s.pr;
     var inm=document.createElement("input");inm.type="text";inm.id="nm"+id;inm.placeholder="Nom";inm.value=s.nm;
     var ie=document.createElement("input");ie.type="email";ie.id="em"+id;ie.placeholder="email@exemple.com";ie.value=s.em;
@@ -1242,6 +1321,7 @@ function validate() {
     var nm=document.getElementById("nm"+id);if(!nm||!nm.value.trim())return "Nom manquant - gagnant "+(i+1)+".";
     var em=document.getElementById("em"+id);if(!em||!em.value.trim())return "Email manquant - gagnant "+(i+1)+".";
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim()))return "Email invalide - gagnant "+(i+1)+".";
+    if(currentMode==="onebyOne"){var nbrInput=document.getElementById("nbrpdf"+id);var nbr=nbrInput?parseInt(nbrInput.value,10):1;if(isNaN(nbr)||nbr<1)return "Nombre de PDFs invalide - gagnant "+(i+1)+".";}
   }
   return null;
 }
@@ -1258,14 +1338,15 @@ function confirmYes(){
   setTimeout(function(){doEnvoi();},600);
 }
 async function doEnvoi() {
+  var cfg=modeConfigs[currentMode];
   var startN=getStart();var winners=[];
-  for(var i=0;i<gagnants.length;i++){var id=gagnants[i];winners.push({numero:startN+i,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()});}
+  for(var i=0;i<gagnants.length;i++){var id=gagnants[i];var w={numero:startN+i,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()};if(currentMode==="onebyOne"){var nbrInput=document.getElementById("nbrpdf"+id);w.nbrPDF=nbrInput?parseInt(nbrInput.value,10):1;}winners.push(w);}
   document.getElementById("btnSend").disabled=true;
   setStep(2);showStatus("loading","Etape 1/2 - Ecriture dans Google Sheet...");
   try{await writeToSheet(document.getElementById("pdfName").value.trim(),document.getElementById("folderID").value.trim(),document.getElementById("mailFrom").value,document.getElementById("mailSubject").value.trim(),document.getElementById("mailContent").value.trim(),winners);}
   catch(e){document.getElementById("btnSend").disabled=false;setStep(1);showStatus("error","Erreur Google Sheets : "+e.message);return;}
   setStep(3);showStatus("loading","Etape 2/2 - Declenchement Make... "+winners.length+" gagnant"+(winners.length>1?"s":""));
-  var xhr=new XMLHttpRequest();xhr.open("POST",WEBHOOK);xhr.setRequestHeader("Content-Type","application/json");
+  var xhr=new XMLHttpRequest();xhr.open("POST",cfg.webhook);xhr.setRequestHeader("Content-Type","application/json");
   xhr.onload=function(){
     document.getElementById("btnSend").disabled=false;
     if(xhr.status>=200&&xhr.status<300){
@@ -1282,8 +1363,9 @@ async function doEnvoi() {
   xhr.send(JSON.stringify({trigger:"html",count:winners.length}));
 }
 function sheetsRequest(method,path,body){
+  var cfg=modeConfigs[currentMode];
   return new Promise(function(resolve,reject){
-    var xhr=new XMLHttpRequest();xhr.open(method,"https://sheets.googleapis.com/v4/spreadsheets/"+SPREADSHEET_ID+path);
+    var xhr=new XMLHttpRequest();xhr.open(method,"https://sheets.googleapis.com/v4/spreadsheets/"+cfg.spreadsheetId+path);
     xhr.setRequestHeader("Authorization","Bearer "+accessToken);xhr.setRequestHeader("Content-Type","application/json");
     xhr.onload=function(){if(xhr.status>=200&&xhr.status<300)resolve(JSON.parse(xhr.responseText||"{}"));else reject(new Error("Sheets HTTP "+xhr.status+" : "+xhr.responseText));};
     xhr.onerror=function(){reject(new Error("Reseau KO"));};
@@ -1291,12 +1373,14 @@ function sheetsRequest(method,path,body){
   });
 }
 async function writeToSheet(pdfName,folderID,mailFrom,mailSubject,mailContent,winners){
+  var cfg=modeConfigs[currentMode];
   await sheetsRequest("POST","/values/GetRowInfos!A2:Z100:clear",{});
   await sheetsRequest("POST","/values/'Liste envois'!A2:Z1000:clear",{});
   await sheetsRequest("PUT","/values/GetRowInfos!A2:E2?valueInputOption=RAW",{values:[[pdfName,folderID,mailFrom,mailSubject,mailContent]]});
-  var rows=winners.map(function(w){return[w.numero,w.prenom,w.nom,w.email];});
-  await sheetsRequest("PUT","/values/'Liste envois'!A2:D"+(1+winners.length)+"?valueInputOption=RAW",{values:rows});
-  await sheetsRequest("PUT","/values/'Liste envois'!F1?valueInputOption=RAW",{values:[[winners.length]]});
+  var rows;
+  if(currentMode==="normal"){rows=winners.map(function(w){return[w.numero,w.prenom,w.nom,w.email];});await sheetsRequest("PUT","/values/'Liste envois'!A2:D"+(1+winners.length)+"?valueInputOption=RAW",{values:rows});}else{rows=winners.map(function(w){return[w.numero,w.nbrPDF||1,w.prenom,w.nom,w.email];});await sheetsRequest("PUT","/values/'Liste envois'!A2:E"+(1+winners.length)+"?valueInputOption=RAW",{values:rows});}
+  var totalCell=currentMode==="normal"?"F1":"G1";
+  await sheetsRequest("PUT","/values/'Liste envois'!"+totalCell+"?valueInputOption=RAW",{values:[[winners.length]]});
 }
 function insertEmoji(e){var ta=document.getElementById("mailContent");var s=ta.selectionStart,end=ta.selectionEnd;ta.value=ta.value.slice(0,s)+e+ta.value.slice(end);ta.selectionStart=ta.selectionEnd=s+e.length;ta.focus();}
 
