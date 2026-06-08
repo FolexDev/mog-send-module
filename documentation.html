@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOG Send - Documentation Complète</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "DM Sans", sans-serif;
+      background: linear-gradient(160deg, #181818, #252525, #181818);
+      color: #ccc;
+      line-height: 1.6;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+      border-bottom: 2px solid rgba(255,255,255,.15);
+      padding-bottom: 20px;
+    }
+    h1 { font-size: 36px; color: #fff; margin-bottom: 10px; }
+    .subtitle { font-size: 14px; color: rgba(200,200,200,.6); letter-spacing: .08em; text-transform: uppercase; }
+    .toc {
+      background: rgba(0,0,0,.3);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 40px;
+    }
+    .toc h2 { font-size: 16px; margin-bottom: 15px; color: #fff; }
+    .toc ul { list-style: none; }
+    .toc li { margin: 8px 0; }
+    .toc a {
+      color: rgba(0,196,122,.8);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .toc a:hover { color: #00c47a; }
+
+    section {
+      margin-bottom: 50px;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 30px;
+    }
+    h2 {
+      font-size: 24px;
+      color: #fff;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(0,196,122,.3);
+    }
+    h3 {
+      font-size: 16px;
+      color: #f5a623;
+      margin-top: 25px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    h4 {
+      font-size: 14px;
+      color: rgba(200,200,200,.8);
+      margin: 15px 0 8px;
+      font-weight: 600;
+    }
+
+    .card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+    .card-title { color: #fff; font-weight: 600; margin-bottom: 10px; }
+    .card-desc { font-size: 13px; color: rgba(200,200,200,.7); }
+
+    .mode-box {
+      display: inline-block;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 10px 5px 10px 0;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .mode-normal { background: rgba(0,196,122,.15); color: #00c47a; border: 1px solid rgba(0,196,122,.3); }
+    .mode-1by1 { background: rgba(245,166,35,.15); color: #f5a623; border: 1px solid rgba(245,166,35,.3); }
+
+    .code-block {
+      background: rgba(0,0,0,.5);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 6px;
+      padding: 15px;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: rgba(200,200,200,.8);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      font-size: 13px;
+    }
+    th {
+      background: rgba(0,196,122,.1);
+      color: #00c47a;
+      padding: 12px;
+      text-align: left;
+      border-bottom: 2px solid rgba(0,196,122,.3);
+      font-weight: 600;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    tr:hover { background: rgba(255,255,255,.03); }
+
+    .warning {
+      background: rgba(245,166,35,.1);
+      border-left: 4px solid #f5a623;
+      padding: 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+      color: rgba(200,200,200,.8);
+    }
+    .warning strong { color: #f5a623; }
+
+    .function-doc {
+      background: rgba(0,0,0,.3);
+      border-left: 4px solid rgba(0,196,122,.4);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 6px;
+    }
+    .func-name {
+      font-family: 'Courier New', monospace;
+      color: #00c47a;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .func-desc { font-size: 13px; color: rgba(200,200,200,.7); margin-bottom: 8px; }
+    .func-params { font-size: 12px; color: rgba(200,200,200,.6); }
+
+    .breadcrumb {
+      font-size: 12px;
+      color: rgba(200,200,200,.5);
+      margin-bottom: 30px;
+    }
+    .breadcrumb a {
+      color: rgba(0,196,122,.8);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      color: rgba(200,200,200,.4);
+      font-size: 12px;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>📚 MOG Send - Documentation Technique</h1>
+    <p class="subtitle">Système Complet d'Envoi de PDFs par Email</p>
+  </header>
+
+  <!-- Table des matières -->
+  <div class="toc">
+    <h2>📋 Table des Matières</h2>
+    <ul>
+      <li><a href="#overview">1. Vue d'Ensemble du Système</a></li>
+      <li><a href="#architecture">2. Architecture Générale</a></li>
+      <li><a href="#modes">3. Les Deux Modes de Fonctionnement</a></li>
+      <li><a href="#sheets">4. Google Sheets - Stockage des Données</a></li>
+      <li><a href="#webhooks">5. Webhooks Make - Déclenchement</a></li>
+      <li><a href="#scenarios">6. Scénarios Make - Traitement Backend</a></li>
+      <li><a href="#frontend">7. Fonctions Frontend (index.html)</a></li>
+      <li><a href="#workflow">8. Flux de Travail Complet</a></li>
+      <li><a href="#troubleshooting">9. Dépannage</a></li>
+    </ul>
+  </div>
+
+  <!-- 1. Vue d'Ensemble -->
+  <section id="overview">
+    <h2>1️⃣ Vue d'Ensemble du Système</h2>
+
+    <p>MOG Send est une application web qui permet d'envoyer des PDFs individualisés par email à plusieurs personnes. Le système automatise entièrement le processus :</p>
+
+    <div class="card">
+      <div class="card-title">🎯 Objectif Principal</div>
+      <div class="card-desc">
+        Permettre à un utilisateur de :<br>
+        1. Sélectionner des PDFs dans un dossier Google Drive<br>
+        2. Créer une liste de bénéficiaires (avec prénoms, noms, emails)<br>
+        3. Attribuer automatiquement à chaque personne le(s) PDF correspondant(s)<br>
+        4. Envoyer les emails avec les PDFs attachés via Make
+      </div>
+    </div>
+
+    <h3>🔑 Points Clés</h3>
+    <ul style="margin-left: 20px; margin-top: 10px;">
+      <li><strong>Frontend :</strong> Application web (HTML/CSS/JavaScript) pour l'interface utilisateur</li>
+      <li><strong>Backend :</strong> Scénarios Make pour orchestrer l'envoi des emails</li>
+      <li><strong>Stockage :</strong> Google Sheets pour centraliser les données</li>
+      <li><strong>Authentification :</strong> Google OAuth 2.0 pour accéder à Drive et Sheets</li>
+      <li><strong>Deux Modes :</strong> Normal (1 PDF/personne) et 1by1 (plusieurs PDFs/personne)</li>
+    </ul>
+  </section>
+
+  <!-- 2. Architecture Générale -->
+  <section id="architecture">
+    <h2>2️⃣ Architecture Générale</h2>
+
+    <h3>Flux de Données</h3>
+    <div class="code-block">
+┌─────────────────┐
+│  Utilisateur    │ (Browser)
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────────────────────────────────┐
+│   Frontend: index.html                      │
+│   - Google Drive: Scan des PDFs             │
+│   - Google Sheets: Écrire les données       │
+│   - Appel Webhook: Déclencher Make          │
+└────────┬────────────────────────────────────┘
+         │
+         ↓
+┌─────────────────────────────────────────────┐
+│   Google Sheets (deux versions)             │
+│   - GetRowInfos: Config (PDF, dossier)      │
+│   - Liste envois: Gagnants + nbrPDF         │
+│   - Cell I1 (1by1) / E2 (Normal): Progress │
+└────────┬────────────────────────────────────┘
+         │
+         ↓
+┌─────────────────────────────────────────────┐
+│   Webhooks Make (Custom)                    │
+│   - Normal: https://hook.eu2.make.com/...   │
+│   - 1by1: https://hook.eu2.make.com/...     │
+└────────┬────────────────────────────────────┘
+         │
+         ↓
+┌─────────────────────────────────────────────┐
+│   Scénarios Make                            │
+│   - Lecture Google Sheets                   │
+│   - Copie des PDFs                          │
+│   - Envoi des emails                        │
+│   - Mise à jour du progrès                  │
+└────────┬────────────────────────────────────┘
+         │
+         ↓
+┌─────────────────────────────────────────────┐
+│   Google Drive + Gmail                      │
+│   - PDFs copiés par bénéficiaire            │
+│   - Emails envoyés avec PDFs                │
+└─────────────────────────────────────────────┘
+    </div>
+  </section>
+
+  <!-- 3. Les Deux Modes -->
+  <section id="modes">
+    <h2>3️⃣ Les Deux Modes de Fonctionnement</h2>
+
+    <h3>Mode Normal (1 PDF par personne)</h3>
+    <div class="mode-box mode-normal">MODE NORMAL</div>
+    <div class="card">
+      <div class="card-title">Cas d'Usage</div>
+      <div class="card-desc">
+        Chaque bénéficiaire reçoit <strong>un seul PDF</strong> avec un numéro attribué. Exemple : Gagnant 1 reçoit PDF n°1, Gagnant 2 reçoit PDF n°2, etc.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Exemple</div>
+      <div class="card-desc">
+        Vous avez 100 PDFs numérotés : ticket-1 à ticket-100<br>
+        Vous sélectionnez 10 gagnants<br>
+        Gagnant 1 → ticket-1<br>
+        Gagnant 2 → ticket-2<br>
+        ... Gagnant 10 → ticket-10
+      </div>
+    </div>
+    <table>
+      <tr>
+        <th>Configuration</th>
+        <th>Valeur</th>
+      </tr>
+      <tr>
+        <td>Google Sheet</td>
+        <td>11O24DWCA2pWtEh344R1ABJ10ZsArKCEiBNWC5EWV2wY</td>
+      </tr>
+      <tr>
+        <td>Webhooks</td>
+        <td>https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv</td>
+      </tr>
+      <tr>
+        <td>Cellule Progrès</td>
+        <td>'Liste envois'!E2 (Format: "X/Y")</td>
+      </tr>
+      <tr>
+        <td>Colonnes Gagnants</td>
+        <td>Numéro | Prénom | Nom | Email</td>
+      </tr>
+    </table>
+
+    <h3>Mode 1by1 (Plusieurs PDFs par personne)</h3>
+    <div class="mode-box mode-1by1">MODE 1BY1</div>
+    <div class="card">
+      <div class="card-title">Cas d'Usage</div>
+      <div class="card-desc">
+        Chaque bénéficiaire reçoit <strong>un nombre variable de PDFs</strong> défini manuellement. Exemple : Gagnant 1 reçoit 2 PDFs, Gagnant 2 reçoit 3 PDFs, etc.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Exemple - Caribana (Multi-jour)</div>
+      <div class="card-desc">
+        Vous avez 100 PDFs pour 4 jours : caribana-1 à caribana-100<br>
+        Jour 1 : 30 PDFs → Gagnant 1 reçoit 1, Gagnant 2 reçoit 2, Gagnant 3 reçoit 2<br>
+        Jour 2 : 25 PDFs → Gagnant 4 reçoit 3, Gagnant 5 reçoit 2...<br>
+        Les numéros s'incrémentent automatiquement : 1, 1+2=3, 3+2=5, 5+3=8, etc.
+      </div>
+    </div>
+    <table>
+      <tr>
+        <th>Configuration</th>
+        <th>Valeur</th>
+      </tr>
+      <tr>
+        <td>Google Sheet</td>
+        <td>1_xMCY0L2hoLu45RnffrMWU71U0y6OG_byqsHZNDd5fk</td>
+      </tr>
+      <tr>
+        <td>Webhooks</td>
+        <td>https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff</td>
+      </tr>
+      <tr>
+        <td>Cellule Progrès</td>
+        <td>'Liste envois'!I1 (Format: "X/Y")</td>
+      </tr>
+      <tr>
+        <td>Colonnes Gagnants</td>
+        <td>Numéro | Nbr PDF | Prénom | Nom | Email</td>
+      </tr>
+      <tr>
+        <td>Validation</td>
+        <td>⚠️ Alerte si Σ(Nbr PDF) &gt; PDFs Disponibles</td>
+      </tr>
+    </table>
+
+    <h3>Calcul des Numéros en Mode 1by1</h3>
+    <div class="code-block">
+Numéro de départ : 1
+Gagnant 1 (nbrPDF=3) → reçoit PDFs 1, 2, 3
+Gagnant 2 (nbrPDF=2) → reçoit PDFs 4, 5 (1 + 3 = 4)
+Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
+    </div>
+  </section>
+
+  <!-- 4. Google Sheets -->
+  <section id="sheets">
+    <h2>4️⃣ Google Sheets - Stockage des Données</h2>
+
+    <h3>Structure Générale</h3>
+    <p>Deux feuilles Google Sheets différentes selon le mode (Normal vs 1by1) contiennent :</p>
+
+    <h4>Feuille 1: "GetRowInfos"</h4>
+    <table>
+      <tr>
+        <th>Colonne</th>
+        <th>Contenu</th>
+        <th>Exemple</th>
+      </tr>
+      <tr>
+        <td>A2</td>
+        <td>Nom du PDF</td>
+        <td>"certificate"</td>
+      </tr>
+      <tr>
+        <td>B2</td>
+        <td>ID du dossier Drive</td>
+        <td>"1_xMCY0L2hoLu45RnffrMWU..."</td>
+      </tr>
+      <tr>
+        <td>C2</td>
+        <td>Email d'envoi</td>
+        <td>"sav@onefm.ch"</td>
+      </tr>
+      <tr>
+        <td>D2</td>
+        <td>Objet du mail</td>
+        <td>"Votre ticket Caribana"</td>
+      </tr>
+      <tr>
+        <td>E2</td>
+        <td>Corps du message</td>
+        <td>"Veuillez trouver ci-joint..."</td>
+      </tr>
+    </table>
+    <p style="font-size: 12px; color: rgba(200,200,200,.6); margin-top: 10px;">⚠️ Les colonnes D et E sont claires avant chaque envoi par le scénario Make</p>
+
+    <h4>Feuille 2: "Liste envois" - Mode NORMAL</h4>
+    <table>
+      <tr>
+        <th>Colonne</th>
+        <th>Contenu</th>
+        <th>Exemple</th>
+      </tr>
+      <tr>
+        <td>A2:A100</td>
+        <td>Numéro du gagnant (calculé)</td>
+        <td>1, 2, 3, 4, ...</td>
+      </tr>
+      <tr>
+        <td>B2:B100</td>
+        <td>Prénom</td>
+        <td>"Jean"</td>
+      </tr>
+      <tr>
+        <td>C2:C100</td>
+        <td>Nom</td>
+        <td>"Dupont"</td>
+      </tr>
+      <tr>
+        <td>D2:D100</td>
+        <td>Email</td>
+        <td>"jean@example.com"</td>
+      </tr>
+      <tr>
+        <td>E2</td>
+        <td>Progrès actuel</td>
+        <td>"2/10" (2 sur 10 traités)</td>
+      </tr>
+      <tr>
+        <td>F1</td>
+        <td>Nombre total</td>
+        <td>"10"</td>
+      </tr>
+    </table>
+
+    <h4>Feuille 2: "Liste envois" - Mode 1BY1</h4>
+    <table>
+      <tr>
+        <th>Colonne</th>
+        <th>Contenu</th>
+        <th>Exemple</th>
+      </tr>
+      <tr>
+        <td>A2:A100</td>
+        <td>Numéro du gagnant (cumulatif)</td>
+        <td>1, 3, 6, 8, ...</td>
+      </tr>
+      <tr>
+        <td>B2:B100</td>
+        <td>Nombre de PDFs</td>
+        <td>"2", "3", "2"</td>
+      </tr>
+      <tr>
+        <td>C2:C100</td>
+        <td>Prénom</td>
+        <td>"Marie"</td>
+      </tr>
+      <tr>
+        <td>D2:D100</td>
+        <td>Nom</td>
+        <td>"Martin"</td>
+      </tr>
+      <tr>
+        <td>E2:E100</td>
+        <td>Email</td>
+        <td>"marie@example.com"</td>
+      </tr>
+      <tr>
+        <td>I1</td>
+        <td>Progrès actuel</td>
+        <td>"2/10" (2 sur 10 traités)</td>
+      </tr>
+      <tr>
+        <td>G1</td>
+        <td>Nombre total</td>
+        <td>"10"</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- 5. Webhooks -->
+  <section id="webhooks">
+    <h2>5️⃣ Webhooks Make - Déclenchement</h2>
+
+    <p>Les webhooks sont des points d'entrée qui déclenchent les scénarios Make depuis le frontend.</p>
+
+    <h3>Webhook Mode NORMAL</h3>
+    <div class="card">
+      <div class="card-title">🔗 URL</div>
+      <div class="card-desc" style="font-family: 'Courier New', monospace; font-size: 11px;">
+        https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📡 Payload Envoyé</div>
+      <div class="code-block">
+{
+  "trigger": "html",
+  "count": 10
+}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚙️ Déclenche</div>
+      <div class="card-desc">Scénario Make "OA Envoi PDF (Claude)"</div>
+    </div>
+
+    <h3>Webhook Mode 1BY1</h3>
+    <div class="card">
+      <div class="card-title">🔗 URL</div>
+      <div class="card-desc" style="font-family: 'Courier New', monospace; font-size: 11px;">
+        https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📡 Payload Envoyé</div>
+      <div class="code-block">
+{
+  "trigger": "html",
+  "count": 10
+}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚙️ Déclenche</div>
+      <div class="card-desc">Scénario Make "OA Envoi PDF (1by1 )"</div>
+    </div>
+
+    <div class="warning">
+      <strong>⚠️ Important :</strong> Le payload contient seulement le nombre de gagnants. Les détails (prénoms, emails, etc.) sont lus directement depuis Google Sheets par le scénario Make.
+    </div>
+  </section>
+
+  <!-- 6. Scénarios Make -->
+  <section id="scenarios">
+    <h2>6️⃣ Scénarios Make - Traitement Backend</h2>
+
+    <h3>Structure Générale des Scénarios</h3>
+    <p>Les deux scénarios (Normal et 1by1) suivent la même logique générale :</p>
+
+    <div class="code-block">
+1. Webhook reçoit le signal du frontend
+2. Lecture Google Sheets (GetRowInfos + Liste envois)
+3. Boucle sur chaque gagnant :
+   a. Préparer les informations (numéro, PDF, email)
+   b. Copier le(s) PDF(s) du dossier source
+   c. Composer l'email avec le(s) PDF(s)
+   d. Envoyer l'email
+   e. Mettre à jour la cellule de progrès
+4. À la fin : Nettoyer/Reset l'état pour le prochain envoi
+    </div>
+
+    <h3>Scénario Mode NORMAL - "OA Envoi PDF (Claude)"</h3>
+    <table>
+      <tr>
+        <th>Module</th>
+        <th>Action</th>
+      </tr>
+      <tr>
+        <td>#434 Gateway</td>
+        <td>Reçoit le webhook du frontend</td>
+      </tr>
+      <tr>
+        <td>#450 Sheets</td>
+        <td>Lit la feuille "GetRowInfos" (configuration)</td>
+      </tr>
+      <tr>
+        <td>#451 Sheets</td>
+        <td>Lit la feuille "Liste envois" (gagnants)</td>
+      </tr>
+      <tr>
+        <td>#452 Iterator</td>
+        <td>Boucle sur chaque gagnant</td>
+      </tr>
+      <tr>
+        <td>#453 Drive</td>
+        <td>Copie 1 PDF pour le gagnant (avec son numéro)</td>
+      </tr>
+      <tr>
+        <td>#454 Gmail</td>
+        <td>Envoie un email avec le PDF attaché</td>
+      </tr>
+      <tr>
+        <td>#455 Sheets</td>
+        <td>Mise à jour cellule E2 avec progrès (1/10, 2/10...)</td>
+      </tr>
+      <tr>
+        <td>#456 Sheets</td>
+        <td>Reset state (efface la cellule à la fin)</td>
+      </tr>
+    </table>
+
+    <h3>Scénario Mode 1BY1 - "OA Envoi PDF (1by1 )"</h3>
+    <table>
+      <tr>
+        <th>Module</th>
+        <th>Action</th>
+      </tr>
+      <tr>
+        <td>#434 Gateway</td>
+        <td>Reçoit le webhook du frontend</td>
+      </tr>
+      <tr>
+        <td>#467 Sheets</td>
+        <td>Reset state (efface I1 avant de commencer)</td>
+      </tr>
+      <tr>
+        <td>#450 Sheets</td>
+        <td>Lit la feuille "GetRowInfos" (configuration)</td>
+      </tr>
+      <tr>
+        <td>#451 Sheets</td>
+        <td>Lit la feuille "Liste envois" (gagnants + nbrPDF)</td>
+      </tr>
+      <tr>
+        <td>#452 Iterator (Ext.)</td>
+        <td>Boucle sur chaque gagnant</td>
+      </tr>
+      <tr>
+        <td>#453 Iterator (Int.)</td>
+        <td>Boucle interne sur le nombre de PDFs du gagnant</td>
+      </tr>
+      <tr>
+        <td>#454 Drive</td>
+        <td>Copie 1 PDF (boucle N fois par gagnant)</td>
+      </tr>
+      <tr>
+        <td>#455 Gmail</td>
+        <td>Envoie 1 email avec les N PDFs attachés</td>
+      </tr>
+      <tr>
+        <td>#456 Sheets</td>
+        <td>Mise à jour cellule I1 avec progrès (1/10, 2/10...)</td>
+      </tr>
+      <tr>
+        <td>#457 Sheets</td>
+        <td>Reset state (efface I1 à la fin)</td>
+      </tr>
+    </table>
+
+    <div class="warning">
+      <strong>⚠️ Différence Clé :</strong> Le scénario 1by1 a une boucle imbriquée (Iterator externe + Iterator interne) pour gérer plusieurs PDFs par gagnant, tandis que le Normal a une seule boucle.
+    </div>
+  </section>
+
+  <!-- 7. Frontend Functions -->
+  <section id="frontend">
+    <h2>7️⃣ Fonctions Frontend (index.html)</h2>
+
+    <h3>Authentification & Setup</h3>
+
+    <div class="function-doc">
+      <div class="func-name">doLogin()</div>
+      <div class="func-desc">Ouvre le dialogue de connexion Google</div>
+      <div class="func-params">Appelle google.accounts.id.initialize()</div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">handleAuth()</div>
+      <div class="func-desc">Bascule connexion/déconnexion (avec revoke du token si connecté)</div>
+      <div class="func-params">Met à jour setAuthUI() et affiche/masque la page de login</div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">unlockApp(email)</div>
+      <div class="func-desc">Appelée quand la connexion réussit - active l'app</div>
+      <div class="func-params">email: adresse Google de l'utilisateur</div>
+    </div>
+
+    <h3>Gestion des Modes</h3>
+
+    <div class="function-doc">
+      <div class="func-name">setMode(mode)</div>
+      <div class="func-desc">Bascule entre les deux modes (normal ↔ onebyOne)</div>
+      <div class="func-params">
+        mode: "normal" ou "onebyOne"<br>
+        • Met à jour les boutons d'activation<br>
+        • Appelle renderGagnants() pour adapter l'UI<br>
+        • Recalcule le startNum si dossier sélectionné
+      </div>
+    </div>
+
+    <h3>Google Drive - Sélection de Dossier</h3>
+
+    <div class="function-doc">
+      <div class="func-name">browseToggle()</div>
+      <div class="func-desc">Ouvre/ferme l'explorateur de dossiers Google Drive</div>
+      <div class="func-params">Affiche l'interface de navigation multi-niveaux</div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">antToggle(ant)</div>
+      <div class="func-desc">Sélectionne une antenne (One FM ou Radio Lac) comme point de départ</div>
+      <div class="func-params">ant: "one" ou "lac" → appelle selectRootFolder()</div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">selectRootFolder(id, name)</div>
+      <div class="func-desc">Lance la navigation depuis un dossier racine</div>
+      <div class="func-params">
+        id: ID du dossier<br>
+        name: Nom affichable<br>
+        Remplit le breadcrumb et charge les sous-dossiers
+      </div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">loadFoldersForLevel(level)</div>
+      <div class="func-desc">Charge les sous-dossiers du niveau actuel via Google Drive API</div>
+      <div class="func-params">
+        level: index dans le breadcrumb<br>
+        Cache les résultats pour éviter les appels répétés
+      </div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">expOpenFolder(folder)</div>
+      <div class="func-desc">Descend d'un niveau dans la hiérarchie des dossiers</div>
+      <div class="func-params">folder: {id, name} → ajoute au breadcrumb</div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">expSelectOriginal(folder)</div>
+      <div class="func-desc">Sélectionne un dossier "Originaux" (fin de la navigation)</div>
+      <div class="func-params">folder: le dossier "Originaux" sélectionné</div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">scanDossier()</div>
+      <div class="func-desc">Scanne le dossier "Originaux" pour lister les PDFs disponibles</div>
+      <div class="func-params">
+        • Récupère tous les fichiers PDF du dossier<br>
+        • Catégorise : envoyes / restants / autres<br>
+        • Calcule le nombre disponible et le prochain numéro<br>
+        • Sauvegarde window.pdfStock pour la validation
+      </div>
+    </div>
+
+    <h3>Gestion des Gagnants</h3>
+
+    <div class="function-doc">
+      <div class="func-name">addGagnant()</div>
+      <div class="func-desc">Ajoute une ligne gagnant vierge à la liste</div>
+      <div class="func-params">Crée un ID unique (timestamp + random) et appelle renderGagnants()</div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">renderGagnants()</div>
+      <div class="func-desc">Re-dessine l'interface des gagnants (adapté au mode courant)</div>
+      <div class="func-params">
+        • En mode Normal : Numéro | Prénom | Nom | Email<br>
+        • En mode 1by1 : Numéro | Nbr PDF | Prénom | Nom | Email<br>
+        • Sauvegarde les valeurs avant re-rendu
+      </div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">recalculateWinnersNumbers()</div>
+      <div class="func-desc">Met à jour les numéros des gagnants en temps réel (Mode 1by1)</div>
+      <div class="func-params">
+        • Parcourt tous les gagnants<br>
+        • Accumule les nbrPDF pour calculer le prochain numéro<br>
+        • Affiche une alerte si dépassement de capacité
+      </div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">validateCapacity()</div>
+      <div class="func-desc">Vérifie que le total des PDFs demandés ne dépasse pas le stock (Mode 1by1)</div>
+      <div class="func-params">
+        Retourne {valid, total, available, surplus}<br>
+        Appelée en temps réel et au moment de valider l'envoi
+      </div>
+    </div>
+
+    <h3>Envoi des Données</h3>
+
+    <div class="function-doc">
+      <div class="func-name">validate()</div>
+      <div class="func-desc">Valide tous les champs avant l'envoi</div>
+      <div class="func-params">
+        Vérifie :<br>
+        • Authentification Google<br>
+        • Tous les champs requis (PDF, dossier, subject, body)<br>
+        • Tous les gagnants (prénom, nom, email valide)<br>
+        • Mode 1by1 : capacité PDF
+      </div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">doEnvoi() [async]</div>
+      <div class="func-desc">Orchestre l'envoi : Sheet → Webhook Make → Monitoring progrès</div>
+      <div class="func-params">
+        1. Construit le tableau des gagnants<br>
+        2. Écrit dans Google Sheets (GetRowInfos + Liste envois)<br>
+        3. Appelle le webhook Make (déclenche le scénario)<br>
+        4. Lance le polling du progrès (startProgPoll)
+      </div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">writeToSheet() [async]</div>
+      <div class="func-desc">Écrit les données des gagnants dans la Google Sheet appropriée</div>
+      <div class="func-params">
+        Utilise modeConfigs[currentMode].spreadsheetId<br>
+        Efface les anciennes données et écrit les nouvelles
+      </div>
+    </div>
+
+    <h3>Suivi du Progrès</h3>
+
+    <div class="function-doc">
+      <div class="func-name">startProgPoll() [async]</div>
+      <div class="func-desc">Lance le polling de la cellule de progrès toutes les 500ms</div>
+      <div class="func-params">
+        • Lit la cellule E2 (Normal) ou I1 (1by1)<br>
+        • Format: "2/10" = 2 gagnants traités sur 10<br>
+        • Arrête quand 100% ou timeout (2 min)
+      </div>
+    </div>
+
+    <div class="function-doc">
+      <div class="func-name">closeProgModal()</div>
+      <div class="func-desc">Ferme le modal de progression et relance le scan du dossier</div>
+      <div class="func-params">En mode 1by1 : met à jour les PDFs disponibles et le startNum</div>
+    </div>
+  </section>
+
+  <!-- 8. Flux Complet -->
+  <section id="workflow">
+    <h2>8️⃣ Flux de Travail Complet</h2>
+
+    <h3>Étape par Étape</h3>
+
+    <div class="card">
+      <div class="card-title">1️⃣ Authentification</div>
+      <div class="card-desc">
+        Utilisateur clique "Se connecter à Google" → doLogin() → dialogue OAuth → accessToken reçu → unlockApp(email)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">2️⃣ Sélection du Mode</div>
+      <div class="card-desc">
+        Utilisateur clique "Normal" ou "1by1" → setMode() → renderGagnants() s'adapte (avec/sans colonne nbrPDF)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">3️⃣ Sélection du Dossier</div>
+      <div class="card-desc">
+        Clique "Parcourir" → browseToggle() ouvre l'explorateur Drive<br>
+        Utilisateur navigue : One FM → Caribana 2026 → Jour 1 → Originaux<br>
+        Clique "SÉLECTIONNER" → expConfirm() → scanDossier() analyse les PDFs
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">4️⃣ Entrée des Gagnants</div>
+      <div class="card-desc">
+        Utilisateur ajoute gagnants manuellement ou importe CSV<br>
+        En mode 1by1 : saisit aussi le nombre de PDFs par gagnant<br>
+        → recalculateWinnersNumbers() met à jour les numéros en temps réel
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">5️⃣ Remplissage des Informations</div>
+      <div class="card-desc">
+        Utilisateur remplit :<br>
+        • Objet du mail<br>
+        • Corps du message<br>
+        • (Optional) Numéro de départ (auto-calculé en 1by1)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">6️⃣ Validation & Envoi</div>
+      <div class="card-desc">
+        Clique "LANCER" → validate() vérifie tout<br>
+        Si OK → doEnvoi() :<br>
+        • writeToSheet() écrit dans Google Sheets<br>
+        • Appelle le webhook Make<br>
+        • Lance startProgPoll() pour suivre la progression
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">7️⃣ Traitement Backend (Make)</div>
+      <div class="card-desc">
+        Scénario Make reçoit le signal<br>
+        Pour chaque gagnant :<br>
+        • Copie le(s) PDF(s) avec le numéro<br>
+        • Envoie l'email avec PDF attaché<br>
+        • Met à jour la cellule de progrès<br>
+        À la fin : Reset state (efface la cellule de progrès)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">8️⃣ Affichage du Progrès</div>
+      <div class="card-desc">
+        Frontend rafraîchit la cellule toutes les 500ms<br>
+        Affiche "X/Y gagnants traités"<br>
+        Quand 100% → modal se ferme → closeProgModal() relance scanDossier()
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Dépannage -->
+  <section id="troubleshooting">
+    <h2>9️⃣ Dépannage</h2>
+
+    <h3>❌ "Non connecté à Google"</h3>
+    <div class="card">
+      <div class="card-title">Problème</div>
+      <div class="card-desc">Le bouton reste "Se connecter à Google" même après clic</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Solutions</div>
+      <div class="card-desc">
+        1. Vérifier la connexion internet<br>
+        2. Vérifier que Google Sign-In est bien chargé (console: window.google)<br>
+        3. Essayer dans une fenêtre de navigation privée<br>
+        4. Vérifier que CLIENT_ID est correct dans index.html
+      </div>
+    </div>
+
+    <h3>❌ "Aucun PDF trouvé"</h3>
+    <div class="card">
+      <div class="card-title">Problème</div>
+      <div class="card-desc">Le dossier est sélectionné mais aucun PDF n'apparaît</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Solutions</div>
+      <div class="card-desc">
+        1. Vérifier que le dossier "Originaux" existe et contient des PDFs<br>
+        2. Vérifier que les PDFs sont au format correct (ticket-1.pdf, etc.)<br>
+        3. Vérifier les permissions Google Drive (accès au dossier)<br>
+        4. Attendre quelques secondes (requête API Drive en cours)
+      </div>
+    </div>
+
+    <h3>❌ "Dépassement de capacité" (Mode 1by1)</h3>
+    <div class="card">
+      <div class="card-title">Problème</div>
+      <div class="card-desc">Alerte orange affichée : nombre de PDFs demandés dépasse le stock</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Solutions</div>
+      <div class="card-desc">
+        1. Vérifier le nombre de PDFs disponibles (affiché au-dessus)<br>
+        2. Réduire le nombre de PDFs par gagnant (colonne "Nbr PDF")<br>
+        3. Ou ajouter plus de PDFs dans le dossier
+      </div>
+    </div>
+
+    <h3>❌ "Sheet OK mais webhook refuse"</h3>
+    <div class="card">
+      <div class="card-title">Problème</div>
+      <div class="card-desc">Les données sont écrites dans Google Sheets mais Make ne reçoit rien</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Solutions</div>
+      <div class="card-desc">
+        1. Vérifier que le webhook URL est correct (voir section Webhooks)<br>
+        2. Vérifier que le scénario Make est activé<br>
+        3. Consulter les logs Make pour voir le dernier appel webhook<br>
+        4. Vérifier que le payload JSON est valide
+      </div>
+    </div>
+
+    <h3>❌ "Progression bloquée à 0%"</h3>
+    <div class="card">
+      <div class="card-title">Problème</div>
+      <div class="card-desc">Le modal de progression apparaît mais n'avance pas</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Solutions</div>
+      <div class="card-desc">
+        1. Vérifier dans Make que le scénario a bien démarré<br>
+        2. Vérifier que les cellules de progrès (E2 ou I1) sont bien écrites par Make<br>
+        3. Vérifier que le polling lit la bonne cellule (normal vs 1by1)<br>
+        4. Augmenter le timeout (2 min actuellement)
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>📚 Documentation MOG Send - Dernière mise à jour : 2026</p>
+    <p>Pour toute question, consulter les logs Make ou la console du navigateur (F12)</p>
+  </footer>
+</div>
+
+</body>
+</html>
