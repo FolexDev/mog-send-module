@@ -828,6 +828,27 @@ function setMode(mode) {
   }
 }
 
+function recalculateWinnersNumbers() {
+  if (currentMode !== "onebyOne") return;
+  var startN = getStart();
+  var currentNum = startN;
+  for (var i = 0; i < gagnants.length; i++) {
+    var id = gagnants[i];
+    var nbrInput = document.getElementById("nbrpdf" + id);
+    var nbr = nbrInput ? parseInt(nbrInput.value, 10) : 0;
+    var gcard = document.getElementById("gcard-" + id);
+    if (gcard) {
+      var badge = gcard.querySelector(".gnum");
+      if (badge) {
+        badge.textContent = currentNum;
+      }
+    }
+    if (!isNaN(nbr) && nbr > 0) {
+      currentNum += nbr;
+    }
+  }
+}
+
 async function recalculateStartNum() {
   if (currentMode !== "onebyOne") return;
   var folderId = document.getElementById("folderID").value.trim();
@@ -1270,15 +1291,15 @@ function removeGagnant(id) {
 }
 function renderGagnants() {
   var block=document.getElementById("gBlock"); var startN=getStart(); var sv={};
-  for(var k=0;k<gagnants.length;k++){var gid=gagnants[k];var ep=document.getElementById("pr"+gid);var en=document.getElementById("nm"+gid);var ee=document.getElementById("em"+gid);var nbr=document.getElementById("nbrpdf"+gid);sv[gid]={pr:ep?ep.value:"",nm:en?en.value:"",em:ee?ee.value:"",nbr:nbr?nbr.value:"1"};}
+  for(var k=0;k<gagnants.length;k++){var gid=gagnants[k];var ep=document.getElementById("pr"+gid);var en=document.getElementById("nm"+gid);var ee=document.getElementById("em"+gid);var nbr=document.getElementById("nbrpdf"+gid);sv[gid]={pr:ep?ep.value:"",nm:en?en.value:"",em:ee?ee.value:"",nbr:nbr?nbr.value:""};}
   while(block.firstChild){block.removeChild(block.firstChild);}
   for(var i=0;i<gagnants.length;i++){
-    var id=gagnants[i];var num=startN+i;var s=sv[id]||{pr:"",nm:"",em:"",nbr:"1"};
-    var row=document.createElement("div");row.className="gcard";
+    var id=gagnants[i];var num=startN+i;var s=sv[id]||{pr:"",nm:"",em:"",nbr:""};
+    var row=document.createElement("div");row.className="gcard";row.id="gcard-"+id;
     var badge=document.createElement("div");badge.className="gnum";badge.textContent=num;
     var fields=document.createElement("div");fields.className="gfields";
     if(currentMode==="onebyOne"){fields.style.gridTemplateColumns="0.8fr 1fr 1fr 2fr";}
-    if(currentMode==="onebyOne"){var inbr=document.createElement("input");inbr.type="number";inbr.id="nbrpdf"+id;inbr.placeholder="Nb";inbr.value=s.nbr;inbr.min="1";fields.appendChild(inbr);}
+    if(currentMode==="onebyOne"){var inbr=document.createElement("input");inbr.type="number";inbr.id="nbrpdf"+id;inbr.placeholder="Nbr PDF";inbr.value=s.nbr;inbr.min="1";inbr.oninput=function(){recalculateWinnersNumbers();};fields.appendChild(inbr);}
     var ip=document.createElement("input");ip.type="text";ip.id="pr"+id;ip.placeholder="Pr\u00e9nom";ip.value=s.pr;
     var inm=document.createElement("input");inm.type="text";inm.id="nm"+id;inm.placeholder="Nom";inm.value=s.nm;
     var ie=document.createElement("input");ie.type="email";ie.id="em"+id;ie.placeholder="email@exemple.com";ie.value=s.em;
@@ -1321,7 +1342,7 @@ function validate() {
     var nm=document.getElementById("nm"+id);if(!nm||!nm.value.trim())return "Nom manquant - gagnant "+(i+1)+".";
     var em=document.getElementById("em"+id);if(!em||!em.value.trim())return "Email manquant - gagnant "+(i+1)+".";
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim()))return "Email invalide - gagnant "+(i+1)+".";
-    if(currentMode==="onebyOne"){var nbrInput=document.getElementById("nbrpdf"+id);var nbr=nbrInput?parseInt(nbrInput.value,10):1;if(isNaN(nbr)||nbr<1)return "Nombre de PDFs invalide - gagnant "+(i+1)+".";}
+    if(currentMode==="onebyOne"){var nbrInput=document.getElementById("nbrpdf"+id);var nbr=nbrInput?parseInt(nbrInput.value,10):0;if(!nbrInput||!nbrInput.value.trim()||isNaN(nbr)||nbr<1)return "Nombre de PDFs manquant ou invalide - gagnant "+(i+1)+".";}
   }
   return null;
 }
@@ -1340,7 +1361,8 @@ function confirmYes(){
 async function doEnvoi() {
   var cfg=modeConfigs[currentMode];
   var startN=getStart();var winners=[];
-  for(var i=0;i<gagnants.length;i++){var id=gagnants[i];var w={numero:startN+i,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()};if(currentMode==="onebyOne"){var nbrInput=document.getElementById("nbrpdf"+id);w.nbrPDF=nbrInput?parseInt(nbrInput.value,10):1;}winners.push(w);}
+  var currentNum=startN;
+  for(var i=0;i<gagnants.length;i++){var id=gagnants[i];var w={numero:currentMode==="normal"?(startN+i):currentNum,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()};if(currentMode==="onebyOne"){var nbrInput=document.getElementById("nbrpdf"+id);w.nbrPDF=nbrInput?parseInt(nbrInput.value,10):1;currentNum+=w.nbrPDF;}winners.push(w);}
   document.getElementById("btnSend").disabled=true;
   setStep(2);showStatus("loading","Etape 1/2 - Ecriture dans Google Sheet...");
   try{await writeToSheet(document.getElementById("pdfName").value.trim(),document.getElementById("folderID").value.trim(),document.getElementById("mailFrom").value,document.getElementById("mailSubject").value.trim(),document.getElementById("mailContent").value.trim(),winners);}
