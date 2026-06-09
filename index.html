@@ -1277,6 +1277,9 @@ function validateCapacity() {
   // Valider la capacité (mode 2-PDF et N-PDF)
   if (currentMode !== "onebyOne" && currentMode !== "twobyOne") return { valid: true, surplus: 0, total: 0, available: 0 };
 
+  // Ne pas valider si aucun dossier sélectionné
+  if (!window.pdfStock) return { valid: true, surplus: 0, total: 0, available: 0 };
+
   var totalRequired = 0;
   for (var i = 0; i < gagnants.length; i++) {
     var id = gagnants[i];
@@ -1747,8 +1750,9 @@ async function scanDossier() {
   } catch(e) {
     box.innerHTML = '<span class="ds-pill err"><span class="ds-dot"></span>Erreur : ' + e.message + '</span>';
   }
-  // Sauvegarder le nombre de PDFs disponibles pour la validation de capacité (mode N-PDF)
+  // Sauvegarder le nombre de PDFs disponibles pour la validation de capacité (mode 2-PDF et N-PDF)
   window.pdfStock = stock || 0;
+  if(currentMode==="onebyOne"||currentMode==="twobyOne"){recalculateWinnersNumbers();}
   setTimeout(function() { recalculateStartNum(); }, 600);
 }
 function getConfigs() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch(e) { return {}; } }
