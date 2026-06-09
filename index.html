@@ -1097,10 +1097,16 @@ function testWebhookStatus() {
       }),
       timeout
     ])
-    .then(r => {
+    .then(async r => {
       if (!r.ok) throw new Error('HTTP ' + r.status);
-      dot.classList.remove('waiting', 'offline');
-      dot.classList.add('online');
+      // Vérifier que la réponse est du JSON avec status: "active"
+      const data = await r.json();
+      if (data && data.status === 'active') {
+        dot.classList.remove('waiting', 'offline');
+        dot.classList.add('online');
+      } else {
+        throw new Error('Scénario désactivé');
+      }
     })
     .catch(() => {
       dot.classList.remove('waiting', 'online');
