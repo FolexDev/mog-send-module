@@ -259,6 +259,12 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .modeBar .mode-toggle:first-child{border-radius:4px 0 0 4px;}
 .modeBar .mode-toggle:last-child{border-radius:0 4px 4px 0;}
 .modeBar .mode-toggle.active{background:rgba(0,196,122,.2);color:#00c47a;border-color:rgba(0,196,122,.3)}
+.mode-info-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(0,196,122,.15);color:#00c47a;font-size:12px;font-weight:bold;cursor:help;border:1px solid rgba(0,196,122,.3);transition:all .2s;position:relative;}
+.mode-info-btn:hover{background:rgba(0,196,122,.25);border-color:rgba(0,196,122,.5);}
+.mode-info-btn::before{content:attr(title);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:#00c47a;padding:8px 12px;border-radius:6px;font-size:11px;white-space:nowrap;z-index:1000;pointer-events:none;opacity:0;transition:opacity .2s;border:1px solid rgba(0,196,122,.3);font-weight:normal;}
+.mode-info-btn:hover::before{opacity:1;}
+.mode-info-btn::after{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid rgba(0,0,0,.9);opacity:0;transition:opacity .2s;z-index:1000;pointer-events:none;}
+.mode-info-btn:hover::after{opacity:1;}
 
 /* ALIGNEMENT LIENS */
 .fl-row{display:flex;align-items:center;gap:8px;min-height:28px;flex-wrap:nowrap}
@@ -580,6 +586,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
         <span>N&deg; du premier PDF du lot<br>Les suivants s'incr&eacute;mentent automatiquement</span>
       </div>
       <div class="modeBar" id="modeBar" style="display:none;margin-bottom:0;">
+        <div class="mode-info-btn" title="1-PDF : Un PDF par personnes&#10;N-PDF : Plusieurs PDFs par personnes">ⓘ</div>
         <button class="mode-toggle active" id="modeNormalBtn" onclick="setMode('normal')">1-PDF</button>
         <button class="mode-toggle" id="modeOneByOneBtn" onclick="setMode('onebyOne')">N-PDF</button>
       </div>
