@@ -874,12 +874,13 @@ function progFinalize(sent, errors, timeout) {
   document.getElementById("btnSend").disabled = false;
 }
 
-var ALLOWED_EMAILS = [
-  "alex@mediaonegroup.ch",
-  "ajeanrenaud@gmail.com",
-  "lionel@mediaonegroup.ch"
-];
-var ADMIN_EMAILS = ["alex@mediaonegroup.ch"];
+// Google Sheet pour les permissions
+var PERMISSIONS_SHEET_ID = "1R6dgUGCp1dPxZEopj7DZTNZFdeOK2m5XkQQLC5Aso5M";
+var PERMISSIONS_RANGE = "Permissions!A2:B1000";
+
+// Arrays qui seront remplis depuis la Google Sheet
+var ALLOWED_EMAILS = [];
+var ADMIN_EMAILS = [];
 
 // ============================================================================
 // NOMENCLATURE DES MODES
@@ -909,6 +910,47 @@ var isAdmin = false;
 var loginClient = null;
 var appUnlocked = false;
 
+// Charger les permissions depuis la Google Sheet
+async function loadPermissionsFromSheet() {
+  if (!accessToken) {
+    // À la première connexion, charger les permissions publiquement (sans token)
+    // Utiliser une approche alternative ou charger une liste par défaut
+    ALLOWED_EMAILS = [];
+    ADMIN_EMAILS = [];
+    return;
+  }
+
+  try {
+    var resp = await fetch(
+      "https://sheets.googleapis.com/v4/spreadsheets/" + PERMISSIONS_SHEET_ID +
+      "/values/" + PERMISSIONS_RANGE,
+      { headers: { Authorization: "Bearer " + accessToken } }
+    );
+    var data = await resp.json();
+    var rows = data.values || [];
+
+    ALLOWED_EMAILS = [];
+    ADMIN_EMAILS = [];
+
+    rows.forEach(function(row) {
+      var email = (row[0] || "").trim().toLowerCase();
+      var role = (row[1] || "").trim().toLowerCase();
+      if (email) {
+        ALLOWED_EMAILS.push(email);
+        if (role === "admin") {
+          ADMIN_EMAILS.push(email);
+        }
+      }
+    });
+
+    console.log("✓ Permissions chargées depuis Google Sheet");
+  } catch(e) {
+    console.error("Erreur chargement permissions:", e);
+    ALLOWED_EMAILS = [];
+    ADMIN_EMAILS = [];
+  }
+}
+
 function initLoginClient() {
   var check = setInterval(function() {
     if (window.google && window.google.accounts) {
@@ -919,18 +961,26 @@ function initLoginClient() {
         prompt: "",
         callback: function(resp) {
           if (resp.error) { showLoginError(); return; }
-          // Vérifier le domaine via userinfo
+          // Sauvegarder le token
+          accessToken = resp.access_token;
+          // Récupérer l'email
           fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
             headers: { Authorization: "Bearer " + resp.access_token }
           }).then(function(r){ return r.json(); }).then(function(info){
             var email = info.email || "";
-            if (ALLOWED_EMAILS.indexOf(email) !== -1) {
-              accessToken = resp.access_token;
-              unlockApp(email);
-            } else {
+            // Charger les permissions depuis la sheet, puis vérifier
+            loadPermissionsFromSheet().then(function() {
+              if (ALLOWED_EMAILS.indexOf(email.toLowerCase()) !== -1) {
+                unlockApp(email);
+              } else {
+                google.accounts.oauth2.revoke(resp.access_token, function(){});
+                showLoginError();
+              }
+            }).catch(function() {
+              // Si erreur de chargement des permissions, revoke et afficher erreur
               google.accounts.oauth2.revoke(resp.access_token, function(){});
               showLoginError();
-            }
+            });
           }).catch(function(){ showLoginError(); });
         }
       });
@@ -951,17 +1001,21 @@ function showLoginError() {
 
 function unlockApp(email) {
   appUnlocked = true;
-  isAdmin = ADMIN_EMAILS.indexOf(email) !== -1;
-  const isAlex = email === "alex@mediaonegroup.ch";
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("webhookBar").style.display = "flex";
-  document.getElementById("modeBar").style.display = "flex";
-  document.getElementById("docBtn").style.display = isAlex ? "block" : "none";
-  document.getElementById("adminBtn").style.display = isAdmin ? "block" : "none";
-  setAuthUI(true);
-  document.getElementById("authLabel").textContent = email;
-  // Tester les webhooks après connexion
-  setTimeout(() => testWebhookStatus(), 500);
+
+  // Charger les permissions depuis la Google Sheet
+  loadPermissionsFromSheet().then(function() {
+    isAdmin = ADMIN_EMAILS.indexOf(email.toLowerCase()) !== -1;
+    const isAlex = email === "alex@mediaonegroup.ch";
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("webhookBar").style.display = "flex";
+    document.getElementById("modeBar").style.display = "flex";
+    document.getElementById("docBtn").style.display = isAlex ? "block" : "none";
+    document.getElementById("adminBtn").style.display = isAdmin ? "block" : "none";
+    setAuthUI(true);
+    document.getElementById("authLabel").textContent = email;
+    // Tester les webhooks après connexion
+    setTimeout(() => testWebhookStatus(), 500);
+  });
 }
 
 function openAdminPanel() {
@@ -992,7 +1046,7 @@ function renderUsersList() {
 
 function addUser() {
   const emailInput = document.getElementById("newUserEmail");
-  const email = emailInput.value.trim();
+  const email = emailInput.value.trim().toLowerCase();
   if (!email || !email.includes("@")) {
     alert("Email invalide");
     return;
@@ -1001,10 +1055,42 @@ function addUser() {
     alert("Cet utilisateur est déjà autorisé");
     return;
   }
-  ALLOWED_EMAILS.push(email);
-  localStorage.setItem("allowedEmails", JSON.stringify(ALLOWED_EMAILS));
+
+  // Écrire directement dans la Google Sheet
+  addUserToSheet(email);
   emailInput.value = "";
-  renderUsersList();
+}
+
+async function addUserToSheet(email) {
+  try {
+    // Ajouter une nouvelle ligne à la sheet
+    var resp = await fetch(
+      "https://sheets.googleapis.com/v4/spreadsheets/" + PERMISSIONS_SHEET_ID +
+      "/values/" + PERMISSIONS_RANGE + ":append?valueInputOption=RAW",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + accessToken,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          values: [[email, "user"]]
+        })
+      }
+    );
+
+    if (resp.ok) {
+      showStatus("success", "Utilisateur ajouté : " + email);
+      // Recharger les permissions
+      await loadPermissionsFromSheet();
+      renderUsersList();
+    } else {
+      alert("Erreur lors de l'ajout de l'utilisateur");
+    }
+  } catch(e) {
+    console.error("Erreur ajout utilisateur:", e);
+    alert("Erreur réseau: " + e.message);
+  }
 }
 
 function removeUser(email) {
@@ -1013,9 +1099,70 @@ function removeUser(email) {
     return;
   }
   if (!confirm("Supprimer " + email + " ?")) return;
-  ALLOWED_EMAILS = ALLOWED_EMAILS.filter(e => e !== email);
-  localStorage.setItem("allowedEmails", JSON.stringify(ALLOWED_EMAILS));
-  renderUsersList();
+  removeUserFromSheet(email);
+}
+
+async function removeUserFromSheet(email) {
+  try {
+    // Charger toutes les données pour trouver la ligne à supprimer
+    var resp = await fetch(
+      "https://sheets.googleapis.com/v4/spreadsheets/" + PERMISSIONS_SHEET_ID +
+      "/values/" + PERMISSIONS_RANGE,
+      { headers: { Authorization: "Bearer " + accessToken } }
+    );
+    var data = await resp.json();
+    var rows = data.values || [];
+
+    // Trouver l'index de l'email
+    var rowIndex = -1;
+    for (var i = 0; i < rows.length; i++) {
+      if ((rows[i][0] || "").trim().toLowerCase() === email.toLowerCase()) {
+        rowIndex = i + 2; // +2 car A2 est la première ligne (0-indexed)
+        break;
+      }
+    }
+
+    if (rowIndex === -1) {
+      alert("Utilisateur non trouvé");
+      return;
+    }
+
+    // Supprimer la ligne
+    var deleteResp = await fetch(
+      "https://sheets.googleapis.com/v4/spreadsheets/" + PERMISSIONS_SHEET_ID + "/batchUpdate",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + accessToken,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          requests: [{
+            deleteRange: {
+              range: {
+                sheetId: 0,
+                startIndex: rowIndex - 1,
+                endIndex: rowIndex
+              },
+              shiftDimension: "ROWS"
+            }
+          }]
+        })
+      }
+    );
+
+    if (deleteResp.ok) {
+      showStatus("success", "Utilisateur supprimé : " + email);
+      // Recharger les permissions
+      await loadPermissionsFromSheet();
+      renderUsersList();
+    } else {
+      alert("Erreur lors de la suppression de l'utilisateur");
+    }
+  } catch(e) {
+    console.error("Erreur suppression utilisateur:", e);
+    alert("Erreur réseau: " + e.message);
+  }
 }
 
 function openDocumentation() {
