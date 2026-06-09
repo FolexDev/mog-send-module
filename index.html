@@ -1310,7 +1310,8 @@ async function recalculateStartNum() {
     var pattern = new RegExp("^" + pdfName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "-(\\d+)$");
     var availableNumbers = [];
     files.forEach(function(file) {
-      var match = file.name.match(pattern);
+      var name = file.name.replace(/\.pdf$/i, "");
+      var match = name.match(pattern);
       if (match) {
         var num = parseInt(match[1], 10);
         availableNumbers.push(num);
