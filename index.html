@@ -1263,14 +1263,17 @@ function recalculateWinnersNumbers() {
   }
 
   // Valider la capacité et afficher une alerte si dépassement (tous les modes)
-  var capCheck = validateCapacity();
-  if (!capCheck.valid) {
-    document.getElementById("capacityAlert").style.display = "flex";
-    document.getElementById("capacityAlertMsg").textContent =
-      "⚠️ Dépassement : " + capCheck.total + " PDFs requis, " +
-      capCheck.available + " disponible(s). Réduisez les quantités.";
-  } else {
-    document.getElementById("capacityAlert").style.display = "none";
+  var capAlert = document.getElementById("capacityAlert");
+  if (capAlert) {
+    var capCheck = validateCapacity();
+    if (!capCheck.valid) {
+      capAlert.style.display = "flex";
+      document.getElementById("capacityAlertMsg").textContent =
+        "⚠️ Dépassement : " + capCheck.total + " PDFs requis, " +
+        capCheck.available + " disponible(s). Réduisez les quantités.";
+    } else {
+      capAlert.style.display = "none";
+    }
   }
 }
 
