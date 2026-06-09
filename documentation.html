@@ -1216,25 +1216,19 @@ Module Répondre au Webhook :
   <section id="permissions">
     <h2>🔐 Gestion des Permissions</h2>
 
-    <p>MOG Send dispose d'un système de gestion des permissions permettant de contrôler qui peut accéder à l'application.</p>
+    <p>MOG Send contrôle l'accès par une liste d'emails autorisés définie dans le code source. Seul <code>alex@mediaonegroup.ch</code> peut gérer les permissions.</p>
 
-    <h3>Structure du Fichier permissions.json</h3>
-    <p>Le fichier <code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:3px;">permissions.json</code> à la racine du projet centralise la configuration des accès :</p>
+    <h3>Liste d'Accès (index.html)</h3>
+    <p>Les utilisateurs autorisés sont définis dans index.html ligne ~865 :</p>
 
     <div class="code-block">
-{
-  "admin": [
-    "alex@mediaonegroup.ch"
-  ],
-  "users": [
-    "alex@mediaonegroup.ch",
-    "ajeanrenaud@gmail.com",
-    "lionel@mediaonegroup.ch",
-    "alexis@onefm.ch"
-  ],
-  "lastModified": "2026-06-09T00:00:00Z",
-  "lastModifiedBy": "alex@mediaonegroup.ch"
-}
+var ALLOWED_EMAILS = [
+  "alex@mediaonegroup.ch",
+  "ajeanrenaud@gmail.com",
+  "lionel@mediaonegroup.ch"
+];
+
+var ADMIN_EMAILS = ["alex@mediaonegroup.ch"];
     </div>
 
     <h3>Rôles et Permissions</h3>
@@ -1242,110 +1236,85 @@ Module Répondre au Webhook :
       <tr>
         <th>Rôle</th>
         <th>Permissions</th>
-        <th>Notes</th>
+        <th>Compte</th>
       </tr>
       <tr>
-        <td><strong>Admin</strong> (alex@mediaonegroup.ch)</td>
+        <td><strong>Admin</strong></td>
         <td>
           ✅ Accès complet à l'application<br>
           ✅ Bouton "⚙️ Admin" visible<br>
-          ✅ Gestion des permissions utilisateurs<br>
+          ✅ Gestion des permissions (interface)<br>
           ✅ Accès à la documentation technique
         </td>
-        <td>Compte protégé (impossible à supprimer)</td>
+        <td>alex@mediaonegroup.ch</td>
       </tr>
       <tr>
-        <td><strong>Utilisateur autorisé</strong></td>
+        <td><strong>Utilisateur</strong></td>
         <td>
           ✅ Accès complet à l'application<br>
           ✅ Envoi de PDFs<br>
-          ❌ Pas d'accès à la gestion des permissions
+          ❌ Pas de panneau admin
         </td>
-        <td>Liste définie dans permissions.json</td>
+        <td>Dans ALLOWED_EMAILS</td>
       </tr>
       <tr>
         <td><strong>Non autorisé</strong></td>
-        <td>
-          ❌ Accès refusé<br>
-          ❌ Message d'erreur affiché
-        </td>
-        <td>Redirection vers page de login</td>
+        <td>❌ Accès refusé</td>
+        <td>Hors de ALLOWED_EMAILS</td>
       </tr>
     </table>
 
-    <h3>Accès à la Section Admin</h3>
+    <h3>Ajouter ou Supprimer un Utilisateur</h3>
+
     <div class="card">
-      <div class="card-title">📍 Localisation du Bouton Admin</div>
+      <div class="card-title">✅ Procédure</div>
       <div class="card-desc">
-        Une fois authentifié en tant que <code>alex@mediaonegroup.ch</code>, un bouton <strong>⚙️ Admin</strong> apparaît en haut à droite de la page (à côté du bouton de documentation).
+        <strong>1. Accéder au panneau admin</strong><br>
+        - Connecte-toi avec alex@mediaonegroup.ch<br>
+        - Clique sur le bouton <strong>⚙️ Admin</strong> (en haut à droite)<br><br>
+
+        <strong>2. Gérer les utilisateurs</strong><br>
+        - Pour <strong>ajouter</strong> : Entre l'email et clique "Ajouter"<br>
+        - Pour <strong>supprimer</strong> : Clique "Supprimer" à côté de l'utilisateur<br><br>
+
+        <strong>⚠️ Important :</strong> Les changements sont sauvegardés <strong>localement seulement</strong> (localStorage sur ton navigateur)
       </div>
     </div>
 
-    <h3>Gestion des Utilisateurs</h3>
-    <div class="card">
-      <div class="card-title">✅ Ajouter un Utilisateur</div>
-      <div class="card-desc">
-        1. Cliquez sur le bouton <strong>⚙️ Admin</strong><br>
-        2. Dans le champ "Ajouter un email...", entrez l'adresse email<br>
-        3. Cliquez sur <strong>Ajouter</strong><br>
-        4. L'utilisateur apparaît immédiatement dans la liste
-      </div>
-    </div>
+    <h3>Persister les Changements</h3>
 
-    <div class="card">
-      <div class="card-title">❌ Supprimer un Utilisateur</div>
-      <div class="card-desc">
-        1. Cliquez sur le bouton <strong>⚙️ Admin</strong><br>
-        2. Localisez l'utilisateur dans la liste<br>
-        3. Cliquez sur <strong>Supprimer</strong><br>
-        4. Confirmez la suppression<br><br>
-        <strong>⚠️ Restriction :</strong> Le compte <code>alex@mediaonegroup.ch</code> <strong>ne peut pas être supprimé</strong> (protégé par défaut)
-      </div>
-    </div>
-
-    <h3>Sauvegarde des Modifications</h3>
     <div class="warning">
-      <strong>⚠️ Important :</strong> Les modifications sont sauvegardées <strong>localement sur votre appareil</strong> (localStorage).<br><br>
-      Pour rendre les changements permanents et accessibles sur tous les appareils/navigateurs, veuillez :<br>
-      1. Copier le contenu du fichier <code>permissions.json</code> généré<br>
-      2. Mettre à jour le fichier <code>permissions.json</code> sur GitHub<br>
-      3. Ou contacter l'administrateur système
+      <strong>⚠️ Important :</strong> Pour rendre les changements <strong>permanents et accessibles à tous</strong> :<br><br>
+
+      1. Modifie manuellement le tableau <code>ALLOWED_EMAILS</code> dans <code>index.html</code> (ligne ~865)<br>
+      2. Ajoute ou retire les emails désirés<br>
+      3. Fais un commit et push sur GitHub<br><br>
+
+      <strong>Exemple :</strong> Pour ajouter "nouveau@example.com" :
     </div>
 
-    <h3>Indicateurs Visuels</h3>
-    <table>
-      <tr>
-        <th>Indicateur</th>
-        <th>Signification</th>
-      </tr>
-      <tr>
-        <td><strong>⭐ (avant l'email)</strong></td>
-        <td>Compte administrateur</td>
-      </tr>
-      <tr>
-        <td><strong style="color:#f5a623;">(protégé)</strong></td>
-        <td>Compte qui ne peut pas être supprimé</td>
-      </tr>
-      <tr>
-        <td><strong>Bouton grisé</strong></td>
-        <td>Action impossible (suppression du compte protégé)</td>
-      </tr>
-    </table>
+    <div class="code-block">
+var ALLOWED_EMAILS = [
+  "alex@mediaonegroup.ch",
+  "ajeanrenaud@gmail.com",
+  "lionel@mediaonegroup.ch",
+  "nouveau@example.com"  // ← Ajouté
+];
+    </div>
 
-    <h3>Authentification et Accès</h3>
+    <h3>Authentification et Flux</h3>
     <div class="card">
-      <div class="card-title">🔒 Flux d'Authentification</div>
+      <div class="card-title">🔒 À la Connexion</div>
       <div class="card-desc">
-        <strong>À la première connexion :</strong><br>
         1. L'utilisateur clique "Se connecter à Google"<br>
         2. Authentification via Google OAuth 2.0<br>
-        3. Vérification de l'email dans <code>permissions.json</code><br><br>
-        <strong>Si autorisé :</strong> Accès complet à l'application<br>
-        <strong>Si non autorisé :</strong> Affichage du message "Accès refusé. Tu n'es pas autorisé."
+        3. Vérification de l'email dans <code>ALLOWED_EMAILS</code><br><br>
+        <strong>✅ Si autorisé :</strong> Accès complet<br>
+        <strong>❌ Si non autorisé :</strong> Message "Accès refusé. Tu n'es pas autorisé."
       </div>
     </div>
 
-    <h3>Boutons Spéciaux</h3>
+    <h3>Boutons Réservés à l'Admin</h3>
     <table>
       <tr>
         <th>Bouton</th>
@@ -1354,15 +1323,26 @@ Module Répondre au Webhook :
       </tr>
       <tr>
         <td><strong>⚙️ Admin</strong></td>
-        <td>alex@mediaonegroup.ch seulement</td>
-        <td>Ouvre le panneau de gestion des permissions</td>
+        <td>alex@mediaonegroup.ch</td>
+        <td>Ouvre le panneau de gestion des permissions (interface)</td>
       </tr>
       <tr>
         <td><strong>?</strong> (Documentation)</td>
-        <td>alex@mediaonegroup.ch seulement</td>
+        <td>alex@mediaonegroup.ch</td>
         <td>Ouvre cette documentation technique</td>
       </tr>
     </table>
+
+    <h3>Restrictions de Sécurité</h3>
+    <div class="card">
+      <div class="card-title">🛡️ Protections</div>
+      <div class="card-desc">
+        • <strong>alex@mediaonegroup.ch ne peut pas être supprimée</strong> (compte protégé)<br>
+        • Impossible de se supprimer soi-même comme admin<br>
+        • Les modifications par l'interface sont locales (test seulement)<br>
+        • Pour persister, modifier le code source et pusher sur GitHub
+      </div>
+    </div>
 
   </section>
 
