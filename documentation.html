@@ -309,7 +309,7 @@
     <ul>
       <li><a href="#overview">1. Vue d'Ensemble du Système</a></li>
       <li><a href="#architecture">2. Architecture Générale</a></li>
-      <li><a href="#modes">3. Les Deux Modes de Fonctionnement</a></li>
+      <li><a href="#modes">3. Les Trois Modes de Fonctionnement</a></li>
       <li><a href="#sheets">4. Google Sheets - Stockage des Données</a></li>
       <li><a href="#webhooks">5. Webhooks Make - Déclenchement</a></li>
       <li><a href="#scenarios">6. Scénarios Make - Traitement Backend</a></li>
@@ -344,7 +344,7 @@
       <li><strong>Backend :</strong> Scénarios Make pour orchestrer l'envoi des emails</li>
       <li><strong>Stockage :</strong> Google Sheets pour centraliser les données</li>
       <li><strong>Authentification :</strong> Google OAuth 2.0 pour accéder à Drive et Sheets</li>
-      <li><strong>Deux Modes :</strong> 1-PDF (1 PDF/personne) et N-PDF (plusieurs PDFs/personne)</li>
+      <li><strong>Trois Modes :</strong> 1-PDF (1 PDF/personne), 2-PDF (2 PDFs/personne fixé), N-PDF (plusieurs PDFs/personne variable)</li>
     </ul>
   </section>
 
@@ -375,7 +375,7 @@
 
       <div class="flow-step">
         <div class="flow-icon">🔗</div>
-        <div class="flow-label"><strong>4. Webhooks Make</strong><br><small>Points d'entrée du backend</small><br><small style="color: #ff6060;">• Mode 1-PDF</small><br><small style="color: #ff6060;">• Mode N-PDF</small></div>
+        <div class="flow-label"><strong>4. Webhooks Make</strong><br><small>Points d'entrée du backend</small><br><small style="color: #ff6060;">• Mode 1-PDF</small><br><small style="color: #ff6060;">• Mode 2-PDF / N-PDF</small></div>
       </div>
       <div class="flow-arrow">↓</div>
 
@@ -392,12 +392,12 @@
     </div>
   </section>
 
-  <!-- 3. Les Deux Modes -->
+  <!-- 3. Les Trois Modes -->
   <section id="modes">
-    <h2>3️⃣ Les Deux Modes de Fonctionnement</h2>
+    <h2>3️⃣ Les Trois Modes de Fonctionnement</h2>
 
     <h3>Mode 1-PDF (1 PDF par personne)</h3>
-    <div class="mode-box mode-normal">MODE NORMAL</div>
+    <div class="mode-box mode-normal">MODE 1-PDF</div>
     <div class="card">
       <div class="card-title">Cas d'Usage</div>
       <div class="card-desc">
@@ -437,8 +437,58 @@
       </tr>
     </table>
 
+    <h3>Mode 2-PDF (2 PDFs par personne - Fixé)</h3>
+    <div class="mode-box mode-1by1">MODE 2-PDF</div>
+    <div class="card">
+      <div class="card-title">Cas d'Usage</div>
+      <div class="card-desc">
+        Chaque bénéficiaire reçoit <strong>exactement 2 PDFs</strong> (nombre fixe, non modifiable). Utile pour les événements où chaque participant reçoit le même nombre de documents.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Exemple</div>
+      <div class="card-desc">
+        Vous avez 100 PDFs (ex: billet-1 à billet-100)<br>
+        Vous avez 10 gagnants<br>
+        Gagnant 1 → billet-1 et billet-2<br>
+        Gagnant 2 → billet-3 et billet-4<br>
+        ... Gagnant 10 → billet-19 et billet-20<br>
+        <strong>Les numéros s'incrémentent automatiquement par 2.</strong>
+      </div>
+    </div>
+    <table>
+      <tr>
+        <th>Configuration</th>
+        <th>Valeur</th>
+      </tr>
+      <tr>
+        <td>Google Sheet</td>
+        <td>1_xMCY0L2hoLu45RnffrMWU71U0y6OG_byqsHZNDd5fk</td>
+      </tr>
+      <tr>
+        <td>Scénario Make</td>
+        <td>OA Envoi N-PDF (même scénario que N-PDF)</td>
+      </tr>
+      <tr>
+        <td>Cellule Progrès</td>
+        <td>'Liste envois'!I1 (Format: "X/Y")</td>
+      </tr>
+      <tr>
+        <td>Colonnes Gagnants</td>
+        <td>Numéro | Nbr PDF (2 - grisé) | Prénom | Nom | Email</td>
+      </tr>
+      <tr>
+        <td>Validation</td>
+        <td>⚠️ Alerte si (Σ gagnants × 2) &gt; PDFs Disponibles</td>
+      </tr>
+      <tr>
+        <td>Particularité</td>
+        <td>Le champ "Nbr PDF" est <strong>désactivé et affiche "2"</strong> (non modifiable)</td>
+      </tr>
+    </table>
+
     <h3>Mode N-PDF (Plusieurs PDFs par personne)</h3>
-    <div class="mode-box mode-1by1">MODE 1BY1</div>
+    <div class="mode-box mode-1by1">MODE N-PDF</div>
     <div class="card">
       <div class="card-title">Cas d'Usage</div>
       <div class="card-desc">
@@ -481,7 +531,7 @@
       </tr>
     </table>
 
-    <h3>Calcul des Numéros en Mode 1by1</h3>
+    <h3>Calcul des Numéros en Mode N-PDF</h3>
     <div class="code-block">
 Numéro de départ : 1
 Gagnant 1 (nbrPDF=3) → reçoit PDFs 1, 2, 3
@@ -495,7 +545,12 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
     <h2>4️⃣ Google Sheets - Stockage des Données</h2>
 
     <h3>Structure Générale</h3>
-    <p>Deux feuilles Google Sheets différentes selon le mode (Normal vs 1by1) contiennent :</p>
+    <p>Deux feuilles Google Sheets différentes selon le mode :</p>
+    <ul style="margin-left: 20px; margin-bottom: 15px;">
+      <li><strong>Mode 1-PDF :</strong> Google Sheet dédiée</li>
+      <li><strong>Mode 2-PDF et N-PDF :</strong> Partagent la même Google Sheet (2-PDF est un N-PDF avec nbrPDF fixé à 2)</li>
+    </ul>
+    <p>Ces feuilles contiennent :</p>
 
     <h4>Feuille 1: "GetRowInfos"</h4>
     <table>
@@ -674,7 +729,7 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
     <h2>6️⃣ Scénarios Make - Traitement Backend</h2>
 
     <h3>Structure Générale des Scénarios</h3>
-    <p>Les deux scénarios (Normal et 1by1) suivent la même logique générale :</p>
+    <p>Il y a deux scénarios Make (1-PDF et N-PDF). Le mode 2-PDF utilise le <strong>même scénario que N-PDF</strong> avec nbrPDF fixé à 2. Ils suivent la même logique générale :</p>
 
     <div class="code-block">
 1. Webhook reçoit le signal du frontend
@@ -777,7 +832,7 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
     </table>
 
     <div class="warning">
-      <strong>⚠️ Différence Clé :</strong> Le scénario 1by1 a une boucle imbriquée (Iterator externe + Iterator interne) pour gérer plusieurs PDFs par gagnant, tandis que le Normal a une seule boucle.
+      <strong>⚠️ Différence Clé :</strong> Le scénario N-PDF a une boucle imbriquée (Iterator externe + Iterator interne) pour gérer plusieurs PDFs par gagnant, tandis que le 1-PDF a une seule boucle.
     </div>
 
     <h3>⚡ Filtre "test-connection" - Réponses Requises</h3>
@@ -920,15 +975,15 @@ Module Répondre au Webhook :
       <div class="func-name">renderGagnants()</div>
       <div class="func-desc">Re-dessine l'interface des gagnants (adapté au mode courant)</div>
       <div class="func-params">
-        • En mode Normal : Numéro | Prénom | Nom | Email<br>
-        • En mode 1by1 : Numéro | Nbr PDF | Prénom | Nom | Email<br>
+        • En mode 1-PDF : Numéro | Prénom | Nom | Email<br>
+        • En mode N-PDF : Numéro | Nbr PDF | Prénom | Nom | Email<br>
         • Sauvegarde les valeurs avant re-rendu
       </div>
     </div>
 
     <div class="function-doc">
       <div class="func-name">recalculateWinnersNumbers()</div>
-      <div class="func-desc">Met à jour les numéros des gagnants en temps réel (Mode 1by1)</div>
+      <div class="func-desc">Met à jour les numéros des gagnants en temps réel (Mode N-PDF)</div>
       <div class="func-params">
         • Parcourt tous les gagnants<br>
         • Accumule les nbrPDF pour calculer le prochain numéro<br>
@@ -938,7 +993,7 @@ Module Répondre au Webhook :
 
     <div class="function-doc">
       <div class="func-name">validateCapacity()</div>
-      <div class="func-desc">Vérifie que le total des PDFs demandés ne dépasse pas le stock (Mode 1by1)</div>
+      <div class="func-desc">Vérifie que le total des PDFs demandés ne dépasse pas le stock (Mode N-PDF)</div>
       <div class="func-params">
         Retourne {valid, total, available, surplus}<br>
         Appelée en temps réel et au moment de valider l'envoi
@@ -955,7 +1010,7 @@ Module Répondre au Webhook :
         • Authentification Google<br>
         • Tous les champs requis (PDF, dossier, subject, body)<br>
         • Tous les gagnants (prénom, nom, email valide)<br>
-        • Mode 1by1 : capacité PDF
+        • Mode N-PDF : capacité PDF
       </div>
     </div>
 
@@ -985,7 +1040,7 @@ Module Répondre au Webhook :
       <div class="func-name">startProgPoll() [async]</div>
       <div class="func-desc">Lance le polling de la cellule de progrès toutes les 500ms</div>
       <div class="func-params">
-        • Lit la cellule E2 (Normal) ou I1 (1by1)<br>
+        • Lit la cellule E2 (1-PDF) ou I1 (N-PDF)<br>
         • Format: "2/10" = 2 gagnants traités sur 10<br>
         • Arrête quand 100% ou timeout (2 min)
       </div>
@@ -994,7 +1049,7 @@ Module Répondre au Webhook :
     <div class="function-doc">
       <div class="func-name">closeProgModal()</div>
       <div class="func-desc">Ferme le modal de progression et relance le scan du dossier</div>
-      <div class="func-params">En mode 1by1 : met à jour les PDFs disponibles et le startNum</div>
+      <div class="func-params">En mode N-PDF : met à jour les PDFs disponibles et le startNum</div>
     </div>
   </section>
 
@@ -1014,7 +1069,7 @@ Module Répondre au Webhook :
     <div class="card">
       <div class="card-title">2️⃣ Sélection du Mode</div>
       <div class="card-desc">
-        Utilisateur clique "Normal" ou "1by1" → setMode() → renderGagnants() s'adapte (avec/sans colonne nbrPDF)
+        Utilisateur clique "1-PDF" ou "N-PDF" → setMode() → renderGagnants() s'adapte (avec/sans colonne nbrPDF)
       </div>
     </div>
 
@@ -1031,7 +1086,7 @@ Module Répondre au Webhook :
       <div class="card-title">4️⃣ Entrée des Gagnants</div>
       <div class="card-desc">
         Utilisateur ajoute gagnants manuellement ou importe CSV<br>
-        En mode 1by1 : saisit aussi le nombre de PDFs par gagnant<br>
+        En mode N-PDF : saisit aussi le nombre de PDFs par gagnant<br>
         → recalculateWinnersNumbers() met à jour les numéros en temps réel
       </div>
     </div>
@@ -1042,7 +1097,7 @@ Module Répondre au Webhook :
         Utilisateur remplit :<br>
         • Objet du mail<br>
         • Corps du message<br>
-        • (Optional) Numéro de départ (auto-calculé en 1by1)
+        • (Optional) Numéro de départ (auto-calculé en N-PDF)
       </div>
     </div>
 
@@ -1113,7 +1168,7 @@ Module Répondre au Webhook :
       </div>
     </div>
 
-    <h3>❌ "Dépassement de capacité" (Mode 1by1)</h3>
+    <h3>❌ "Dépassement de capacité" (Mode N-PDF)</h3>
     <div class="card">
       <div class="card-title">Problème</div>
       <div class="card-desc">Alerte orange affichée : nombre de PDFs demandés dépasse le stock</div>
@@ -1152,7 +1207,7 @@ Module Répondre au Webhook :
       <div class="card-desc">
         1. Vérifier dans Make que le scénario a bien démarré<br>
         2. Vérifier que les cellules de progrès (E2 ou I1) sont bien écrites par Make<br>
-        3. Vérifier que le polling lit la bonne cellule (normal vs 1by1)<br>
+        3. Vérifier que le polling lit la bonne cellule (1-PDF vs N-PDF)<br>
         4. Augmenter le timeout (2 min actuellement)
       </div>
     </div>
