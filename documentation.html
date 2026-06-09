@@ -395,7 +395,7 @@
   <section id="modes">
     <h2>3️⃣ Les Deux Modes de Fonctionnement</h2>
 
-    <h3>Mode Normal (1 PDF par personne)</h3>
+    <h3>Mode 1-PDF (1 PDF par personne)</h3>
     <div class="mode-box mode-normal">MODE NORMAL</div>
     <div class="card">
       <div class="card-title">Cas d'Usage</div>
@@ -436,7 +436,7 @@
       </tr>
     </table>
 
-    <h3>Mode 1by1 (Plusieurs PDFs par personne)</h3>
+    <h3>Mode N-PDF (Plusieurs PDFs par personne)</h3>
     <div class="mode-box mode-1by1">MODE 1BY1</div>
     <div class="card">
       <div class="card-title">Cas d'Usage</div>
@@ -687,7 +687,7 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
 4. À la fin : Nettoyer/Reset l'état pour le prochain envoi
     </div>
 
-    <h3>Scénario Mode NORMAL - "OA Envoi PDF (Claude)"</h3>
+    <h3>Scénario Mode 1-PDF - "OA Envoi PDF (Claude)"</h3>
     <table>
       <tr>
         <th>Module</th>
@@ -727,7 +727,7 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
       </tr>
     </table>
 
-    <h3>Scénario Mode 1BY1 - "OA Envoi PDF (1by1 )"</h3>
+    <h3>Scénario Mode N-PDF - "OA Envoi PDF (1by1 )"</h3>
     <table>
       <tr>
         <th>Module</th>
@@ -782,24 +782,24 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
     <h3>⚡ Filtre "test-connection" - Réponses Requises</h3>
     <p>Chaque scénario doit avoir un <strong>Router</strong> au début pour détecter les requêtes de test et répondre avec un JSON spécifique.</p>
 
-    <h4>Scénario Normal - "OA Envoi PDF (Claude)"</h4>
+    <h4>Scénario 1-PDF - "OA Envoi PDF (Claude)"</h4>
     <div class="code-block">
 Filtre Router :
   Condition: {{434.trigger}} equals "test-connection"
 
 Module Répondre au Webhook :
   Status: 200
-  Body: {"status":"active","scenario":"Normal"}
+  Body: {"status":"active","scenario":"1-PDF"}
     </div>
 
-    <h4>Scénario 1by1 - "OA Envoi PDF (1by1 )"</h4>
+    <h4>Scénario N-PDF - "OA Envoi PDF (1by1 )"</h4>
     <div class="code-block">
 Filtre Router :
   Condition: {{434.trigger}} equals "test-connection"
 
 Module Répondre au Webhook :
   Status: 200
-  Body: {"status":"active","scenario":"1by1"}
+  Body: {"status":"active","scenario":"N-PDF"}
     </div>
 
     <div class="card" style="margin-top: 15px; background: rgba(0,196,122,.1); border: 1px solid rgba(0,196,122,.3);">
