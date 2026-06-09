@@ -716,7 +716,7 @@ function closeProgModal() {
   document.getElementById("progBg").classList.remove("show");
   if (progPollInterval) { clearInterval(progPollInterval); progPollInterval = null; }
 
-  // Rescanner le dossier en mode 1by1 pour mettre à jour les PDFs disponibles et le numéro de départ
+  // Rescanner le dossier en mode N-PDF pour mettre à jour les PDFs disponibles et le numéro de départ
   if (currentMode === "onebyOne") {
     var folderId = document.getElementById("folderID").value.trim();
     if (folderId) {
@@ -876,6 +876,31 @@ var ALLOWED_EMAILS = [
   "lionel@mediaonegroup.ch"
 ];
 var ADMIN_EMAILS = ["alex@mediaonegroup.ch"];
+
+// ============================================================================
+// NOMENCLATURE DES MODES
+// ============================================================================
+// MOG Send gère deux modes d'envoi distincts:
+//
+// MODE 1-PDF (identifiant interne: "normal")
+//   - 1 seul PDF par personne
+//   - Google Sheet: 11O24DWCA2pWtEh344R1ABJ10ZsArKCEiBNWC5EWV2wY
+//   - Webhook: https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv
+//   - Scénario Make: OA Envoi 1-PDF
+//   - Cellule progrès: 'Liste envois'!E2
+//
+// MODE N-PDF (identifiant interne: "onebyOne")
+//   - Plusieurs PDFs par personne (nombre configurable)
+//   - Google Sheet: 1_xMCY0L2hoLu45RnffrMWU71U0y6OG_byqsHZNDd5fk
+//   - Webhook: https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff
+//   - Scénario Make: OA Envoi N-PDF
+//   - Cellule progrès: 'Liste envois'!I1
+//
+// NOTE: Les noms internes ("normal", "onebyOne", "1by1") sont des identifiants
+// utilisés dans le code JavaScript et doivent rester constants.
+// Le champ "name" dans modeConfigs contient le nom affiché à l'utilisateur.
+// ============================================================================
+
 var isAdmin = false;
 var loginClient = null;
 var appUnlocked = false;
@@ -1015,6 +1040,11 @@ var EXP = {
   cache: {}              // par ID parent
 };
 
+// Configuration des deux modes d'envoi
+// IMPORTANT: Les clés (normal, onebyOne) sont les identifiants internes utilisés dans le code
+// Le champ "name" contient le nom affiché à l'utilisateur
+// normal = Mode 1-PDF (1 seul PDF par personne)
+// onebyOne = Mode N-PDF (plusieurs PDFs par personne)
 var modeConfigs = {
   normal: {
     name: "1-PDF",
@@ -1036,6 +1066,7 @@ var currentMode = "normal";
 document.getElementById("logoImg").src = "https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
 
 function setMode(mode) {
+  // mode: "normal" = 1-PDF  |  "onebyOne" = N-PDF
   if (!modeConfigs[mode]) return;
   currentMode = mode;
   document.getElementById("modeNormalBtn").classList.toggle("active", mode === "normal");
@@ -1047,6 +1078,7 @@ function setMode(mode) {
 }
 
 function recalculateWinnersNumbers() {
+  // Recalculer les numéros des gagnants en mode N-PDF seulement
   if (currentMode !== "onebyOne") return;
   var startN = getStart();
   var currentNum = startN;
@@ -1079,6 +1111,7 @@ function recalculateWinnersNumbers() {
 }
 
 function validateCapacity() {
+  // Valider la capacité (mode N-PDF seulement)
   if (currentMode !== "onebyOne") return { valid: true, surplus: 0, total: 0, available: 0 };
 
   var totalRequired = 0;
@@ -1099,6 +1132,7 @@ function validateCapacity() {
 }
 
 async function recalculateStartNum() {
+  // Recalculer le numéro de départ (mode N-PDF seulement)
   if (currentMode !== "onebyOne") return;
   var folderId = document.getElementById("folderID").value.trim();
   var pdfName = document.getElementById("pdfName").value.trim();
@@ -1198,6 +1232,8 @@ function openDocumentation() {
   window.open("documentation.html", "MOG_Documentation", "width=1200,height=800,scrollbars=yes");
 }
 function testWebhookStatus() {
+  // Teste l'état des deux webhooks Make
+  // normal = 1-PDF  |  1by1 = N-PDF
   const webhooks = {
     normal: 'https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv',
     '1by1': 'https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff'
@@ -1547,7 +1583,7 @@ async function scanDossier() {
   } catch(e) {
     box.innerHTML = '<span class="ds-pill err"><span class="ds-dot"></span>Erreur : ' + e.message + '</span>';
   }
-  // Sauvegarder le nombre de PDFs disponibles pour la validation de capacité (mode 1by1)
+  // Sauvegarder le nombre de PDFs disponibles pour la validation de capacité (mode N-PDF)
   window.pdfStock = stock || 0;
   setTimeout(function() { recalculateStartNum(); }, 600);
 }
@@ -1670,7 +1706,7 @@ document.addEventListener('paste', function(e) {
 function effacerListe(){gagnants=[];addGagnant();}
 function validate() {
   if(!accessToken) return "Connecte-toi a Google d'abord.";
-  // En mode 1by1, vérifier la capacité avant l'envoi
+  // En mode N-PDF, vérifier la capacité avant l'envoi
   if(currentMode==="onebyOne"){var capCheck=validateCapacity();if(!capCheck.valid){return "Dépassement de capacité : "+capCheck.total+" PDFs requis, seulement "+capCheck.available+" disponible(s).";}};
   if(!document.getElementById("pdfName").value.trim()) return "Nom du PDF manquant.";
   if(!document.getElementById("folderID").value.trim()) return "ID du dossier manquant.";
