@@ -164,6 +164,135 @@
       font-size: 12px;
       margin-top: 50px;
     }
+
+    /* Styles pour la section État des Webhooks */
+    .webhook-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,.3);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px currentColor;
+    }
+
+    .dot.waiting {
+      background: #f5a623;
+      color: #f5a623;
+      animation: pulse 1.5s infinite;
+    }
+
+    .dot.online {
+      background: #00c47a;
+      color: #00c47a;
+      animation: pulse 2s infinite;
+    }
+
+    .dot.offline {
+      background: #ff6060;
+      color: #ff6060;
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px currentColor; }
+      50% { opacity: 0.5; box-shadow: 0 0 12px currentColor; }
+    }
+
+    .status.waiting { color: #f5a623; }
+    .status.online { color: #00c47a; }
+    .status.offline { color: #ff6060; }
+
+    .test-btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,196,122,.3);
+      background: rgba(0,196,122,.1);
+      color: #00c47a;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .test-btn:hover {
+      background: rgba(0,196,122,.2);
+      border-color: rgba(0,196,122,.5);
+    }
+
+    .webhook-info code {
+      display: block;
+      background: rgba(0,0,0,.5);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 11px;
+      margin: 8px 0;
+      word-break: break-all;
+      color: rgba(200,200,200,.7);
+    }
+
+    /* Styles pour le flux de données */
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      padding: 15px 20px;
+      background: rgba(0,0,0,.3);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      margin: 12px 0;
+    }
+
+    .flow-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .flow-label {
+      flex: 1;
+      font-size: 13px;
+      color: rgba(200,200,200,.8);
+      line-height: 1.5;
+    }
+
+    .flow-label strong {
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .flow-label small {
+      display: block;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+
+    .flow-arrow {
+      text-align: center;
+      color: rgba(0,196,122,.5);
+      font-size: 20px;
+      margin: 4px 0;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -187,6 +316,7 @@
       <li><a href="#frontend">7. Fonctions Frontend (index.html)</a></li>
       <li><a href="#workflow">8. Flux de Travail Complet</a></li>
       <li><a href="#troubleshooting">9. Dépannage</a></li>
+      <li><a href="#webhook-status">10. État des Scénarios Make</a></li>
     </ul>
   </div>
 
@@ -222,49 +352,42 @@
     <h2>2️⃣ Architecture Générale</h2>
 
     <h3>Flux de Données</h3>
-    <div class="code-block">
-┌─────────────────┐
-│  Utilisateur    │ (Browser)
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────────────────────────────────┐
-│   Frontend: index.html                      │
-│   - Google Drive: Scan des PDFs             │
-│   - Google Sheets: Écrire les données       │
-│   - Appel Webhook: Déclencher Make          │
-└────────┬────────────────────────────────────┘
-         │
-         ↓
-┌─────────────────────────────────────────────┐
-│   Google Sheets (deux versions)             │
-│   - GetRowInfos: Config (PDF, dossier)      │
-│   - Liste envois: Gagnants + nbrPDF         │
-│   - Cell I1 (1by1) / E2 (Normal): Progress │
-└────────┬────────────────────────────────────┘
-         │
-         ↓
-┌─────────────────────────────────────────────┐
-│   Webhooks Make (Custom)                    │
-│   - Normal: https://hook.eu2.make.com/...   │
-│   - 1by1: https://hook.eu2.make.com/...     │
-└────────┬────────────────────────────────────┘
-         │
-         ↓
-┌─────────────────────────────────────────────┐
-│   Scénarios Make                            │
-│   - Lecture Google Sheets                   │
-│   - Copie des PDFs                          │
-│   - Envoi des emails                        │
-│   - Mise à jour du progrès                  │
-└────────┬────────────────────────────────────┘
-         │
-         ↓
-┌─────────────────────────────────────────────┐
-│   Google Drive + Gmail                      │
-│   - PDFs copiés par bénéficiaire            │
-│   - Emails envoyés avec PDFs                │
-└─────────────────────────────────────────────┘
+
+    <div style="margin: 20px 0;">
+      <div class="flow-step">
+        <div class="flow-icon">👤</div>
+        <div class="flow-label"><strong>1. Utilisateur</strong><br><small>Action depuis le navigateur</small></div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-icon">🌐</div>
+        <div class="flow-label"><strong>2. Frontend (index.html)</strong><br><small>Interface web</small><br><small style="color: #00c47a;">• Scanne Google Drive (PDFs)</small><br><small style="color: #00c47a;">• Écrit dans Google Sheets</small><br><small style="color: #00c47a;">• Déclenche webhooks Make</small></div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-icon">📊</div>
+        <div class="flow-label"><strong>3. Google Sheets</strong><br><small>Stockage central des données</small><br><small style="color: #f5a623;">• GetRowInfos (config PDF)</small><br><small style="color: #f5a623;">• Liste envois (gagnants)</small><br><small style="color: #f5a623;">• Cellule progrès (E2/I1)</small></div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-icon">🔗</div>
+        <div class="flow-label"><strong>4. Webhooks Make</strong><br><small>Points d'entrée du backend</small><br><small style="color: #ff6060;">• Mode Normal</small><br><small style="color: #ff6060;">• Mode 1by1</small></div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-icon">⚙️</div>
+        <div class="flow-label"><strong>5. Scénarios Make</strong><br><small>Orchestration backend</small><br><small style="color: #a78bfa;">• Lit Sheets</small><br><small style="color: #a78bfa;">• Copie PDFs</small><br><small style="color: #a78bfa;">• Envoie emails</small><br><small style="color: #a78bfa;">• Mise à jour progrès</small></div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-icon">💾</div>
+        <div class="flow-label"><strong>6. Résultat Final</strong><br><small>Services Google</small><br><small style="color: #00d4ff;">• Google Drive (PDFs)</small><br><small style="color: #00d4ff;">• Gmail (emails)</small></div>
+      </div>
     </div>
   </section>
 
@@ -1000,11 +1123,117 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
     </div>
   </section>
 
+  <!-- 10. État des Scénarios Make -->
+  <section id="webhook-status">
+    <h2>🔗 État des Scénarios Make</h2>
+
+    <p>Vérifiez l'état de connexion de vos scénarios Make. Les tests ci-dessous envoient une requête légère qui vérifie simplement que les webhooks répondent, sans déclencher le traitement des PDFs.</p>
+
+    <div class="webhook-card">
+      <div class="webhook-info">
+        <h3>Scénario Normal (1 PDF)</h3>
+        <code>https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv</code>
+        <div class="status" id="status-normal">
+          <span class="dot waiting"></span> En attente de test...
+        </div>
+      </div>
+      <button class="test-btn" onclick="testConnection('normal')">🧪 Tester</button>
+    </div>
+
+    <div class="webhook-card">
+      <div class="webhook-info">
+        <h3>Scénario 1by1 (Plusieurs PDFs)</h3>
+        <code>https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff</code>
+        <div class="status" id="status-1by1">
+          <span class="dot waiting"></span> En attente de test...
+        </div>
+      </div>
+      <button class="test-btn" onclick="testConnection('1by1')">🧪 Tester</button>
+    </div>
+
+    <div class="card" style="margin-top: 25px;">
+      <div class="card-title">📊 Interprétation des Résultats</div>
+      <div class="card-desc">
+        <strong>🟢 Connecté</strong> : Le webhook répond correctement. Le scénario est accessible et prêt à traiter les envois.<br><br>
+        <strong>🔴 Déconnecté</strong> : Le webhook ne répond pas. Vérifiez :<br>
+        • Que le scénario Make est bien <strong>activé</strong><br>
+        • Que l'URL du webhook est correcte (pas modifiée dans Make)<br>
+        • Votre connexion internet<br>
+        • Que le <strong>filtre "test-connection" a été ajouté aux scénarios</strong> (voir guide ci-dessous)<br><br>
+        <strong>🟠 Test en cours</strong> : La requête de test a été envoyée et on attend la réponse (timeout après 5 secondes).
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 25px; background: rgba(245,166,35,.1); border: 1px solid rgba(245,166,35,.3);">
+      <div class="card-title">⚙️ Configuration Requise</div>
+      <div class="card-desc">
+        Pour que les tests de connexion fonctionnent, vous devez <strong>modifier les deux scénarios Make</strong> pour ajouter un filtre "test-connection" au début.<br><br>
+        <strong>→ Consultez le guide détaillé :</strong> <a href="GUIDE_WEBHOOK_TESTING.md" style="color: #f5a623; text-decoration: underline;">GUIDE_WEBHOOK_TESTING.md</a><br><br>
+        Ce guide explique étape par étape comment :<br>
+        • Ajouter un Router après le webhook<br>
+        • Configurer les conditions (test-connection vs html)<br>
+        • Ajouter un module de réponse pour les tests
+      </div>
+    </div>
+  </section>
+
   <footer>
     <p>📚 Documentation MOG Send - Dernière mise à jour : 2026</p>
     <p>Pour toute question, consulter les logs Make ou la console du navigateur (F12)</p>
   </footer>
 </div>
+
+<script>
+const WEBHOOKS = {
+  normal: 'https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv',
+  '1by1': 'https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff'
+};
+
+function testConnection(mode) {
+  const statusEl = document.getElementById('status-' + mode);
+  const dot = statusEl.querySelector('.dot');
+
+  dot.classList.remove('online', 'offline');
+  dot.classList.add('waiting');
+  statusEl.textContent = '🟠 Test en cours...';
+  statusEl.classList.remove('online', 'offline');
+  statusEl.classList.add('waiting');
+
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Timeout')), 5000)
+  );
+
+  Promise.race([
+    fetch(WEBHOOKS[mode], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ trigger: 'test-connection', count: 0 })
+    }),
+    timeout
+  ])
+  .then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    dot.classList.remove('waiting');
+    dot.classList.add('online');
+    statusEl.classList.remove('offline', 'waiting');
+    statusEl.classList.add('online');
+    statusEl.innerHTML = '<span class="dot online"></span> 🟢 Connecté';
+  })
+  .catch(err => {
+    dot.classList.remove('waiting');
+    dot.classList.add('offline');
+    statusEl.classList.remove('online', 'waiting');
+    statusEl.classList.add('offline');
+    statusEl.innerHTML = '<span class="dot offline"></span> 🔴 Déconnecté';
+  });
+}
+
+// Lancer les tests au chargement
+window.addEventListener('load', function() {
+  setTimeout(() => testConnection('normal'), 300);
+  setTimeout(() => testConnection('1by1'), 800);
+});
+</script>
 
 </body>
 </html>
