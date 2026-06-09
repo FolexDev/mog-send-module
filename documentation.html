@@ -778,6 +778,40 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
     <div class="warning">
       <strong>⚠️ Différence Clé :</strong> Le scénario 1by1 a une boucle imbriquée (Iterator externe + Iterator interne) pour gérer plusieurs PDFs par gagnant, tandis que le Normal a une seule boucle.
     </div>
+
+    <h3>⚡ Filtre "test-connection" - Réponses Requises</h3>
+    <p>Chaque scénario doit avoir un <strong>Router</strong> au début pour détecter les requêtes de test et répondre avec un JSON spécifique.</p>
+
+    <h4>Scénario Normal - "OA Envoi PDF (Claude)"</h4>
+    <div class="code-block">
+Filtre Router :
+  Condition: {{434.trigger}} equals "test-connection"
+
+Module Répondre au Webhook :
+  Status: 200
+  Body: {"status":"active","scenario":"Normal"}
+    </div>
+
+    <h4>Scénario 1by1 - "OA Envoi PDF (1by1 )"</h4>
+    <div class="code-block">
+Filtre Router :
+  Condition: {{434.trigger}} equals "test-connection"
+
+Module Répondre au Webhook :
+  Status: 200
+  Body: {"status":"active","scenario":"1by1"}
+    </div>
+
+    <div class="card" style="margin-top: 15px; background: rgba(0,196,122,.1); border: 1px solid rgba(0,196,122,.3);">
+      <div class="card-title">✅ Validation du Test</div>
+      <div class="card-desc">
+        <strong>Frontend envoie :</strong> POST avec `{"trigger":"test-connection"}`<br>
+        <strong>Scénario répond avec :</strong> HTTP 200 + JSON body ci-dessus<br>
+        <strong>Frontend valide :</strong> Que `status == "active"`<br><br>
+        <strong>Si réponse correcte :</strong> 🟢 Voyant vert (Scénario activé)<br>
+        <strong>Si pas de réponse :</strong> 🔴 Voyant rouge (Scénario désactivé ou erreur)
+      </div>
+    </div>
   </section>
 
   <!-- 7. Frontend Functions -->
@@ -1211,20 +1245,27 @@ function testConnection(mode) {
     }),
     timeout
   ])
-  .then(r => {
+  .then(async r => {
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    dot.classList.remove('waiting');
-    dot.classList.add('online');
-    statusEl.classList.remove('offline', 'waiting');
-    statusEl.classList.add('online');
-    statusEl.innerHTML = '<span class="dot online"></span> 🟢 Connecté';
+    // Vérifier que la réponse est du JSON avec status: "active"
+    const data = await r.json();
+    if (data && data.status === 'active') {
+      dot.classList.remove('waiting');
+      dot.classList.add('online');
+      statusEl.classList.remove('offline', 'waiting');
+      statusEl.classList.add('online');
+      statusEl.innerHTML = '<span class="dot online"></span> 🟢 Connecté';
+    } else {
+      throw new Error('Scénario désactivé ou réponse invalide');
+    }
   })
   .catch(err => {
     dot.classList.remove('waiting');
     dot.classList.add('offline');
     statusEl.classList.remove('online', 'waiting');
     statusEl.classList.add('offline');
-    statusEl.innerHTML = '<span class="dot offline"></span> 🔴 Déconnecté';
+    const errMsg = err.message.includes('Timeout') ? 'Timeout' : 'Déconnecté';
+    statusEl.innerHTML = '<span class="dot offline"></span> 🔴 ' + errMsg;
   });
 }
 
