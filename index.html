@@ -1375,6 +1375,15 @@ function expSelectOriginal(folder) {
 
   EXP.selectedId = folder.id;
   EXP.selectedName = folder.name;
+
+  // D\u00e9tecter l'antenne automatiquement selon le chemin du dossier
+  var breadcrumbPath = EXP.breadcrumb.map(b => b.name).join(" / ").toLowerCase();
+  if (breadcrumbPath.includes("one fm") || breadcrumbPath.includes("onefm")) {
+    document.getElementById("mailFrom").value = "sav@onefm.ch";
+  } else if (breadcrumbPath.includes("radio lac") || breadcrumbPath.includes("radiolac")) {
+    document.getElementById("mailFrom").value = "sav@radiolac.ch";
+  }
+
   expUpdFooter();
 }
 
