@@ -470,7 +470,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
   <div class="authbar">
     <div class="aleft"><div class="authdot" id="authDot"></div><span id="authLabel">Non connect&eacute; &agrave; Google</span></div>
     <div style="display:flex;gap:8px;align-items:center;">
-      <button class="authbtn" style="padding:8px 12px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--txt);" onclick="openDocumentation()">&#10067;</button>
+      <button class="authbtn" id="docBtn" style="display:none;padding:8px 12px;border-radius:8px;background:transparent;color:#ccc;font-size:13px;font-weight:700;cursor:default;" onclick="openDocumentation()">?</button>
       <button class="authbtn" id="adminBtn" style="display:none;padding:8px 12px;border-radius:8px;background:rgba(245,166,35,.15);color:#f5a623;border:1px solid rgba(245,166,35,.3);" onclick="openAdminPanel()">⚙️ Admin</button>
       <button class="authbtn" id="authBtn" onclick="handleAuth()">Se connecter &agrave; Google</button>
     </div>
@@ -621,7 +621,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
       </div>
       <div class="modeBar" id="modeBar" style="display:none;margin-bottom:0;">
         <div style="position:relative;display:inline-flex;align-items:center;margin-right:8px;" onmouseenter="document.getElementById('tipMode').style.display='block'" onmouseleave="document.getElementById('tipMode').style.display='none'">
-          <span style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#ccc;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:default;">?</span>
+          <span style="color:#ccc;font-size:11px;font-weight:700;cursor:default;">?</span>
           <div id="tipMode" style="display:none;position:absolute;top:26px;left:0;z-index:50;width:280px;padding:14px 16px;background:#222;border:1px solid rgba(255,255,255,.18);border-radius:10px;font-size:12px;color:rgba(210,210,210,.9);line-height:1.6;box-shadow:0 8px 32px rgba(0,0,0,.6);">
             <div style="font-weight:700;margin-bottom:6px;">Mode d'envoi</div>
             <div><strong>1-PDF :</strong> Un PDF par personnes</div>
@@ -933,9 +933,11 @@ function showLoginError() {
 function unlockApp(email) {
   appUnlocked = true;
   isAdmin = ADMIN_EMAILS.indexOf(email) !== -1;
+  const isAlex = email === "alex@mediaonegroup.ch";
   document.getElementById("loginPage").style.display = "none";
   document.getElementById("webhookBar").style.display = "flex";
   document.getElementById("modeBar").style.display = "flex";
+  document.getElementById("docBtn").style.display = isAlex ? "block" : "none";
   document.getElementById("adminBtn").style.display = isAdmin ? "block" : "none";
   setAuthUI(true);
   document.getElementById("authLabel").textContent = email;
@@ -958,11 +960,12 @@ function renderUsersList() {
   listEl.innerHTML = "";
   ALLOWED_EMAILS.forEach(email => {
     const isAdminUser = ADMIN_EMAILS.indexOf(email) !== -1;
+    const isProtected = email === "alex@mediaonegroup.ch";
     const item = document.createElement("div");
     item.className = "user-item" + (isAdminUser ? " admin" : "");
     item.innerHTML = `
-      <span>${email}</span>
-      <button class="user-remove" onclick="removeUser('${email}')">Supprimer</button>
+      <span>${email}${isProtected ? ' <span style="color:#f5a623;font-size:10px;margin-left:6px;">(protégé)</span>' : ''}</span>
+      <button class="user-remove" onclick="removeUser('${email}')" ${isProtected ? 'disabled style="opacity:.5;cursor:not-allowed;"' : ''}>Supprimer</button>
     `;
     listEl.appendChild(item);
   });
@@ -986,6 +989,10 @@ function addUser() {
 }
 
 function removeUser(email) {
+  if (email === "alex@mediaonegroup.ch") {
+    alert("⚠️ Impossible de supprimer le compte administrateur");
+    return;
+  }
   if (!confirm("Supprimer " + email + " ?")) return;
   ALLOWED_EMAILS = ALLOWED_EMAILS.filter(e => e !== email);
   localStorage.setItem("allowedEmails", JSON.stringify(ALLOWED_EMAILS));
