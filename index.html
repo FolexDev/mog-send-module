@@ -254,7 +254,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .webhook-dot.offline{background:#ff6060;color:#ff6060;animation:none;}
 @keyframes pulse-mini{0%,100%{opacity:1;box-shadow:0 0 4px currentColor;}50%{opacity:.6;box-shadow:0 0 8px currentColor;}}
 .webhook-label{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.05em;}
-.modeBar{display:flex;align-items:center;gap:6px;padding:0;margin-bottom:0;flex-wrap:nowrap;}
+.modeBar{display:flex;align-items:center;gap:6px;padding:0;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);flex-wrap:nowrap;}
 .modeBar .mode-toggle{border:none;padding:8px 12px;background:transparent;font-size:11px;border-radius:4px;border:1px solid transparent;}
 .modeBar .mode-toggle:first-child{border-radius:4px 0 0 4px;}
 .modeBar .mode-toggle:last-child{border-radius:0 4px 4px 0;}
@@ -619,17 +619,19 @@ select option{background:#2a2a2a;color:#e8e8e8}
         <input type="number" id="startNum" value="1" min="1" oninput="renderGagnants()">
         <span>N&deg; du premier PDF du lot<br>Les suivants s'incr&eacute;mentent automatiquement</span>
       </div>
-      <div class="modeBar" id="modeBar" style="display:none;margin-bottom:0;">
-        <div style="position:relative;display:inline-flex;align-items:center;margin-right:8px;" onmouseenter="document.getElementById('tipMode').style.display='block'" onmouseleave="document.getElementById('tipMode').style.display='none'">
+      <div style="display:none;margin-bottom:0;display:flex;gap:8px;align-items:center;" id="modeBar">
+        <div style="position:relative;display:inline-flex;align-items:center;" onmouseenter="document.getElementById('tipMode').style.display='block'" onmouseleave="document.getElementById('tipMode').style.display='none'">
           <span style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#ccc;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:default;">?</span>
-          <div id="tipMode" style="display:none;position:absolute;top:26px;left:0;z-index:50;width:280px;padding:14px 16px;background:#222;border:1px solid rgba(255,255,255,.18);border-radius:10px;font-size:12px;color:rgba(210,210,210,.9);line-height:1.6;box-shadow:0 8px 32px rgba(0,0,0,.6);">
+          <div id="tipMode" style="display:none;position:absolute;top:26px;left:0;z-index:50;width:320px;padding:14px 16px;background:#222;border:1px solid rgba(255,255,255,.18);border-radius:10px;font-size:12px;color:rgba(210,210,210,.9);line-height:1.6;box-shadow:0 8px 32px rgba(0,0,0,.6);white-space:normal;">
             <div style="font-weight:700;margin-bottom:6px;">Mode d'envoi</div>
             <div><strong>1-PDF :</strong> Un PDF par personnes</div>
             <div><strong>N-PDF :</strong> Plusieurs PDFs par personnes</div>
           </div>
         </div>
-        <button class="mode-toggle active" id="modeNormalBtn" onclick="setMode('normal')">1-PDF</button>
-        <button class="mode-toggle" id="modeOneByOneBtn" onclick="setMode('onebyOne')">N-PDF</button>
+        <div class="modeBar">
+          <button class="mode-toggle active" id="modeNormalBtn" onclick="setMode('normal')">1-PDF</button>
+          <button class="mode-toggle" id="modeOneByOneBtn" onclick="setMode('onebyOne')">N-PDF</button>
+        </div>
       </div>
     </div>
     <div class="import-row">
