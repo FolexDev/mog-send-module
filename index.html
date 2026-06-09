@@ -1836,7 +1836,7 @@ function removeGagnant(id) {
   gagnants = gagnants.filter(function(g){return g!==id;}); renderGagnants();
 }
 function renderGagnants() {
-  var block=document.getElementById("gBlock"); var startN=getStart(); var sv={};
+  var block=document.getElementById("gBlock"); if(!block)return; var startN=getStart(); var sv={};
   for(var k=0;k<gagnants.length;k++){var gid=gagnants[k];var ep=document.getElementById("pr"+gid);var en=document.getElementById("nm"+gid);var ee=document.getElementById("em"+gid);var nbr=document.getElementById("nbrpdf"+gid);sv[gid]={pr:ep?ep.value:"",nm:en?en.value:"",em:ee?ee.value:"",nbr:nbr?nbr.value:""};}
   while(block.firstChild){block.removeChild(block.firstChild);}
   for(var i=0;i<gagnants.length;i++){
@@ -1854,7 +1854,7 @@ function renderGagnants() {
     (function(rmid){rb.onclick=function(){removeGagnant(rmid);};})(id);
     row.appendChild(badge);row.appendChild(fields);row.appendChild(rb);block.appendChild(row);
   }
-  document.getElementById("cbadge").textContent=gagnants.length;
+  var cbadge=document.getElementById("cbadge"); if(cbadge)cbadge.textContent=gagnants.length;
   recalculateWinnersNumbers();
 document.addEventListener('paste', function(e) {
   var active=document.activeElement;
