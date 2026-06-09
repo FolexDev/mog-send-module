@@ -254,7 +254,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .webhook-dot.offline{background:#ff6060;color:#ff6060;animation:none;}
 @keyframes pulse-mini{0%,100%{opacity:1;box-shadow:0 0 4px currentColor;}50%{opacity:.6;box-shadow:0 0 8px currentColor;}}
 .webhook-label{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.05em;}
-.modeBar{display:flex;align-items:center;gap:6px;padding:0;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);margin-bottom:0;flex-wrap:nowrap;}
+.modeBar{display:flex;align-items:center;gap:6px;padding:0;margin-bottom:0;flex-wrap:nowrap;}
 .modeBar .mode-toggle{border:none;padding:8px 12px;background:transparent;font-size:11px;border-radius:4px;border:1px solid transparent;}
 .modeBar .mode-toggle:first-child{border-radius:4px 0 0 4px;}
 .modeBar .mode-toggle:last-child{border-radius:0 4px 4px 0;}
@@ -862,33 +862,15 @@ function progFinalize(sent, errors, timeout) {
   document.getElementById("btnSend").disabled = false;
 }
 
-var ALLOWED_EMAILS = [];
-var ADMIN_EMAILS = [];
-var permissionsData = null;
+var ALLOWED_EMAILS = [
+  "alex@mediaonegroup.ch",
+  "ajeanrenaud@gmail.com",
+  "lionel@mediaonegroup.ch"
+];
+var ADMIN_EMAILS = ["alex@mediaonegroup.ch"];
 var isAdmin = false;
 var loginClient = null;
 var appUnlocked = false;
-
-async function loadPermissions() {
-  try {
-    const response = await fetch('permissions.json');
-    permissionsData = await response.json();
-    ALLOWED_EMAILS = permissionsData.users || [];
-    ADMIN_EMAILS = permissionsData.admin || [];
-
-    // Charger les modifications locales si disponibles
-    const localEmails = localStorage.getItem("allowedEmails");
-    if (localEmails) {
-      try {
-        ALLOWED_EMAILS = JSON.parse(localEmails);
-      } catch(e) {}
-    }
-  } catch(e) {
-    console.error("Erreur chargement permissions.json:", e);
-    ALLOWED_EMAILS = ["alex@mediaonegroup.ch"];
-    ADMIN_EMAILS = ["alex@mediaonegroup.ch"];
-  }
-}
 
 function initLoginClient() {
   var check = setInterval(function() {
@@ -1003,7 +985,6 @@ function openDocumentation() {
   window.open("documentation.html", "MOG_Documentation", "width=1200,height=800,scrollbars=yes");
 }
 
-loadPermissions();
 initLoginClient();
 
 var CLIENT_ID      = "253709404223-7dk219jfjfn43vitgap2ujdblue4m1v8.apps.googleusercontent.com";
