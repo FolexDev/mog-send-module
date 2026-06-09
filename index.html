@@ -637,6 +637,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
         </div>
         <div class="modeBar">
           <button class="mode-toggle active" id="modeNormalBtn" onclick="setMode('normal')">1-PDF</button>
+          <button class="mode-toggle" id="modeTwoByOneBtn" onclick="setMode('twobyOne')">2-PDF</button>
           <button class="mode-toggle" id="modeOneByOneBtn" onclick="setMode('onebyOne')">N-PDF</button>
         </div>
       </div>
@@ -1218,6 +1219,14 @@ var modeConfigs = {
     progressCell: "'Liste envois'!E2",
     hasNbrPDF: false
   },
+  twobyOne: {
+    name: "2-PDF",
+    spreadsheetId: "1_xMCY0L2hoLu45RnffrMWU71U0y6OG_byqsHZNDd5fk",
+    webhook: "https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff",
+    progressCell: "'Liste envois'!I1",
+    hasNbrPDF: "fixed",
+    fixedNbrPDF: 2
+  },
   onebyOne: {
     name: "N-PDF",
     spreadsheetId: "1_xMCY0L2hoLu45RnffrMWU71U0y6OG_byqsHZNDd5fk",
@@ -1231,10 +1240,11 @@ var currentMode = "normal";
 document.getElementById("logoImg").src = "https://raw.githubusercontent.com/FolexMOG/mog-send-module/ec831aef635d72626a86e03e2efef8a75757865d/One-Lac%20Shade%20Envoi.png";
 
 function setMode(mode) {
-  // mode: "normal" = 1-PDF  |  "onebyOne" = N-PDF
+  // mode: "normal" = 1-PDF  |  "twobyOne" = 2-PDF  |  "onebyOne" = N-PDF
   if (!modeConfigs[mode]) return;
   currentMode = mode;
   document.getElementById("modeNormalBtn").classList.toggle("active", mode === "normal");
+  document.getElementById("modeTwoByOneBtn").classList.toggle("active", mode === "twobyOne");
   document.getElementById("modeOneByOneBtn").classList.toggle("active", mode === "onebyOne");
   renderGagnants();
   if (document.getElementById("pdfName").value.trim()) {
@@ -1243,8 +1253,8 @@ function setMode(mode) {
 }
 
 function recalculateWinnersNumbers() {
-  // Recalculer les numéros des gagnants en mode N-PDF seulement
-  if (currentMode !== "onebyOne") return;
+  // Recalculer les numéros des gagnants en mode 2-PDF et N-PDF
+  if (currentMode !== "onebyOne" && currentMode !== "twobyOne") return;
   var startN = getStart();
   var currentNum = startN;
   for (var i = 0; i < gagnants.length; i++) {
@@ -1276,8 +1286,8 @@ function recalculateWinnersNumbers() {
 }
 
 function validateCapacity() {
-  // Valider la capacité (mode N-PDF seulement)
-  if (currentMode !== "onebyOne") return { valid: true, surplus: 0, total: 0, available: 0 };
+  // Valider la capacité (mode 2-PDF et N-PDF)
+  if (currentMode !== "onebyOne" && currentMode !== "twobyOne") return { valid: true, surplus: 0, total: 0, available: 0 };
 
   var totalRequired = 0;
   for (var i = 0; i < gagnants.length; i++) {
@@ -1297,8 +1307,8 @@ function validateCapacity() {
 }
 
 async function recalculateStartNum() {
-  // Recalculer le numéro de départ (mode N-PDF seulement)
-  if (currentMode !== "onebyOne") return;
+  // Recalculer le numéro de départ (mode 2-PDF et N-PDF)
+  if (currentMode !== "onebyOne" && currentMode !== "twobyOne") return;
   var folderId = document.getElementById("folderID").value.trim();
   var pdfName = document.getElementById("pdfName").value.trim();
   if (!folderId || !pdfName || !accessToken) return;
@@ -1831,8 +1841,8 @@ function renderGagnants() {
     var row=document.createElement("div");row.className="gcard";row.id="gcard-"+id;
     var badge=document.createElement("div");badge.className="gnum";badge.textContent=num;
     var fields=document.createElement("div");fields.className="gfields";
-    if(currentMode==="onebyOne"){fields.classList.add("grid-nby1");}
-    if(currentMode==="onebyOne"){var inbr=document.createElement("input");inbr.type="number";inbr.id="nbrpdf"+id;inbr.placeholder="Nbr PDF";inbr.value=s.nbr;inbr.min="1";inbr.oninput=function(){recalculateWinnersNumbers();};fields.appendChild(inbr);}
+    if(currentMode==="onebyOne"||currentMode==="twobyOne"){fields.classList.add("grid-nby1");}
+    if(currentMode==="onebyOne"||currentMode==="twobyOne"){var inbr=document.createElement("input");inbr.type="number";inbr.id="nbrpdf"+id;inbr.placeholder="Nbr PDF";inbr.value=currentMode==="twobyOne"?"2":s.nbr;inbr.min="1";if(currentMode==="twobyOne"){inbr.disabled=true;inbr.style.opacity="0.5";inbr.style.cursor="not-allowed";}else{inbr.oninput=function(){recalculateWinnersNumbers();};}fields.appendChild(inbr);}
     var ip=document.createElement("input");ip.type="text";ip.id="pr"+id;ip.placeholder="Pr\u00e9nom";ip.value=s.pr;
     var inm=document.createElement("input");inm.type="text";inm.id="nm"+id;inm.placeholder="Nom";inm.value=s.nm;
     var ie=document.createElement("input");ie.type="email";ie.id="em"+id;ie.placeholder="email@exemple.com";ie.value=s.em;
@@ -1857,7 +1867,7 @@ document.addEventListener('paste', function(e) {
   var suffix=active.id.replace(/^(pr|nm|em|nbrpdf)/,'');
   var startIdx=gagnants.indexOf(parseFloat(suffix));
   if(startIdx===-1)return;
-  var fields=(currentMode==='onebyOne'&&numCols===4)?['nbrpdf','pr','nm','em']:['nm','pr','em'];
+  var fields=(currentMode==='onebyOne'&&numCols===4)?['nbrpdf','pr','nm','em']:['nm','pr','em']; // En mode 2-PDF, ignorer la 4e colonne si présente
   var colsPerGagnant=fields.length;
   var allValues=[];
   lines.forEach(function(line){allValues=allValues.concat(line.split('\t').map(function(v){return v.trim();}).filter(function(v){return v!=='';}));});
@@ -1871,8 +1881,8 @@ document.addEventListener('paste', function(e) {
 function effacerListe(){gagnants=[];addGagnant();}
 function validate() {
   if(!accessToken) return "Connecte-toi a Google d'abord.";
-  // En mode N-PDF, vérifier la capacité avant l'envoi
-  if(currentMode==="onebyOne"){var capCheck=validateCapacity();if(!capCheck.valid){return "Dépassement de capacité : "+capCheck.total+" PDFs requis, seulement "+capCheck.available+" disponible(s).";}};
+  // En mode 2-PDF et N-PDF, vérifier la capacité avant l'envoi
+  if(currentMode==="onebyOne"||currentMode==="twobyOne"){var capCheck=validateCapacity();if(!capCheck.valid){return "Dépassement de capacité : "+capCheck.total+" PDFs requis, seulement "+capCheck.available+" disponible(s).";}};
   if(!document.getElementById("pdfName").value.trim()) return "Nom du PDF manquant.";
   if(!document.getElementById("folderID").value.trim()) return "ID du dossier manquant.";
   if(!document.getElementById("mailSubject").value.trim()) return "Objet du mail manquant.";
@@ -1883,7 +1893,7 @@ function validate() {
     var nm=document.getElementById("nm"+id);if(!nm||!nm.value.trim())return "Nom manquant - gagnant "+(i+1)+".";
     var em=document.getElementById("em"+id);if(!em||!em.value.trim())return "Email manquant - gagnant "+(i+1)+".";
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim()))return "Email invalide - gagnant "+(i+1)+".";
-    if(currentMode==="onebyOne"){var nbrInput=document.getElementById("nbrpdf"+id);var nbr=nbrInput?parseInt(nbrInput.value,10):0;if(!nbrInput||!nbrInput.value.trim()||isNaN(nbr)||nbr<1)return "Nombre de PDFs manquant ou invalide - gagnant "+(i+1)+".";}
+    if(currentMode==="onebyOne"||currentMode==="twobyOne"){var nbrInput=document.getElementById("nbrpdf"+id);var nbr=nbrInput?parseInt(nbrInput.value,10):0;if(!nbrInput||!nbrInput.value.trim()||isNaN(nbr)||nbr<1)return "Nombre de PDFs manquant ou invalide - gagnant "+(i+1)+".";}
   }
   return null;
 }
@@ -1891,8 +1901,7 @@ function lancerEnvoi(){var err=validate();if(err){showStatus("error",err);return
 
 function testWebhookForConfirm(){
   // Tester le webhook du mode courant quand la boîte de confirmation s'ouvre
-  var modeName=currentMode==="normal"?"1-PDF":"N-PDF";
-  var modeLabel=currentMode==="normal"?"1-PDF":"N-PDF";
+  var modeLabel=currentMode==="normal"?"1-PDF":currentMode==="twobyOne"?"2-PDF":"N-PDF";
   document.getElementById("confirmWebhookLabel").textContent="Vérification statut scénario "+modeLabel+"...";
 
   var dot=document.getElementById("confirmWebhookDot");
@@ -1947,7 +1956,7 @@ async function doEnvoi() {
   var cfg=modeConfigs[currentMode];
   var startN=getStart();var winners=[];
   var currentNum=startN;
-  for(var i=0;i<gagnants.length;i++){var id=gagnants[i];var w={numero:currentMode==="normal"?(startN+i):currentNum,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()};if(currentMode==="onebyOne"){var nbrInput=document.getElementById("nbrpdf"+id);w.nbrPDF=nbrInput?parseInt(nbrInput.value,10):1;currentNum+=w.nbrPDF;}winners.push(w);}
+  for(var i=0;i<gagnants.length;i++){var id=gagnants[i];var w={numero:currentMode==="normal"?(startN+i):currentNum,prenom:document.getElementById("pr"+id).value.trim(),nom:document.getElementById("nm"+id).value.trim(),email:document.getElementById("em"+id).value.trim()};if(currentMode==="onebyOne"||currentMode==="twobyOne"){var nbrInput=document.getElementById("nbrpdf"+id);w.nbrPDF=nbrInput?parseInt(nbrInput.value,10):1;currentNum+=w.nbrPDF;}winners.push(w);}
   // Vérifier la capacité avant envoi (sécurité)
   var capCheck=validateCapacity();if(!capCheck.valid){showStatus("error","Impossible d'envoyer : dépassement de capacité ("+capCheck.total+" PDFs requis, "+capCheck.available+" disponible(s))");return;}
   document.getElementById("btnSend").disabled=true;
