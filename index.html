@@ -447,6 +447,10 @@ select option{background:#2a2a2a;color:#e8e8e8}
 <div class="confirm-bg" id="confirmBg">
   <div class="confirm-box">
     <h3>Confirmation</h3>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:12px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid rgba(255,255,255,.08);">
+      <span class="webhook-dot waiting" id="confirmWebhookDot" style="width:12px;height:12px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px currentColor;background:#f5a623;color:#f5a623;animation:pulse 1.5s infinite;"></span>
+      <span id="confirmWebhookLabel" style="font-size:13px;color:rgba(200,200,200,.8);">Vérification statut scénario...</span>
+    </div>
     <ul class="confirm-list">
       <li><span class="qi">?</span>Tu es s&ucirc;r de ce que tu fais&nbsp;?</li>
       <li><span class="qi">?</span>Tu as tout v&eacute;rifi&eacute;&nbsp;?</li>
@@ -1722,7 +1726,51 @@ function validate() {
   }
   return null;
 }
-function lancerEnvoi(){var err=validate();if(err){showStatus("error",err);return;}document.getElementById("confirmNum").textContent=getStart();document.getElementById("confirmBg").classList.add("show");}
+function lancerEnvoi(){var err=validate();if(err){showStatus("error",err);return;}document.getElementById("confirmNum").textContent=getStart();document.getElementById("confirmBg").classList.add("show");testWebhookForConfirm();}
+
+function testWebhookForConfirm(){
+  // Tester le webhook du mode courant quand la boîte de confirmation s'ouvre
+  var modeName=currentMode==="normal"?"1-PDF":"N-PDF";
+  var modeLabel=currentMode==="normal"?"1-PDF":"N-PDF";
+  document.getElementById("confirmWebhookLabel").textContent="Vérification statut scénario "+modeLabel+"...";
+
+  var dot=document.getElementById("confirmWebhookDot");
+  dot.className="webhook-dot waiting";
+  dot.style.background="#f5a623";
+  dot.style.color="#f5a623";
+
+  var webhookUrl=currentMode==="normal"?"https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv":"https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff";
+
+  var timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("Timeout")),5000));
+
+  Promise.race([
+    fetch(webhookUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({trigger:"test-connection",count:0})}),
+    timeout
+  ])
+  .then(async r=>{
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    var data=await r.json();
+    if(data&&data.status==="active"){
+      dot.className="webhook-dot online";
+      dot.style.background="#00c47a";
+      dot.style.color="#00c47a";
+      dot.style.animation="pulse 2s infinite";
+      document.getElementById("confirmWebhookLabel").textContent="✓ Scénario "+modeLabel+" - Connecté";
+      document.getElementById("confirmWebhookLabel").style.color="#00c47a";
+    }else{
+      throw new Error("Réponse invalide");
+    }
+  })
+  .catch(err=>{
+    dot.className="webhook-dot offline";
+    dot.style.background="#ff6060";
+    dot.style.color="#ff6060";
+    dot.style.animation="none";
+    var errMsg=err.message.includes("Timeout")?"Timeout":"Déconnecté";
+    document.getElementById("confirmWebhookLabel").textContent="✗ Scénario "+modeLabel+" - "+errMsg;
+    document.getElementById("confirmWebhookLabel").style.color="#ff6060";
+  });
+}
 function closeConfirm(){document.getElementById("confirmBg").classList.remove("show");}
 function confirmNo(){closeConfirm();showStatus("warn","Process interrupted");}
 function confirmYes(){
