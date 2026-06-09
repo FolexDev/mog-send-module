@@ -423,8 +423,8 @@
         <td>11O24DWCA2pWtEh344R1ABJ10ZsArKCEiBNWC5EWV2wY</td>
       </tr>
       <tr>
-        <td>Webhooks</td>
-        <td>https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv</td>
+        <td>Scénario Make</td>
+        <td>OA Envoi 1-PDF</td>
       </tr>
       <tr>
         <td>Cellule Progrès</td>
@@ -463,8 +463,8 @@
         <td>1_xMCY0L2hoLu45RnffrMWU71U0y6OG_byqsHZNDd5fk</td>
       </tr>
       <tr>
-        <td>Webhooks</td>
-        <td>https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff</td>
+        <td>Scénario Make</td>
+        <td>OA Envoi N-PDF</td>
       </tr>
       <tr>
         <td>Cellule Progrès</td>
@@ -621,11 +621,11 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
 
     <p>Les webhooks sont des points d'entrée qui déclenchent les scénarios Make depuis le frontend.</p>
 
-    <h3>Webhook Mode NORMAL</h3>
+    <h3>Webhook Mode 1-PDF</h3>
     <div class="card">
-      <div class="card-title">🔗 URL</div>
-      <div class="card-desc" style="font-family: 'Courier New', monospace; font-size: 11px;">
-        https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv
+      <div class="card-title">🔗 Scénario</div>
+      <div class="card-desc">
+        OA Envoi 1-PDF
       </div>
     </div>
     <div class="card">
@@ -639,14 +639,14 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
     </div>
     <div class="card">
       <div class="card-title">⚙️ Déclenche</div>
-      <div class="card-desc">Scénario Make "OA Envoi PDF (Claude)"</div>
+      <div class="card-desc">Scénario Make "OA Envoi 1-PDF"</div>
     </div>
 
-    <h3>Webhook Mode 1BY1</h3>
+    <h3>Webhook Mode N-PDF</h3>
     <div class="card">
-      <div class="card-title">🔗 URL</div>
-      <div class="card-desc" style="font-family: 'Courier New', monospace; font-size: 11px;">
-        https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff
+      <div class="card-title">🔗 Scénario</div>
+      <div class="card-desc">
+        OA Envoi N-PDF
       </div>
     </div>
     <div class="card">
@@ -660,7 +660,7 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
     </div>
     <div class="card">
       <div class="card-title">⚙️ Déclenche</div>
-      <div class="card-desc">Scénario Make "OA Envoi PDF (1by1 )"</div>
+      <div class="card-desc">Scénario Make "OA Envoi N-PDF"</div>
     </div>
 
     <div class="warning">
@@ -687,7 +687,7 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
 4. À la fin : Nettoyer/Reset l'état pour le prochain envoi
     </div>
 
-    <h3>Scénario Mode 1-PDF - "OA Envoi PDF (Claude)"</h3>
+    <h3>Scénario Mode 1-PDF - "OA Envoi 1-PDF"</h3>
     <table>
       <tr>
         <th>Module</th>
@@ -727,7 +727,7 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
       </tr>
     </table>
 
-    <h3>Scénario Mode N-PDF - "OA Envoi PDF (1by1 )"</h3>
+    <h3>Scénario Mode N-PDF - "OA Envoi N-PDF"</h3>
     <table>
       <tr>
         <th>Module</th>
@@ -782,7 +782,7 @@ Gagnant 3 (nbrPDF=1) → reçoit PDF 6 (4 + 2 = 6)
     <h3>⚡ Filtre "test-connection" - Réponses Requises</h3>
     <p>Chaque scénario doit avoir un <strong>Router</strong> au début pour détecter les requêtes de test et répondre avec un JSON spécifique.</p>
 
-    <h4>Scénario 1-PDF - "OA Envoi PDF (Claude)"</h4>
+    <h4>Scénario 1-PDF - "OA Envoi 1-PDF"</h4>
     <div class="code-block">
 Filtre Router :
   Condition: {{434.trigger}} equals "test-connection"
@@ -792,7 +792,7 @@ Module Répondre au Webhook :
   Body: {"status":"active","scenario":"1-PDF"}
     </div>
 
-    <h4>Scénario N-PDF - "OA Envoi PDF (1by1 )"</h4>
+    <h4>Scénario N-PDF - "OA Envoi N-PDF"</h4>
     <div class="code-block">
 Filtre Router :
   Condition: {{434.trigger}} equals "test-connection"
@@ -1167,8 +1167,7 @@ Module Répondre au Webhook :
 
     <div class="webhook-card">
       <div class="webhook-info">
-        <h3>Scénario 1-PDF</h3>
-        <code>https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv</code>
+        <h3>Scénario 1-PDF - "OA Envoi 1-PDF"</h3>
         <div class="status" id="status-normal">
           <span class="dot waiting"></span> En attente de test...
         </div>
@@ -1178,8 +1177,7 @@ Module Répondre au Webhook :
 
     <div class="webhook-card">
       <div class="webhook-info">
-        <h3>Scénario N-PDF</h3>
-        <code>https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff</code>
+        <h3>Scénario N-PDF - "OA Envoi N-PDF"</h3>
         <div class="status" id="status-1by1">
           <span class="dot waiting"></span> En attente de test...
         </div>
