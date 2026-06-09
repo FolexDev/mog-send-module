@@ -259,12 +259,23 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .modeBar .mode-toggle:first-child{border-radius:4px 0 0 4px;}
 .modeBar .mode-toggle:last-child{border-radius:0 4px 4px 0;}
 .modeBar .mode-toggle.active{background:rgba(0,196,122,.2);color:#00c47a;border-color:rgba(0,196,122,.3)}
-.mode-info-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(0,196,122,.15);color:#00c47a;font-size:12px;font-weight:bold;cursor:help;border:1px solid rgba(0,196,122,.3);transition:all .2s;position:relative;}
-.mode-info-btn:hover{background:rgba(0,196,122,.25);border-color:rgba(0,196,122,.5);}
-.mode-info-btn::before{content:attr(title);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:#00c47a;padding:8px 12px;border-radius:6px;font-size:11px;white-space:nowrap;z-index:1000;pointer-events:none;opacity:0;transition:opacity .2s;border:1px solid rgba(0,196,122,.3);font-weight:normal;}
-.mode-info-btn:hover::before{opacity:1;}
-.mode-info-btn::after{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid rgba(0,0,0,.9);opacity:0;transition:opacity .2s;z-index:1000;pointer-events:none;}
-.mode-info-btn:hover::after{opacity:1;}
+/* Admin Panel */
+.admin-panel{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:2000;}
+.admin-modal{background:linear-gradient(160deg, #181818, #252525);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:30px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;padding-bottom:15px;border-bottom:2px solid rgba(0,196,122,.3);}
+.admin-header h2{color:#fff;font-size:18px;margin:0;}
+.admin-close{background:none;border:none;color:rgba(200,200,200,.6);font-size:20px;cursor:pointer;transition:color .2s;}
+.admin-close:hover{color:#fff;}
+.admin-content{color:rgba(200,200,200,.8);}
+.admin-section h3{color:#f5a623;font-size:14px;margin-bottom:15px;text-transform:uppercase;letter-spacing:.05em;}
+.users-list{display:flex;flex-direction:column;gap:8px;margin-bottom:15px;max-height:300px;overflow-y:auto;}
+.user-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:6px;font-size:13px;}
+.user-item.admin{border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.1);}
+.user-item.admin::before{content:'⭐ ';color:#f5a623;}
+.user-remove{background:rgba(255,100,100,.2);color:#ff6060;border:1px solid rgba(255,100,100,.3);padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;transition:all .2s;}
+.user-remove:hover{background:rgba(255,100,100,.3);border-color:rgba(255,100,100,.5);}
+.add-user{display:flex;gap:8px;margin-top:15px;}
+.admin-info{color:rgba(200,200,200,.7)!important;}
 
 /* ALIGNEMENT LIENS */
 .fl-row{display:flex;align-items:center;gap:8px;min-height:28px;flex-wrap:nowrap}
@@ -353,6 +364,28 @@ select option{background:#2a2a2a;color:#e8e8e8}
   </div>
 </div>
 
+<div class="admin-panel" id="adminPanel" style="display:none;">
+  <div class="admin-modal">
+    <div class="admin-header">
+      <h2>⚙️ Gestion des Permissions</h2>
+      <button class="admin-close" onclick="closeAdminPanel()">✕</button>
+    </div>
+    <div class="admin-content">
+      <div class="admin-section">
+        <h3>Utilisateurs Autorisés</h3>
+        <div class="users-list" id="usersList"></div>
+        <div class="add-user">
+          <input type="email" id="newUserEmail" placeholder="Ajouter un email..." style="flex:1;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:6px;background:rgba(255,255,255,.05);color:#fff;">
+          <button onclick="addUser()" style="padding:8px 16px;background:rgba(0,196,122,.2);color:#00c47a;border:1px solid rgba(0,196,122,.3);border-radius:6px;cursor:pointer;font-weight:600;">Ajouter</button>
+        </div>
+      </div>
+      <div class="admin-info" style="margin-top:20px;padding:12px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:6px;color:rgba(200,200,200,.8);font-size:12px;">
+        <strong>⚠️ À noter :</strong> Les changements sont sauvegardés localement. Pour persister sur tous les appareils, contacte l'administrateur système qui mettra à jour le fichier <code>permissions.json</code> sur GitHub.
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="picker-bg" id="pickerBg" onclick="pickerBgClose(event)">
   <div class="epicker">
     <div class="epicker-top"></div>
@@ -438,6 +471,7 @@ select option{background:#2a2a2a;color:#e8e8e8}
     <div class="aleft"><div class="authdot" id="authDot"></div><span id="authLabel">Non connect&eacute; &agrave; Google</span></div>
     <div style="display:flex;gap:8px;align-items:center;">
       <button class="authbtn" style="padding:8px 12px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--txt);" onclick="openDocumentation()">&#10067;</button>
+      <button class="authbtn" id="adminBtn" style="display:none;padding:8px 12px;border-radius:8px;background:rgba(245,166,35,.15);color:#f5a623;border:1px solid rgba(245,166,35,.3);" onclick="openAdminPanel()">⚙️ Admin</button>
       <button class="authbtn" id="authBtn" onclick="handleAuth()">Se connecter &agrave; Google</button>
     </div>
   </div>
@@ -586,7 +620,14 @@ select option{background:#2a2a2a;color:#e8e8e8}
         <span>N&deg; du premier PDF du lot<br>Les suivants s'incr&eacute;mentent automatiquement</span>
       </div>
       <div class="modeBar" id="modeBar" style="display:none;margin-bottom:0;">
-        <div class="mode-info-btn" title="1-PDF : Un PDF par personnes&#10;N-PDF : Plusieurs PDFs par personnes">ⓘ</div>
+        <div style="position:relative;display:inline-flex;align-items:center;margin-right:8px;" onmouseenter="document.getElementById('tipMode').style.display='block'" onmouseleave="document.getElementById('tipMode').style.display='none'">
+          <span style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#ccc;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:default;">?</span>
+          <div id="tipMode" style="display:none;position:absolute;top:26px;left:0;z-index:50;width:280px;padding:14px 16px;background:#222;border:1px solid rgba(255,255,255,.18);border-radius:10px;font-size:12px;color:rgba(210,210,210,.9);line-height:1.6;box-shadow:0 8px 32px rgba(0,0,0,.6);">
+            <div style="font-weight:700;margin-bottom:6px;">Mode d'envoi</div>
+            <div><strong>1-PDF :</strong> Un PDF par personnes</div>
+            <div><strong>N-PDF :</strong> Plusieurs PDFs par personnes</div>
+          </div>
+        </div>
         <button class="mode-toggle active" id="modeNormalBtn" onclick="setMode('normal')">1-PDF</button>
         <button class="mode-toggle" id="modeOneByOneBtn" onclick="setMode('onebyOne')">N-PDF</button>
       </div>
@@ -821,14 +862,33 @@ function progFinalize(sent, errors, timeout) {
   document.getElementById("btnSend").disabled = false;
 }
 
-var ALLOWED_EMAILS = [
-  "alex@mediaonegroup.ch",
-  "ajeanrenaud@gmail.com",
-  "lionel@mediaonegroup.ch",
-  "alexis@onefm.ch"
-];
+var ALLOWED_EMAILS = [];
+var ADMIN_EMAILS = [];
+var permissionsData = null;
+var isAdmin = false;
 var loginClient = null;
 var appUnlocked = false;
+
+async function loadPermissions() {
+  try {
+    const response = await fetch('permissions.json');
+    permissionsData = await response.json();
+    ALLOWED_EMAILS = permissionsData.users || [];
+    ADMIN_EMAILS = permissionsData.admin || [];
+
+    // Charger les modifications locales si disponibles
+    const localEmails = localStorage.getItem("allowedEmails");
+    if (localEmails) {
+      try {
+        ALLOWED_EMAILS = JSON.parse(localEmails);
+      } catch(e) {}
+    }
+  } catch(e) {
+    console.error("Erreur chargement permissions.json:", e);
+    ALLOWED_EMAILS = ["alex@mediaonegroup.ch"];
+    ADMIN_EMAILS = ["alex@mediaonegroup.ch"];
+  }
+}
 
 function initLoginClient() {
   var check = setInterval(function() {
@@ -872,15 +932,71 @@ function showLoginError() {
 
 function unlockApp(email) {
   appUnlocked = true;
+  isAdmin = ADMIN_EMAILS.indexOf(email) !== -1;
   document.getElementById("loginPage").style.display = "none";
   document.getElementById("webhookBar").style.display = "flex";
   document.getElementById("modeBar").style.display = "flex";
+  document.getElementById("adminBtn").style.display = isAdmin ? "block" : "none";
   setAuthUI(true);
   document.getElementById("authLabel").textContent = email;
   // Tester les webhooks après connexion
   setTimeout(() => testWebhookStatus(), 500);
 }
 
+function openAdminPanel() {
+  if (!isAdmin) return;
+  document.getElementById("adminPanel").style.display = "flex";
+  renderUsersList();
+}
+
+function closeAdminPanel() {
+  document.getElementById("adminPanel").style.display = "none";
+}
+
+function renderUsersList() {
+  const listEl = document.getElementById("usersList");
+  listEl.innerHTML = "";
+  ALLOWED_EMAILS.forEach(email => {
+    const isAdminUser = ADMIN_EMAILS.indexOf(email) !== -1;
+    const item = document.createElement("div");
+    item.className = "user-item" + (isAdminUser ? " admin" : "");
+    item.innerHTML = `
+      <span>${email}</span>
+      <button class="user-remove" onclick="removeUser('${email}')">Supprimer</button>
+    `;
+    listEl.appendChild(item);
+  });
+}
+
+function addUser() {
+  const emailInput = document.getElementById("newUserEmail");
+  const email = emailInput.value.trim();
+  if (!email || !email.includes("@")) {
+    alert("Email invalide");
+    return;
+  }
+  if (ALLOWED_EMAILS.indexOf(email) !== -1) {
+    alert("Cet utilisateur est déjà autorisé");
+    return;
+  }
+  ALLOWED_EMAILS.push(email);
+  localStorage.setItem("allowedEmails", JSON.stringify(ALLOWED_EMAILS));
+  emailInput.value = "";
+  renderUsersList();
+}
+
+function removeUser(email) {
+  if (!confirm("Supprimer " + email + " ?")) return;
+  ALLOWED_EMAILS = ALLOWED_EMAILS.filter(e => e !== email);
+  localStorage.setItem("allowedEmails", JSON.stringify(ALLOWED_EMAILS));
+  renderUsersList();
+}
+
+function openDocumentation() {
+  window.open("documentation.html", "MOG_Documentation", "width=1200,height=800,scrollbars=yes");
+}
+
+loadPermissions();
 initLoginClient();
 
 var CLIENT_ID      = "253709404223-7dk219jfjfn43vitgap2ujdblue4m1v8.apps.googleusercontent.com";
