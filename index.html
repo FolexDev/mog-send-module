@@ -1102,23 +1102,7 @@ function removeUser(email) {
 
 async function removeUserFromSheet(email) {
   try {
-    // 1. Charger les métadonnées pour obtenir le sheetId de "Permissions"
-    var metaResp = await fetch(
-      "https://sheets.googleapis.com/v4/spreadsheets/" + PERMISSIONS_SHEET_ID + "?fields=sheets(properties(sheetId,title))",
-      { headers: { Authorization: "Bearer " + accessToken } }
-    );
-    var metaData = await metaResp.json();
-    var sheetId = 0;
-    if (metaData.sheets) {
-      for (var s = 0; s < metaData.sheets.length; s++) {
-        if (metaData.sheets[s].properties.title === "Permissions") {
-          sheetId = metaData.sheets[s].properties.sheetId;
-          break;
-        }
-      }
-    }
-
-    // 2. Charger toutes les données pour trouver la ligne à supprimer
+    // 1. Charger toutes les données
     var resp = await fetch(
       "https://sheets.googleapis.com/v4/spreadsheets/" + PERMISSIONS_SHEET_ID +
       "/values/" + PERMISSIONS_RANGE,
@@ -1127,52 +1111,55 @@ async function removeUserFromSheet(email) {
     var data = await resp.json();
     var rows = data.values || [];
 
-    // 3. Trouver l'index de l'email
-    var rowIndexToDelete = -1;
-    for (var i = 0; i < rows.length; i++) {
-      if ((rows[i][0] || "").trim().toLowerCase() === email.toLowerCase()) {
-        rowIndexToDelete = i + 1; // +1 car A2 est l'index 1 (0-indexed)
-        break;
-      }
-    }
+    // 2. Filtrer l'utilisateur à supprimer
+    var newRows = rows.filter(function(row) {
+      return (row[0] || "").trim().toLowerCase() !== email.toLowerCase();
+    });
 
-    if (rowIndexToDelete === -1) {
+    if (newRows.length === rows.length) {
       alert("Utilisateur non trouvé");
       return;
     }
 
-    // 4. Supprimer la ligne entière avec batchUpdate
-    var deleteResp = await fetch(
-      "https://sheets.googleapis.com/v4/spreadsheets/" + PERMISSIONS_SHEET_ID + "/batchUpdate",
+    // 3. Effacer la plage entière puis réécrire les données filtrées
+    var clearResp = await fetch(
+      "https://sheets.googleapis.com/v4/spreadsheets/" + PERMISSIONS_SHEET_ID +
+      "/values/" + PERMISSIONS_RANGE + ":clear",
       {
         method: "POST",
         headers: {
           Authorization: "Bearer " + accessToken,
           "Content-Type": "application/json"
+        }
+      }
+    );
+
+    if (!clearResp.ok) {
+      throw new Error("Erreur lors de l'effacement");
+    }
+
+    // 4. Réécrire les données (sans l'email supprimé)
+    var updateResp = await fetch(
+      "https://sheets.googleapis.com/v4/spreadsheets/" + PERMISSIONS_SHEET_ID +
+      "/values/" + PERMISSIONS_RANGE + "?valueInputOption=RAW",
+      {
+        method: "PUT",
+        headers: {
+          Authorization: "Bearer " + accessToken,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          requests: [{
-            deleteRange: {
-              range: {
-                sheetId: sheetId,
-                startIndex: rowIndexToDelete,
-                endIndex: rowIndexToDelete + 1
-              },
-              shiftDimension: "ROWS"
-            }
-          }]
+          values: newRows
         })
       }
     );
 
-    if (deleteResp.ok) {
+    if (updateResp.ok) {
       showStatus("success", "Utilisateur supprimé : " + email);
       await loadPermissionsFromSheet();
       renderUsersList();
     } else {
-      var errData = await deleteResp.json();
-      console.error("Erreur suppression:", errData);
-      alert("Erreur lors de la suppression");
+      throw new Error("Erreur lors de la réécriture");
     }
   } catch(e) {
     console.error("Erreur suppression utilisateur:", e);
