@@ -1793,7 +1793,7 @@ function loadConfig(name) {
 }
 function deleteConfig(name) { var c = getConfigs(); delete c[name]; setConfigs(c); renderSaveSlots(); }
 function renderSaveSlots() {
-  var configs = getConfigs(); var container = document.getElementById("saveSlots"); container.innerHTML = "";
+  var configs = getConfigs(); var container = document.getElementById("saveSlots"); if(!container)return; container.innerHTML = "";
   var keys = Object.keys(configs);
   if (!keys.length) { container.innerHTML = "<span style='font-size:11px;color:var(--mut)'>Aucune config</span>"; return; }
   keys.forEach(function(name) {
