@@ -69,9 +69,12 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .slot{padding:6px 12px;border-radius:7px;border:1px solid var(--bd);background:rgba(0,0,0,.2);color:var(--mut);font-family:"DM Sans",sans-serif;font-size:11px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
 .slot:hover{border-color:var(--bd2);color:var(--txt)}.slot.filled{border-color:rgba(0,196,122,.25);color:var(--ok)}
 .slot-del{color:var(--mut);font-size:10px;line-height:1}.slot-del:hover{color:#ff6060}
-.start-row{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.start-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
 .start-row input[type=number]{width:90px;text-align:center;font-size:16px;font-weight:700}
 .start-row span{font-size:12px;color:var(--mut);line-height:1.5}
+.mode-toggle{padding:8px 16px;border:none;border-radius:6px;background:rgba(255,255,255,.08);color:var(--mut);font-family:"DM Sans",sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid rgba(255,255,255,.15)}
+.mode-toggle:hover{background:rgba(255,255,255,.12);color:var(--txt)}
+.mode-toggle.active{background:rgba(0,196,122,.2);color:#00c47a;border-color:rgba(0,196,122,.4)}
 .import-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
 .import-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;border:1px solid var(--bd2);background:rgba(255,255,255,.04);color:var(--mut);font-family:"DM Sans",sans-serif;font-size:13px;cursor:pointer;transition:all .2s}
 .import-btn:hover{color:var(--txt);border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
@@ -243,11 +246,19 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .ca-text{flex:1}
 .exp-back:disabled{opacity:.28;cursor:not-allowed;pointer-events:none}
 /* ── MODE SELECTOR ── */
-.modeBar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;border:1px solid var(--bd);background:rgba(0,0,0,.15);margin-bottom:16px;flex-wrap:wrap;}
-.mode-lbl{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
-.mode-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--bd2);background:rgba(255,255,255,.04);color:var(--mut);font-family:"DM Sans",sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
-.mode-btn:hover{background:rgba(255,255,255,.08);color:var(--txt);}
-.mode-btn.active{border-color:rgba(0,196,122,.3);color:var(--ok);background:rgba(0,196,122,.07);}
+.webhook-status-bar{display:flex;align-items:center;gap:16px;padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);margin-bottom:12px;font-size:12px;}
+.webhook-status-item{display:flex;align-items:center;gap:6px;}
+.webhook-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;box-shadow:0 0 4px currentColor;}
+.webhook-dot.waiting{background:#f5a623;color:#f5a623;animation:pulse-mini 1.5s infinite;}
+.webhook-dot.online{background:#00c47a;color:#00c47a;animation:pulse-mini 2s infinite;}
+.webhook-dot.offline{background:#ff6060;color:#ff6060;animation:none;}
+@keyframes pulse-mini{0%,100%{opacity:1;box-shadow:0 0 4px currentColor;}50%{opacity:.6;box-shadow:0 0 8px currentColor;}}
+.webhook-label{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.05em;}
+.modeBar{display:flex;align-items:center;gap:6px;padding:0;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);margin-bottom:0;flex-wrap:nowrap;}
+.modeBar .mode-toggle{border:none;padding:8px 12px;background:transparent;font-size:11px;border-radius:4px;border:1px solid transparent;}
+.modeBar .mode-toggle:first-child{border-radius:4px 0 0 4px;}
+.modeBar .mode-toggle:last-child{border-radius:0 4px 4px 0;}
+.modeBar .mode-toggle.active{background:rgba(0,196,122,.2);color:#00c47a;border-color:rgba(0,196,122,.3)}
 
 /* ALIGNEMENT LIENS */
 .fl-row{display:flex;align-items:center;gap:8px;min-height:28px;flex-wrap:nowrap}
@@ -424,10 +435,15 @@ select option{background:#2a2a2a;color:#e8e8e8}
       <button class="authbtn" id="authBtn" onclick="handleAuth()">Se connecter &agrave; Google</button>
     </div>
   </div>
-  <div class="modeBar" id="modeBar" style="display:none;">
-    <span class="mode-lbl">Mode d'envoi :</span>
-    <button class="mode-btn active" id="modeNormalBtn" onclick="setMode('normal')">Normal (1 PDF)</button>
-    <button class="mode-btn" id="modeOneByOneBtn" onclick="setMode('onebyOne')">1by1 (Plusieurs PDFs)</button>
+  <div class="webhook-status-bar" id="webhookBar" style="display:none;">
+    <div class="webhook-status-item">
+      <span class="webhook-dot waiting" id="wh-normal"></span>
+      <span class="webhook-label">Normal</span>
+    </div>
+    <div class="webhook-status-item">
+      <span class="webhook-dot waiting" id="wh-1by1"></span>
+      <span class="webhook-label">1by1</span>
+    </div>
   </div>
   <div class="steps">
     <div class="step active" id="s1"><span class="sn">1</span>Config PDF &amp; Mail</div>
@@ -558,8 +574,14 @@ select option{background:#2a2a2a;color:#e8e8e8}
     <div class="sep"></div>
     <div class="sec">Destinataires &mdash; gagnants <span class="cbadge" id="cbadge">0</span></div>
     <div class="start-row">
-      <input type="number" id="startNum" value="1" min="1" oninput="renderGagnants()">
-      <span>N&deg; du premier PDF du lot<br>Les suivants s'incr&eacute;mentent automatiquement</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <input type="number" id="startNum" value="1" min="1" oninput="renderGagnants()">
+        <span>N&deg; du premier PDF du lot<br>Les suivants s'incr&eacute;mentent automatiquement</span>
+      </div>
+      <div class="modeBar" id="modeBar" style="display:none;margin-bottom:0;">
+        <button class="mode-toggle active" id="modeNormalBtn" onclick="setMode('normal')">Normal</button>
+        <button class="mode-toggle" id="modeOneByOneBtn" onclick="setMode('onebyOne')">1by1</button>
+      </div>
     </div>
     <div class="import-row">
       <button class="import-btn" onclick="document.getElementById('csvInput').click()">&#128194; Importer CSV / Excel</button>
@@ -843,9 +865,12 @@ function showLoginError() {
 function unlockApp(email) {
   appUnlocked = true;
   document.getElementById("loginPage").style.display = "none";
+  document.getElementById("webhookBar").style.display = "flex";
   document.getElementById("modeBar").style.display = "flex";
   setAuthUI(true);
   document.getElementById("authLabel").textContent = email;
+  // Tester les webhooks après connexion
+  setTimeout(() => testWebhookStatus(), 500);
 }
 
 initLoginClient();
@@ -1051,6 +1076,37 @@ function setAuthUI(c) {
 }
 function openDocumentation() {
   window.open("documentation.html", "MOG_Documentation", "width=1200,height=800,scrollbars=yes");
+}
+function testWebhookStatus() {
+  const webhooks = {
+    normal: 'https://hook.eu2.make.com/5fmu4g6onwbg8yjeszd8cchrarfwqjqv',
+    '1by1': 'https://hook.eu2.make.com/2vqww5qpkel2ikyogsvp4wyltmfkqyff'
+  };
+
+  ['normal', '1by1'].forEach(function(mode) {
+    const dot = document.getElementById('wh-' + mode);
+    if (!dot) return;
+
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000));
+
+    Promise.race([
+      fetch(webhooks[mode], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trigger: 'test-connection', count: 0 })
+      }),
+      timeout
+    ])
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      dot.classList.remove('waiting', 'offline');
+      dot.classList.add('online');
+    })
+    .catch(() => {
+      dot.classList.remove('waiting', 'online');
+      dot.classList.add('offline');
+    });
+  });
 }
 function extractFolderID(e) {
   setTimeout(function() {
