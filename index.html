@@ -1829,7 +1829,7 @@ function importRows(rows) {
   if (added > 0) showStatus("success", added+" gagnant"+(added>1?"s":"")+" importe"+(added>1?"s":"")+".");
   else showStatus("warn", "Aucune ligne valide. Format : Prenom, Nom, Email.");
 }
-function getStart() { return Math.max(1, parseInt(document.getElementById("startNum").value, 10) || 1); }
+function getStart() { var el = document.getElementById("startNum"); return Math.max(1, parseInt(el ? el.value : "1", 10) || 1); }
 function addGagnant() { gagnants.push(Date.now() + Math.random()); renderGagnants(); }
 function removeGagnant(id) {
   if (gagnants.length <= 1) { var ep=document.getElementById("pr"+id); var en=document.getElementById("nm"+id); var ee=document.getElementById("em"+id); if(ep)ep.value=""; if(en)en.value=""; if(ee)ee.value=""; return; }
