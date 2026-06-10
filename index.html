@@ -1230,7 +1230,18 @@ document.getElementById("logoImg").src = "https://raw.githubusercontent.com/Fole
 function setMode(mode) {
   // mode: "normal" = 1-PDF  |  "twobyOne" = 2-PDF  |  "onebyOne" = N-PDF
   if (!modeConfigs[mode]) return;
+  var previousMode = currentMode;
   currentMode = mode;
+
+  // Quand on passe de 2-PDF à N-PDF, réinitialiser les valeurs nbrPDF
+  if(previousMode === "twobyOne" && mode === "onebyOne") {
+    for(var i=0;i<gagnants.length;i++){
+      var id=gagnants[i];
+      var nbrInput=document.getElementById("nbrpdf"+id);
+      if(nbrInput) nbrInput.value="";
+    }
+  }
+
   document.getElementById("modeNormalBtn").classList.toggle("active", mode === "normal");
   document.getElementById("modeTwoByOneBtn").classList.toggle("active", mode === "twobyOne");
   document.getElementById("modeOneByOneBtn").classList.toggle("active", mode === "onebyOne");
@@ -2030,6 +2041,7 @@ function resetForm(){
   document.getElementById("startNum").value="1";
   document.getElementById("driveStats").innerHTML="";
   document.getElementById("folderLink").innerHTML="";
+  document.getElementById("capacityAlert").style.display="none";
   EXP = { open: false, breadcrumb: [], currentLevel: 0, selectedId: null, selectedName: null, currentFolders: [], cache: {} };
   document.getElementById("expFolders").innerHTML="";
   expRenderBreadcrumb();
