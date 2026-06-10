@@ -250,6 +250,8 @@ select option{background:#2a2a2a;color:#e8e8e8}
 .capacity-alert{display:none;align-items:center;gap:10px;padding:12px 16px;margin:12px 0;border-radius:8px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);color:#f5a623;font-size:13px;font-weight:500}
 .ca-icon{font-size:16px;flex-shrink:0}
 .ca-text{flex:1}
+input.invalid-email{color:#ff6060 !important;}
+.email-invalid-alert{display:none;align-items:center;gap:10px;padding:12px 16px;margin:12px 0;border-radius:8px;background:rgba(255,96,96,.1);border:1px solid rgba(255,96,96,.3);color:#ff6060;font-size:13px;font-weight:500}
 .exp-back:disabled{opacity:.28;cursor:not-allowed;pointer-events:none}
 /* ── MODE SELECTOR ── */
 .webhook-status-bar{display:flex;align-items:center;gap:16px;padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);margin-bottom:12px;font-size:12px;}
@@ -654,6 +656,10 @@ select option{background:#2a2a2a;color:#e8e8e8}
     <div class="capacity-alert" id="capacityAlert" style="display:none;">
       <span class="ca-icon">⚠️</span>
       <span class="ca-text" id="capacityAlertMsg">Dépassement de capacité</span>
+    </div>
+    <div class="email-invalid-alert" id="emailInvalidAlert" style="display:none;">
+      <span class="ca-icon">❌</span>
+      <span class="ca-text" id="emailInvalidMsg">Email invalide</span>
     </div>
     <div class="actions">
       <button class="sendb" id="btnSend" onclick="lancerEnvoi()">&#128640; LANCER &#128640;</button>
@@ -1841,6 +1847,28 @@ function importRows(rows) {
   else showStatus("warn", "Aucune ligne valide. Format : Prenom, Nom, Email.");
 }
 function getStart() { var el = document.getElementById("startNum"); return Math.max(1, parseInt(el ? el.value : "1", 10) || 1); }
+function validateEmailsRealtime() {
+  var hasInvalidEmail = false;
+  var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  for(var i=0;i<gagnants.length;i++){
+    var id=gagnants[i];
+    var em=document.getElementById("em"+id);
+    if(!em) continue;
+    var isValid=emailRegex.test(em.value.trim());
+    if(isValid && em.value.trim()!==""){
+      em.classList.remove("invalid-email");
+    } else if(em.value.trim()!==""){
+      em.classList.add("invalid-email");
+      hasInvalidEmail=true;
+    }
+  }
+  var alertEl=document.getElementById("emailInvalidAlert");
+  if(hasInvalidEmail){
+    alertEl.style.display="flex";
+  } else {
+    alertEl.style.display="none";
+  }
+}
 function addGagnant() { gagnants.push(Date.now() + Math.random()); renderGagnants(); }
 function removeGagnant(id) {
   if (gagnants.length <= 1) { var ep=document.getElementById("pr"+id); var en=document.getElementById("nm"+id); var ee=document.getElementById("em"+id); if(ep)ep.value=""; if(en)en.value=""; if(ee)ee.value=""; return; }
@@ -1859,7 +1887,7 @@ function renderGagnants() {
     if(currentMode==="onebyOne"||currentMode==="twobyOne"){var inbr=document.createElement("input");inbr.type="number";inbr.id="nbrpdf"+id;inbr.placeholder="Nbr PDF";inbr.value=currentMode==="twobyOne"?"2":s.nbr;inbr.min="1";if(currentMode==="twobyOne"){inbr.disabled=true;inbr.style.opacity="0.5";inbr.style.cursor="not-allowed";}else{inbr.oninput=function(){recalculateWinnersNumbers();};}fields.appendChild(inbr);}
     var ip=document.createElement("input");ip.type="text";ip.id="pr"+id;ip.placeholder="Pr\u00e9nom";ip.value=s.pr;
     var inm=document.createElement("input");inm.type="text";inm.id="nm"+id;inm.placeholder="Nom";inm.value=s.nm;
-    var ie=document.createElement("input");ie.type="email";ie.id="em"+id;ie.placeholder="email@exemple.com";ie.value=s.em;
+    var ie=document.createElement("input");ie.type="email";ie.id="em"+id;ie.placeholder="email@exemple.com";ie.value=s.em;ie.oninput=function(){validateEmailsRealtime();};
     fields.appendChild(inm);fields.appendChild(ip);fields.appendChild(ie);
     var rb=document.createElement("button");rb.className="rmb";rb.textContent="x";
     (function(rmid){rb.onclick=function(){removeGagnant(rmid);};})(id);
@@ -1867,6 +1895,7 @@ function renderGagnants() {
   }
   var cbadge=document.getElementById("cbadge"); if(cbadge)cbadge.textContent=gagnants.length;
   recalculateWinnersNumbers();
+  validateEmailsRealtime();
 }
 document.addEventListener('paste', function(e) {
   var active=document.activeElement;
@@ -2042,6 +2071,7 @@ function resetForm(){
   document.getElementById("driveStats").innerHTML="";
   document.getElementById("folderLink").innerHTML="";
   document.getElementById("capacityAlert").style.display="none";
+  document.getElementById("emailInvalidAlert").style.display="none";
   EXP = { open: false, breadcrumb: [], currentLevel: 0, selectedId: null, selectedName: null, currentFolders: [], cache: {} };
   document.getElementById("expFolders").innerHTML="";
   expRenderBreadcrumb();
