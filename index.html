@@ -1687,29 +1687,36 @@ function expConfirm() {
 function loadPdfJs(cb) {
   if (window.pdfjsLib) { cb(); return; }
   var s = document.createElement("script");
-  s.src = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.269/build/pdf.min.js";
+  s.src = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js";
   s.onload = function() {
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.269/build/pdf.worker.min.js";
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
     cb();
   };
+  s.onerror = function() { console.error("❌ Failed to load PDF.js"); };
   document.head.appendChild(s);
 }
 function detectPdfPages(fileId) {
+  console.log("📄 detectPdfPages called with fileId:", fileId);
   loadPdfJs(async function() {
     try {
+      console.log("PDF.js loaded, fetching file...");
       var resp = await fetch(
         "https://www.googleapis.com/drive/v3/files/" + fileId + "?alt=media&supportsAllDrives=true",
         { headers: { Authorization: "Bearer " + accessToken } }
       );
+      console.log("Fetch status:", resp.status);
       var ab = await resp.arrayBuffer();
+      console.log("ArrayBuffer size:", ab.byteLength);
       var pdf = await pdfjsLib.getDocument({ data: ab }).promise;
       var n = pdf.numPages;
+      console.log("PDF numPages:", n);
       var box = document.getElementById("driveStats");
-      if (!box) return;
+      if (!box) { console.log("driveStats not found"); return; }
       var cls = n === 1 ? "ok" : "warn";
       box.innerHTML += '<span class="ds-pill ' + cls + '"><span class="ds-dot"></span>' + n + '&nbsp;Page' + (n > 1 ? 's' : '') + '/PDF</span>';
-    } catch(e) { /* silencieux */ }
+      console.log("✓ Pill added");
+    } catch(e) { console.error("❌ detectPdfPages error:", e); }
   });
 }
 async function scanDossier() {
@@ -1775,14 +1782,18 @@ async function scanDossier() {
     var pillUtil = '<span class="ds-pill" style="color:rgba(200,200,200,.45)"><span class="ds-dot"></span>' + utilises + '&nbsp;/&nbsp;' + total + ' utilis&eacute;' + (utilises > 1 ? 's' : '') + '</span>';
     box.innerHTML = pillNext + pillStock + pillUtil;
     // Détecter le nombre de pages via le premier PDF disponible (ou envoyé si dispo)
+    console.log("🔍 Page detection: prochain=" + prochain + ", stock=" + stock + ", restants.length=" + restants.length);
     if (prochain !== null && stock > 0) {
       var baseName2 = restants[0].replace(/-\d+$/, "");
       var filePrefix = baseName2 + "-" + prochain;
+      console.log("Looking for file matching:", filePrefix);
       var file1 = allFiles.find(function(f){
         var cleanName = f.name.replace(/\.pdf$/i,"");
         return cleanName === filePrefix || cleanName.indexOf(filePrefix + "-") === 0;
       });
-      if (file1 && file1.id) detectPdfPages(file1.id);
+      console.log("Found file:", file1 ? file1.name : "NOT FOUND");
+      if (file1 && file1.id) { console.log("Calling detectPdfPages with id:", file1.id); detectPdfPages(file1.id); }
+      else console.log("No file or no ID");
     }
     // Bouton lien dossier orange
     try {
