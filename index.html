@@ -1697,26 +1697,20 @@ function loadPdfJs(cb) {
   document.head.appendChild(s);
 }
 function detectPdfPages(fileId) {
-  console.log("📄 detectPdfPages called with fileId:", fileId);
-  console.log("accessToken exists?", !!accessToken, "length:", (accessToken || "").length);
+  var box = document.getElementById("driveStats");
+  if (box) box.innerHTML += '<span class="ds-pill warn"><span class="ds-dot" style="animation:sp .7s linear infinite;border:2px solid rgba(220,220,220,.15);border-top-color:currentColor;border-radius:50%;width:8px;height:8px;background:none"></span>Calcul nbr de pages/PDF&hellip;</span>';
   loadPdfJs(async function() {
     try {
-      console.log("PDF.js loaded, fetching file...");
       var resp = await fetch(
         "https://www.googleapis.com/drive/v3/files/" + fileId + "?alt=media&supportsAllDrives=true",
         { headers: { Authorization: "Bearer " + accessToken } }
       );
-      console.log("Fetch status:", resp.status);
       var ab = await resp.arrayBuffer();
-      console.log("ArrayBuffer size:", ab.byteLength);
       var pdf = await pdfjsLib.getDocument({ data: ab }).promise;
       var n = pdf.numPages;
-      console.log("PDF numPages:", n);
-      var box = document.getElementById("driveStats");
-      if (!box) { console.log("driveStats not found"); return; }
-      box.innerHTML += '<span class="ds-pill warn"><span class="ds-dot"></span>' + n + '&nbsp;Page' + (n > 1 ? 's' : '') + '/PDF</span>';
-      console.log("✓ Pill added");
-    } catch(e) { console.error("❌ detectPdfPages error:", e); }
+      if (!box) return;
+      box.innerHTML = box.innerHTML.replace(/Calcul nbr de pages\/PDF[^<]*/,'<span class="ds-dot"></span>' + n + '&nbsp;Page' + (n > 1 ? 's' : '') + '/PDF');
+    } catch(e) { if (box) box.innerHTML = box.innerHTML.replace(/Calcul nbr de pages\/PDF[^<]*/, '<span class="ds-dot"></span>Erreur'); }
   });
 }
 async function scanDossier() {
