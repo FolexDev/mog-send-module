@@ -1777,7 +1777,7 @@ async function scanDossier() {
       : '<span class="ds-pill err"><span class="ds-dot"></span>0 PDF disponible</span>';
     var pillUtil = '<span class="ds-pill" style="color:rgba(200,200,200,.45)"><span class="ds-dot"></span>' + utilises + '&nbsp;/&nbsp;' + total + ' utilis&eacute;' + (utilises > 1 ? 's' : '') + '</span>';
     var pillPages = (prochain !== null && stock > 0 && accessToken)
-      ? '<br><span class="ds-pill warn" id="pillPages" style="margin-top:8px;display:inline-flex"><span class="ds-dot" style="animation:sp .7s linear infinite;border:2px solid rgba(220,220,220,.15);border-top-color:currentColor;border-radius:50%;width:8px;height:8px;background:none"></span>Calcul nbr de pages/PDF&hellip;</span>'
+      ? '<span class="ds-pill warn" id="pillPages"><span class="ds-dot" style="animation:sp .7s linear infinite;border:2px solid rgba(220,220,220,.15);border-top-color:currentColor;border-radius:50%;width:8px;height:8px;background:none"></span>Calcul</span>'
       : '';
     box.innerHTML = pillNext + pillStock + pillUtil + pillPages;
     // Détecter le nombre de pages via le premier PDF disponible (ou envoyé si dispo)
