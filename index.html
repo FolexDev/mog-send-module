@@ -1708,13 +1708,24 @@ function detectPdfPages(fileId) {
       var n = pdf.numPages;
       var pill = document.getElementById("pillPages");
       if (!pill) return;
-      var blobUrl = URL.createObjectURL(new Blob([ab], { type: 'application/pdf' }));
-      var link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = "test.pdf";
+      window.testPdfBlob = new Blob([ab], { type: 'application/pdf' });
+      var link = document.createElement("button");
+      link.className = "ds-pill";
+      link.style.border = "none";
+      link.style.background = "transparent";
+      link.style.cursor = "pointer";
       link.style.textDecoration = "none";
       link.style.color = "inherit";
-      link.style.cursor = "pointer";
+      link.style.padding = "0";
+      link.onclick = function(e) {
+        e.preventDefault();
+        var blobUrl = URL.createObjectURL(window.testPdfBlob);
+        var a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = "test.pdf";
+        a.click();
+        setTimeout(function() { URL.revokeObjectURL(blobUrl); }, 100);
+      };
       link.innerHTML = '<span class="ds-dot"></span>' + n + '&nbsp;Page' + (n > 1 ? 's' : '') + '/PDF';
       pill.innerHTML = "";
       pill.appendChild(link);
@@ -1784,11 +1795,11 @@ async function scanDossier() {
     var pillStock = stock > 0
       ? '<span class="ds-pill ok"><span class="ds-dot"></span>' + stock + ' PDF disponible' + (stock > 1 ? 's' : '') + '</span>'
       : '<span class="ds-pill err"><span class="ds-dot"></span>0 PDF disponible</span>';
-    var pillPages = (prochain !== null && stock > 0 && accessToken)
-      ? '<span class="ds-pill warn" id="pillPages"><span class="ds-dot" style="animation:sp .7s linear infinite;border:2px solid rgba(220,220,220,.15);border-top-color:currentColor;border-radius:50%;width:8px;height:8px;background:none"></span>Calcul nbr de pages/PDF&hellip;</span>'
-      : '';
     var pillUtil = '<span class="ds-pill" style="color:rgba(200,200,200,.45)"><span class="ds-dot"></span>' + utilises + '&nbsp;/&nbsp;' + total + ' utilis&eacute;' + (utilises > 1 ? 's' : '') + '</span>';
-    box.innerHTML = pillNext + pillStock + pillPages + pillUtil;
+    var pillPages = (prochain !== null && stock > 0 && accessToken)
+      ? '<div style="margin-top:8px"><span class="ds-pill warn" id="pillPages"><span class="ds-dot" style="animation:sp .7s linear infinite;border:2px solid rgba(220,220,220,.15);border-top-color:currentColor;border-radius:50%;width:8px;height:8px;background:none"></span>Calcul nbr de pages/PDF&hellip;</span></div>'
+      : '';
+    box.innerHTML = pillNext + pillStock + pillUtil + pillPages;
     // Détecter le nombre de pages via le premier PDF disponible (ou envoyé si dispo)
     if (prochain !== null && stock > 0 && accessToken) {
       var baseName2 = restants[0].replace(/-\d+$/, "");
