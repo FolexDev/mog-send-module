@@ -1714,8 +1714,7 @@ function detectPdfPages(fileId) {
       console.log("PDF numPages:", n);
       var box = document.getElementById("driveStats");
       if (!box) { console.log("driveStats not found"); return; }
-      var cls = n === 1 ? "ok" : "warn";
-      box.innerHTML += '<span class="ds-pill ' + cls + '"><span class="ds-dot"></span>' + n + '&nbsp;Page' + (n > 1 ? 's' : '') + '/PDF</span>';
+      box.innerHTML += '<span class="ds-pill warn"><span class="ds-dot"></span>' + n + '&nbsp;Page' + (n > 1 ? 's' : '') + '/PDF</span>';
       console.log("✓ Pill added");
     } catch(e) { console.error("❌ detectPdfPages error:", e); }
   });
