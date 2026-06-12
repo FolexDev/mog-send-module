@@ -1708,7 +1708,15 @@ function detectPdfPages(fileId) {
       var n = pdf.numPages;
       var pill = document.getElementById("pillPages");
       if (!pill) return;
-      pill.innerHTML = '<span class="ds-dot"></span>' + n + '&nbsp;Page' + (n > 1 ? 's' : '') + '/PDF';
+      var link = document.createElement("a");
+      link.href = "https://drive.google.com/file/d/" + fileId + "/view";
+      link.target = "_blank";
+      link.style.textDecoration = "none";
+      link.style.color = "inherit";
+      link.style.cursor = "pointer";
+      link.innerHTML = '<span class="ds-dot"></span>' + n + '&nbsp;Page' + (n > 1 ? 's' : '') + '/PDF';
+      pill.innerHTML = "";
+      pill.appendChild(link);
     } catch(e) {
       var pill = document.getElementById("pillPages");
       if (pill) pill.innerHTML = '<span class="ds-dot"></span>Erreur';
