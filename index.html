@@ -667,10 +667,6 @@ input.invalid-email{color:#ff6060 !important;}
     </div>
     <div class="sbar" id="sbar"><div class="spin" id="spin" style="display:none"></div><span id="stxt"></span></div>
   </div>
-  <div class="infobox">
-    <span>&#8505;&#65039;</span>
-    <div>Le HTML &eacute;crit les donn&eacute;es dans la <strong>Google Sheet</strong> puis d&eacute;clenche le <strong>webhook Make</strong>.<br>Connexion Google requise avant l'envoi.</div>
-  </div>
 </div>
 <script>
 
@@ -725,12 +721,10 @@ function closeProgModal() {
   document.getElementById("progBg").classList.remove("show");
   if (progPollInterval) { clearInterval(progPollInterval); progPollInterval = null; }
 
-  // Rescanner le dossier en mode N-PDF pour mettre à jour les PDFs disponibles et le numéro de départ
-  if (currentMode === "onebyOne") {
-    var folderId = document.getElementById("folderID").value.trim();
-    if (folderId) {
-      scanDossier();
-    }
+  // Rescanner le dossier pour mettre à jour les PDFs disponibles, le numéro de départ et le nombre de pages
+  var folderId = document.getElementById("folderID").value.trim();
+  if (folderId) {
+    scanDossier();
   }
 }
 
